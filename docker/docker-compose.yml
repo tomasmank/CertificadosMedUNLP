@@ -20,8 +20,12 @@ services:
     container_name: php
     build:
       context: ./php
+    links:
+      - database
     ports:
       - '8741:80'
+    networks:
+      - backend
     volumes:
       - ${PROJECT_ROOT}:/var/www/CertificadosMedUNLP
       - './apache2:/etc/apache2/sites-enabled'
