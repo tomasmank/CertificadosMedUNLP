@@ -16,6 +16,8 @@ services:
       - ./mysql:/var/lib/mysql
     networks:
       - backend
+    security_opt:
+      - seccomp:unconfined
   php:
     container_name: php
     build:
