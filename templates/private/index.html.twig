@@ -16,7 +16,7 @@
             <nav class="navbar justify-content-center navbar-expand-lg navbar-dark">
                 <div class="container">
                     <a class="navbar-brand d-none d-sm-block" href="http://www.med.unlp.edu.ar">
-                        <img class="img-fluid" src="..\src\fmed-unlp-logo.png" alt="Facultad de Medicina UNLP">
+                        <img class="img-fluid" src="/static/assets/logos/fmed-unlp-logo.png" alt="Facultad de Medicina UNLP">
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -63,7 +63,7 @@
                                             <nav class="navbar justify-content-center navbar-expand-lg navbar-dark">
                                                 <div class="container">
                                                     <a class="navbar-brand d-none d-sm-block" href="http://www.med.unlp.edu.ar">
-                                                        <img class="img-fluid" src="..\src\fmed-unlp-logo.png" alt="Facultad de Medicina UNLP">
+                                                        <img class="img-fluid" src="/static/assets/logos/fmed-unlp-logo.png" alt="Facultad de Medicina UNLP">
                                                     </a>
                                                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                                                         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -76,7 +76,7 @@
                                                                 <a class="nav-link active" aria-current="page" href="#">Inicio</a>
                                                             </li>
                                                             <li class="nav-item">
-                                                                <a class="nav-link" href="event/index.html">Eventos</a>
+                                                                <a class="nav-link" href={{path("private_event_index")}}>Eventos</a>
                                                             </li>
                                                             <li class="nav-item">
                                                                 <a class="nav-link" href="#">Templates</a>
@@ -87,7 +87,7 @@
                                                                     Administrar
                                                                 </a>
                                                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                                                    <li><a class="dropdown-item" href="user/index.html">Usuarios</a></li>
+                                                                    <li><a class="dropdown-item" href={{path("private_user_index")}}>Usuarios</a></li>
                                                                     <li>
                                                                         <hr class="dropdown-divider">
                                                                     </li>
