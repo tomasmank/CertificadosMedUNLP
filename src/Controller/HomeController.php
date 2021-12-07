@@ -19,9 +19,9 @@ class HomeController extends AbstractController
         return $this->render('app/private/index.html.twig');
     }
     /**
-     * @Route("/certificados", name="home")
+     * @Route("/certificados", name="public")
      */
-    public function public(): Response
+    public function certificados(): Response
     {
         return $this->render('app/public/index.html.twig');
     }
