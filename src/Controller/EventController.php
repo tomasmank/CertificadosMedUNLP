@@ -22,7 +22,7 @@ class EventController extends AbstractController
         ]);
     }
     /**
-     * @Route("/new", name="create_event")
+     * @Route("/new", name="createEvent")
      */
     public function Create(): Response
     {
