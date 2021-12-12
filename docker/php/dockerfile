@@ -17,6 +17,6 @@ RUN mv /root/.symfony/bin/symfony /usr/local/bin/symfony
 RUN git config --global user.email "tomy-bsso.16@hotmail.com" \ 
     && git config --global user.name "Tomas Mankowski"
 
-CMD ["apache2-foreground"]
- 
-ENTRYPOINT ["./entrypoint.sh"]
+ CMD ["apache2-foreground"]
+
+ ENTRYPOINT ["./entrypoint.sh"]

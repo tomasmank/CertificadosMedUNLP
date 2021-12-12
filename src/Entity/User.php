@@ -81,6 +81,8 @@ class User implements UserInterface
 
     // modificación para manejar los roles (o nombres de los permisos...) según el profile
     
+        $roles = $this->roles;
+
         foreach($this->profile->getRoles() as $roleObject) {
             $roles[] = $roleObject->getName();
         }

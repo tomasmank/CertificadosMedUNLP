@@ -1,0 +1,11 @@
+knp_snappy:
+    temporary_folder: '%kernel.cache_dir%/snappy'     # apunta a ../var/cache/dev/snappy/
+    
+    pdf:
+        enabled:    true
+        binary:     '%env(WKHTMLTOPDF_PATH)%'
+        options:
+            page-width: 200
+            page-height: 160
+
+    process_timeout: 30 # In seconds

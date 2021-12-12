@@ -18,6 +18,7 @@ class HomeController extends AbstractController
     {
         return $this->render('app/private/index.html.twig');
     }
+
     /**
      * @Route("/certificados", name="public")
      */
@@ -25,4 +26,12 @@ class HomeController extends AbstractController
     {
         return $this->render('app/public/index.html.twig');
     }
+
+  #  /**
+  #   * @Route("/login", name="login")
+  #   */
+  #  public function login(): Response
+  #  {
+  #      return $this->render('app/private/user/login.html.twig');
+  #  }
 }

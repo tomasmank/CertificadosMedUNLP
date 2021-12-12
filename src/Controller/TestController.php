@@ -14,6 +14,9 @@ use App\Entity\Event;
 use App\Entity\Attendee;
 use \DateTime;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Knp\Snappy\Pdf;
+use Twig\Environment;
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 
 class TestController extends AbstractController
 {
@@ -129,7 +132,7 @@ class TestController extends AbstractController
         $em->persist($role);
         $em->flush();
 
-        return new Response('Se registró el rol (permiso) '.role->getName().' con ID '.$role->getID());
+        return new Response('Se registró el rol (permiso) '.$role->getName().' con ID '.$role->getID());
     }
 
     /**
@@ -261,5 +264,40 @@ class TestController extends AbstractController
         $user = $em->find('App\Entity\User', $idUser);
 
         return $this->render('test/prueba.html.twig', ['nombreColeccion' => 'Roles', 'coleccion' => $user->getRoles()]);
+    }
+
+    /**
+     * @Route("/find_attendee/{dni}", name="find_attendee")
+     */
+    public function findAttendee(string $dni): Response
+    {
+        $attendee = $this->getDoctrine()
+           ->getRepository(Attendee::class)
+            ->findAttendeeByDni($dni);
+        if ($attendee == null) {
+            return new Response('No se encontró ningún asistente con dni '.$dni);    
+        }
+        return new Response('Asistente con dni '.$dni.': '.$attendee->getFirstName().' '.$attendee->getLastName());
+    }
+
+    /**
+     * @Route("/showPDF", name="show_pdf")
+     */
+    public function indexAction(\Knp\Snappy\Pdf $snappy)
+    {
+        #$html = '<h1>Hello</h1>';
+        #$html = $this->renderView('hello-world.html.twig');
+        $html = $this->renderView('index.html.twig');
+        
+        $filename = 'myFirstSnappyPDF';
+
+        return new Response(
+            $snappy->getOutputFromHtml($html),
+            200,
+            array(
+                'Content-Type'          => 'application/pdf',
+                'Content-Disposition'   => 'inline; filename="'.$filename.'.pdf"'
+            )
+        );
     }
 }
