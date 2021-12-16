@@ -2,12 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <title>Inicio</title>
+    {% include "head.html.twig" %}
 </head>
 
 <body>
@@ -16,7 +11,8 @@
             <nav class="navbar">
                 <div class="container">
                     <a class="navbar-brand" href="http://www.med.unlp.edu.ar">
-                        <img class="img-fluid" src="/static/assets/logos/fmed-unlp-logo.png" alt="Facultad de Medicina UNLP">
+                        <img class="img-fluid" src="/static/assets/logos/fmed-unlp-logo.png"
+                            alt="Facultad de Medicina UNLP">
                     </a>
                 </div>
             </nav>
@@ -30,8 +26,7 @@
                             <form>
                                 <div class="mb-3">
                                     <label for="userName" class="form-label">Nombre de usuario</label>
-                                    <input type="text" class="form-control" id="userName"
-                                        aria-describedby="emailHelp">
+                                    <input type="text" class="form-control" id="userName" aria-describedby="emailHelp">
                                 </div>
                                 <div class="mb-3">
                                     <label for="exampleInputPassword1" class="form-label">Contaseña</label>
@@ -42,7 +37,8 @@
                                     <label class="form-check-label" for="exampleCheck1">Recordarme</label>
                                 </div>
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                    <a type="button" href={{path("private_index")}} class="btn btn-secondary align-self-end"
+                                    <a type="button" href={{path("private_index")}}
+                                        class="btn btn-secondary align-self-end"
                                         style="background-color: #00889B;">Ingresar</a>
                                 </div>
                             </form>
@@ -53,13 +49,7 @@
         </div>
     </div>
 
-    <footer class="py-4 bg-dark">
-        <p class="text-center text-light">© 2021 Grupo 6, TTPS.</p>
-    </footer>
+    {% include "footer.html.twig" %}
 </body>
 
 </html>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-    crossorigin="anonymous"></script>
