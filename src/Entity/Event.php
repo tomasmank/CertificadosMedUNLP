@@ -40,7 +40,7 @@ class Event
     private $published;
 
     /**
-     * @ORM\ManyToOne(targetEntity=City::class)
+     * @ORM\ManyToOne(targetEntity=City::class,inversedBy="events")
      */
     private $city;
 

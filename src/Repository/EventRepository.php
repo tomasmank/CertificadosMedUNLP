@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use App\Entity\City;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,33 +19,39 @@ class EventRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Event::class);
     }
-
-    // /**
-    //  * @return Event[] Returns an array of Event objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    
+    public function findByName($value)
     {
         return $this->createQueryBuilder('e')
-            ->andWhere('e.exampleField = :val')
+            ->andWhere('e.name = :val')
             ->setParameter('val', $value)
-            ->orderBy('e.id', 'ASC')
-            ->setMaxResults(10)
+            ->getQuery()
+            ->getResults()
+        ;
+    }
+    
+
+     /**
+      * @return Event[] Returns an array of Event objects
+      */
+    
+   /* public function findByName(string $toSearch)
+    {*/
+   /*     $query = $this->getEntityManager()
+            ->createQuery(
+                'SELECT e FROM Event e
+                 WHERE e.name = :ts'
+            )->setParameter('ts', $toSearch);
+            
+            return $query->getResults();*/
+
+    /*    return $this->createQueryBuilder('e')
+            ->innerJoin('App\Entity\Event', 'App\Entity\City', 'c', 'e.city_id = c.id')
+            ->where('e.name LIKE ?1')
+            ->setParameter(1, '%'.$value.'%')
             ->getQuery()
             ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Event
-    {
-        return $this->createQueryBuilder('e')
-            ->andWhere('e.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
+        ;   */
+    /*}*/
+    
 }

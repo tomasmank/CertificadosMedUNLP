@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
-use App\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=PersonRepository::class)
@@ -19,11 +19,21 @@ class Person
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
+     * @Assert\Regex(
+     *   pattern="/^[a-zñáéíóúäëïöüàèìòùâêîôû\s]{1,100}$/i",
+     *   message="El nombre solo puede contener letras."
+     * )
      */
     private $first_name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
+     * @Assert\Regex(
+     *   pattern="/^[a-zñáéíóúäëïöüàèìòùâêîôû\s]{1,100}$/i",
+     *   message="El nombre solo puede contener letras."
+     * )
      */
     private $last_name;
 
@@ -40,7 +50,7 @@ class Person
     public function setFirstName(string $first_name): self
     {
         $this->first_name = $first_name;
-
+        
         return $this;
     }
 

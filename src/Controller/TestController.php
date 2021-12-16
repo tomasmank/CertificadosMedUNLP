@@ -12,11 +12,11 @@ use App\Entity\Profile;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Attendee;
+use App\Controller\ValidateController;
 use \DateTime;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Knp\Snappy\Pdf;
-use Twig\Environment;
-use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+
 
 class TestController extends AbstractController
 {
@@ -107,16 +107,29 @@ class TestController extends AbstractController
      */
     public function newPerson(string $fn, $ln)
     {
-        $em = $this->getDoctrine()->getManager();
+        $response = $this->forward('App\Controller\ValidateController::validateNames', [
+            'name'  => $fn,
+        ]);
         
-        $person = new Person();
-        $person->setFirstName($fn);
-        $person->setLastName($ln);
-        
-        $em->persist($person);
-        $em->flush();
+        if (($response->getContent()) == 0) {
+            
+            $response = $this->forward('App\Controller\ValidateController::validateNames', [
+                'name'  => $ln,
+            ]);
+            
+            if (($response->getContent()) == 0) {
 
-        return new Response('Persona registrada con ID: '.$person->getID());
+                $em = $this->getDoctrine()->getManager();
+                $person = new Person();
+                $person->setFirstName($fn);
+                $person->setLastName($ln);
+                $em->persist($person);
+                $em->flush();
+
+                return new Response('Persona registrada con ID: '.$person->getID());
+            }
+        }
+        return new Response('Hubo un error en la definción del nombre '.$fn.' o '.$ln);
     }
 
     /**
@@ -269,15 +282,47 @@ class TestController extends AbstractController
     /**
      * @Route("/find_attendee/{dni}", name="find_attendee")
      */
-    public function findAttendee(string $dni): Response
+    public function findAttendee(string $dni): ?Response
     {
         $attendee = $this->getDoctrine()
            ->getRepository(Attendee::class)
             ->findAttendeeByDni($dni);
-        if ($attendee == null) {
+        if (is_null($attendee)) {
             return new Response('No se encontró ningún asistente con dni '.$dni);    
         }
         return new Response('Asistente con dni '.$dni.': '.$attendee->getFirstName().' '.$attendee->getLastName());
+    }
+
+    /**
+     * @Route("/fullSearchEvent/{eventSubString}/{citySubString}", name="full_search_event")
+     */
+    public function searchInEvents(string $eventSubString, string $citySubString)
+    {
+        $event = $this->getDoctrine()
+           ->getRepository(Event::class)
+           ->findAll();
+    /*        ->fullSearchEvent($eventSubString, $citySubString);
+        if (is_null($event)) {
+            return new Response('No se encontró ningún evento coincidente con el criterio de búsqueda.');
+        }; */
+        return $event;
+      /* return new Response(count($event)); */
+    }
+
+     /**
+     * @Route("/searchEvents/{eventSubString}/{citySubString}", name="search_events")
+     */
+    public function searchEvents(string $eventSubString, string $citySubString)
+    {
+        $events = $this->searchInEvents($eventSubString, $citySubString);
+
+        if ($events != null) {
+            $eventNames = [];
+            foreach($events as $e) {
+                $eventNames[] = $e->getName(); 
+            }
+            return $this->render('test/prueba.html.twig', ['nombreColeccion' => 'Eventos encontrados', 'coleccion' => $eventNames]);
+        }
     }
 
     /**
@@ -300,4 +345,99 @@ class TestController extends AbstractController
             )
         );
     }
+
+    /* 'find($id)' - Método predefinido en cada repositorio de cada clase - Devuelve un objeto o null */
+
+    public function findOneEventById(int $id)
+    {
+        $event = $this->getDoctrine()
+           ->getRepository(Event::class)
+           ->find($id);
+
+        return $event;
+    }
+
+    /* 'findOneBy(array de criterios)' - Método predefinido en cada repositorio de cada clase - Devuelve un evento o null */
+
+    public function findOneEventBy(string $name, City $city)
+    {
+
+        $event = $this->getDoctrine()
+            ->getRepository(Event::class)
+            ->findOneBy([
+                'name' => $name,
+                'city' => $city,
+            ]);
+
+        return $event;
+    }
+
+    /* 'findAll()' - Método predefinido en cada repositorio de cada clase - Devuelve un array */
+
+    public function findAllEvents()
+    {
+        $events = $this->getDoctrine()
+           ->getRepository(Event::class)
+           ->findAll();
+
+        return $events;
+    }
+
+    /* 'findBy()' - Método predefinido en cada repositorio de cada clase - Devuelve un array     */
+    /*  esta función es un ejemplo, donde solo busca por dos criterios (ver la cuestión del NULL) */
+
+    public function findEventsBy(string $name, City $city)
+    {
+        $events = $this->getDoctrine()
+           ->getRepository(Event::class)
+           ->findBy([
+               'name' => $name,
+               'city' => $city,
+           ]);
+
+        return $events;
+    }
+
+    
+
+    /**
+     * @Route("/getCertificate/{dni}/{idEvent}", name="get_certificate")
+     */
+    public function getCertificate(string $dni, int $idEvent) {
+                          
+        $events = $this->findAllEvents();
+
+    //    return new Response($event->getName());
+
+    //return $this->render('test/prueba.html.twig', ['nombreColeccion' => 'Eventos encontrados', 'coleccion' => $events]);
+    return $this->render('test/prueba2.html.twig', ['nombreColeccion' => 'Eventos encontrados', 'coleccion' => $events]);
+ }
+
+    /**
+     * @Route("/prueba", name="prueba")
+     */
+    public function prueba() {
+                          
+           $events = $this->findAllEvents();
+
+       //    return new Response($event->getName());
+
+       //return $this->render('test/prueba.html.twig', ['nombreColeccion' => 'Eventos encontrados', 'coleccion' => $events]);
+       return $this->render('test/prueba2.html.twig', ['nombreColeccion' => 'Eventos encontrados', 'coleccion' => $events]);
+    }
+
+    /**
+     * @Route("/prueba2/{name}/{id}", name="prueba2")
+     */
+    public function prueba2(string $name, int $id) {
+                          
+        $city = $this->getDoctrine()->getRepository(City::class)->find($id);
+
+        $events = $this->findEventsBy($name, $city);
+
+    //    return new Response($event->getName());
+
+    //return $this->render('test/prueba.html.twig', ['nombreColeccion' => 'Eventos encontrados', 'coleccion' => $events]);
+    return $this->render('test/prueba2.html.twig', ['nombreColeccion' => 'Eventos encontrados', 'coleccion' => $events]);
+ }
 }
