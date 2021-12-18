@@ -1,0 +1,181 @@
+{% extends '@layout/base.html.twig' %}
+
+{% block title %} Nuevo Template {% endblock %}
+
+{% block content %}
+
+<div>
+
+</div>
+<div id="component" class="container">
+    <div class="row mt-1">
+        <div class="col">
+            <h3>Nuevo template</h3>
+        </div>
+    </div>
+    <form action="">
+        <div class="container border rounded">
+            <div class="container">
+                <h4 class="mt-3 mb-3">Datos del template</h4>
+                <div class="mt-3 mb-3 row">
+                    <label for="inputName" class="col-sm-2 col-form-label">Nombre</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="inputName" id="inputName"
+                            placeholder="Ingrese un nombre para identificarlo más tarde...">
+                    </div>
+                </div>
+                <div class="mt-3 mb-3 row">
+                    <label for="inputDescription" class="col-sm-2 col-form-label">Descripción</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="inputDescription" id="inputDescription"
+                            placeholder="Breve descripción del template...">
+                    </div>
+                </div>
+                <div class="mt-3 mb-3 row">
+                    <label for="inputName" class="col-sm-2 col-form-label">
+                        <div class="row">
+                            <p class="mb-0"> Cuerpo
+                                <!-- Modal Button -->
+                                <a class="btn btn-link d-inline justify-content-center" data-bs-toggle="modal"
+                                    data-bs-target="#infoModal">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-info-circle" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                        <path
+                                            d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                                    </svg>
+                                </a>
+                            </p>
+                        </div>
+                    </label>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="infoModalLabel">Cuerpo del certificado</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>El texto ingresado aquí se mostrará en el certificado final.</p>
+                                    <p>Se pueden utilizar variables en el texto. Luego, se
+                                        mostrarán en el certificado con su valor correspondiente, recuperando los datos
+                                        del evento (ver ejemplo más abajo).</p>
+                                    <p>Las variables que se pueden utilizar son: </p>
+                                </div>
+                                <div class="container mb-2">
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            $asistente-nombre
+                                        </li>
+                                        <li class="list-group-item">
+                                            $asistente-apellido
+                                        </li>
+                                        <li class="list-group-item">
+                                            $asistente-dni
+                                        </li>
+                                        <li class="list-group-item">
+                                            $asistente-condicion
+                                        </li>
+                                        <li class="list-group-item">
+                                            $evento-nombre
+                                        </li>
+                                        <li class="list-group-item">
+                                            $evento-inicio
+                                        </li>
+                                        <li class="list-group-item">
+                                            $evento-fin
+                                        </li>
+                                        <li class="list-group-item">
+                                            $evento-ciudad
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="modal-body">
+                                        <p>Por ejemplo: </p>
+                                        <p style="font-style: italic;"> - "Certifico que <b>$asistente-apellido</b>,
+                                            <b>$asistente-nombre</b> finalizó
+                                            el
+                                            curso
+                                            de
+                                            <b>$evento-nombre</b>."
+                                        </p>
+                                        <p>Luego será reemplazado por...</p>
+                                        <p style="font-style: italic;"> - "Certifico que <b>Perez</b>, <b>Juan</b>
+                                            finalizó
+                                            el curso de <b>RCP
+                                                Avanzado</b>."</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" name="inputBody" id="inputBody" cols="30" rows="10"
+                            placeholder="Ingresar cuerpo de texto del certificado..."></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-3 mb-3 row">
+                    <label for="inputBackgroundColor" class="col-sm-2 col-form-label">Color de fondo</label>
+                    <div class="col-sm-10" style="width: 70px;">
+                        <input type="color" class="form-control" name="inputBackgroundColor" id="inputBackgroundColor">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container border rounded mt-3">
+            <div class="container">
+                <h4 class="mt-3 mb-3 ">Archivos de imagen</h4>
+                <div class="col">
+                    <div class="mt-3 mb-3 row">
+                        <label for="headerFile" class="col-md-2 col-form-label">Encabezamiento</label>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <input type="file" class="form-control" id="headerFile"
+                                    aria-describedby="resetHeaderFile" aria-label="Upload">
+                                <button class="btn btn-outline-secondary" type="reset" id="resetHeaderFile">x</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 mb-3 row">
+                        <label for="signaturesFile" class="col-md-2 col-form-label">Firmas</label>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <input type="file" class="form-control" id="signaturesFile"
+                                    aria-describedby="resetSignaturesFile" aria-label="Upload">
+                                <button class="btn btn-outline-secondary" type="reset"
+                                    id="resetSignaturesFile">x</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 mb-3 row">
+                        <label for="footerFile" class="col-md-2 col-form-label">Pie de certificado</label>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <input type="file" class="form-control" id="footerFile"
+                                    aria-describedby="resetFooterFile" aria-label="Upload">
+                                <button class="btn btn-outline-secondary" type="reset" id="resetFooterFile">x</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                <a class="btn btn-secondary mb-3" href={{ path('events') }}>Cancelar y volver</a>
+                <button class="btn btn-success mb-3">Crear evento</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
