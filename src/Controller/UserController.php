@@ -23,7 +23,7 @@ class UserController extends AbstractController
         ]);
     }
     /**
-     * @Route("/new", name="create_user")
+     * @Route("/new", name="createUser")
      */
     public function Create(): Response
     {
