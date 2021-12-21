@@ -38,5 +38,21 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # matches /certificados/*
+        - { path: ^/certificados, roles: [] }
+
+        # matches /login/*
+        - { path: ^/login, roles: [] }
+
+        # matches /* except anything matching the rules above
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+
+        # instruction above is the same as:
+        # - { path: ^/home, roles: IS_AUTHENTICATED_FULLY }
+        # - { path: ^/event, roles: IS_AUTHENTICATED_FULLY }
+        # - { path: ^/template, roles: IS_AUTHENTICATED_FULLY }
+        # - { path: ^/user, roles: IS_AUTHENTICATED_FULLY }
+
+
+        
         # - { path: ^/profile, roles: ROLE_USER }
