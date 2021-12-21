@@ -29,4 +29,12 @@ class UserController extends AbstractController
     {
         return $this->render('app/private/user/new.html.twig');
     }
+
+    /**
+     * @Route("/perfil", name="detailCurrentUser")
+     */
+    public function detailCurrent(): Response
+    {
+        return $this->render('app/private/user/detail-current.html.twig');
+    }
 }

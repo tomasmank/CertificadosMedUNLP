@@ -14,9 +14,9 @@ class SecurityController extends AbstractController
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // if there is a logged user, redirect to home (TODO: change this to "Mi profile" when it is done)
+        // if there is a logged user, redirect to "My profile" page
         if ($this->getUser()) {
-             return $this->redirectToRoute('home');
+             return $this->redirectToRoute('detailCurrentUser');
         }
 
         // get the login error if there is one
