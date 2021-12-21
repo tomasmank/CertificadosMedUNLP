@@ -41,10 +41,42 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="{{ path('app_logout') }}">Cerrar sesion</a></li>
+                            <li>
+                                <a href="" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                                    Cerrar sesión
+                                </a>
+
+                            </li>
                         </ul>
                     </li>
                 </ul>
+
+                <!--MODAL Cerrar Sesión-->
+                <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="logoutModalLabel">Cerrar sesión</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {% if app.user %}
+                                <p>Usuario actual: {{ app.user.username }}</p>
+                                {% endif %}
+                                <p>¿Está seguro/a que desea cerrar sesión?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <a href="{{ path('app_logout') }}" type="button" class="btn btn-danger">Cerrar
+                                    sesión</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </nav>
