@@ -1,14 +1,15 @@
 <?php
 
 namespace App\Controller;
+
+use App\Entity\Event;
 use App\Repository\EventRepository;
-use App\Entity\Template;
 use App\Entity\City;
+use App\Entity\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use App\Entity\Event;
 
 /**
  * @Route("/event")
@@ -30,11 +31,11 @@ class EventController extends AbstractController
     public function newEvent(): Response
     {
         $cities = $this->getDoctrine()
-        ->getRepository(City::class)
-         ->findAll();
+            ->getRepository(City::class)
+            ->findAll();
 
-         $templates = $this->getDoctrine()
-           ->getRepository(Template::class)
+        $templates = $this->getDoctrine()
+            ->getRepository(Template::class)
             ->findAll();
 
         return $this->render('app/private/event/new.html.twig',[
