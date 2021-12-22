@@ -45,7 +45,7 @@ class Template
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private $commnets;
+    private $comments;
 
     public function getId(): ?int
     {
@@ -112,14 +112,14 @@ class Template
         return $this;
     }
 
-    public function getCommnets(): ?string
+    public function getComments(): ?string
     {
-        return $this->commnets;
+        return $this->comments;
     }
 
-    public function setCommnets(?string $commnets): self
+    public function setComments(?string $comments): self
     {
-        $this->commnets = $commnets;
+        $this->comments = $comments;
 
         return $this;
     }
