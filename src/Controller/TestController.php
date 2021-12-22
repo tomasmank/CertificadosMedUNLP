@@ -12,6 +12,7 @@ use App\Entity\Profile;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Attendee;
+use App\Entity\Template;
 use App\Controller\ValidateController;
 use \DateTime;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -167,7 +168,7 @@ class TestController extends AbstractController
     /**
      * @Route("/new_city/{cityName}", name="new_city")
      */
-    public function newCity(string $cityName)
+    public function new_City(string $cityName)
     {
         $em = $this->getDoctrine()->getManager();
         
@@ -439,5 +440,22 @@ class TestController extends AbstractController
 
     //return $this->render('test/prueba.html.twig', ['nombreColeccion' => 'Eventos encontrados', 'coleccion' => $events]);
     return $this->render('test/prueba2.html.twig', ['nombreColeccion' => 'Eventos encontrados', 'coleccion' => $events]);
- }
+    }
+
+    /**
+     * @Route("/new_template/{templateName}", name="new_template")
+     */
+    public function newTemplate(string $templateName)
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        $template = new Template();
+        $template->setName($templateName);
+                
+        $em->persist($template);
+        $em->flush();
+
+        return new Response('Se registró el template '.$template->getName().' con ID '.$template->getID());
+    }
+
 }

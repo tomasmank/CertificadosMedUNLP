@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
-use App\Repository\CityRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=CityRepository::class)

@@ -1,0 +1,78 @@
+{% extends '@layout/base.html.twig' %}
+
+{% block title %} Nuevo Usuario {% endblock %}
+
+{% block content %}
+
+<div id="component" class="container">
+    <div class="row mt-1">
+        <div class="col">
+            <h3>Eliminar evento</h3>
+        </div>
+    </div>
+    <form action="{{path("deleteEvent")}}"> 
+        <div class="container border rounded">
+            <div class="container">
+                <h4 class="mt-3 mb-3">Datos del evento</h4>
+                <div class="mt-3 mb-3 row">
+                    <label for="eventName" class="col-sm-2 col-form-label">Nombre</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="eventName" name="eventName" value="{{event.name}}" disabled>
+                    </div>
+                </div>
+                <div class="mt-3 mb-3 row">
+                    <label for="cityID" class="col-sm-2 col-form-label">Ubicación</label>
+                    <div class="col-sm-10">     
+                        <select name="cityID" class="form-select form-select-sm" aria-label=".form-select-sm example" disabled>
+                            <option selected>{{event.city.name}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <div class="col">
+                        <label for="startDate" class="form-label">Fecha inicio</label>
+                        <input type="date" class="form-control"
+                            {% if event.startDate is not empty %} 
+                               value="{{event.startDate|date('Y-m-d')}}"
+                            {% endif %}
+                    disabled >
+                    </div>
+                    <div class="col">
+                        <label for="endDate" class="form-label">Fecha fin</label>
+                        <input type="date" class="form-control" disabled
+                            {% if event.endDate is not empty %} 
+                                value="{{event.endDate|date('Y-m-d')}}"
+                            {% endif %}
+                        >
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="container border rounded mt-3">
+            <div class="container">
+                <h4 class="mt-3 mb-3 ">Template</h4>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <select name="templateID" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                <option selected
+                                {% if (event.template != null) %} value={{event.template.id}} disabled> {{event.template.name}} </option>
+                                    {% else %} disabled > Sin template seleccionado. </option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                <a class="btn btn-secondary mb-3" href={{ path('events') }}>Cancelar y volver</a>
+                <button class="btn btn-success mb-3" style="color:white;background-color:red;" id="eventID" name="eventID" value="{{event.id}}">Eliminar evento</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
