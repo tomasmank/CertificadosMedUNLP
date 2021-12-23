@@ -2,8 +2,11 @@
 
 namespace App\Entity;
 
+use App\Entity\Event;
 use App\Repository\AttendeeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\Entity(repositoryClass=AttendeeRepository::class)
@@ -41,6 +44,18 @@ class Attendee
      * @ORM\Column(type="string", length=255)
      */
     private $cond;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection|Event[]
+     *
+     * @ORM\ManyToMany(targetEntity="Event", mappedBy="attendees")
+     */
+    private $events;
+
+    public function __construct()
+    {
+        $this->events = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -105,5 +120,10 @@ class Attendee
         $this->cond = $cond;
 
         return $this;
+    }
+
+    public function getEvents(): Collection
+    {
+        return $this->events;
     }
 }

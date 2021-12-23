@@ -28,7 +28,7 @@ class EventRepository extends ServiceEntityRepository
             ->andWhere('e.name = :val')
             ->setParameter('val', $value)
             ->getQuery()
-            ->getResults()
+            ->getResult()
         ;
     }
 

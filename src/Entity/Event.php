@@ -50,7 +50,16 @@ class Event
     private $template;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Attendee::class)
+     * @ORM\ManyToMany(targetEntity=Attendee::class, inversedBy="events")
+     * @ORM\JoinTable(
+     *  name="event_attendee",
+     *  joinColumns={
+     *      @ORM\JoinColumn(name="event_id", referencedColumnName="id")
+     *  },
+     *  inverseJoinColumns={
+     *      @ORM\JoinColumn(name="attendee_id", referencedColumnName="id")
+     *  }
+     * )
      */
     private $attendees;
 
