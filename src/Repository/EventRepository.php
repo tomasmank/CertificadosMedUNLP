@@ -26,10 +26,24 @@ class EventRepository extends ServiceEntityRepository
             ->andWhere('e.name = :val')
             ->setParameter('val', $value)
             ->getQuery()
-            ->getResults()
+            ->getResult()
         ;
     }
     
+    public function getAllAttendedBy($attendee_id){
+
+        # $event = $this->findByName('Curso de anatomia');
+
+        $rsm = new ResultSetMapping();
+// build rsm here
+
+$query = $entityManager->createNativeQuery('SELECT id, name, discr FROM users WHERE name = ?', $rsm);
+$query->setParameter(1, 'romanb');
+
+$users = $query->getResult();
+
+        return $event;
+    }
 
      /**
       * @return Event[] Returns an array of Event objects
