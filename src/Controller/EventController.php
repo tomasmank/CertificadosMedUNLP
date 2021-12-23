@@ -54,6 +54,7 @@ class EventController extends AbstractController
         $startDate = $request->query->get("startDate");  
         $endDate = $request->query->get("endDate");  
         $templateID = $request->query->get("templateID");  
+        $published = $request->query->get("published");  
 
         if (is_null($eventName) or is_null($cityID)) {
                 /*    PONER MENSAJE DE ERROR
@@ -118,7 +119,7 @@ class EventController extends AbstractController
                 ->setStartDate($startDate)
                 ->setEndDate($endDate)
                 ->setTemplate($template)
-                ->setPublished(0);
+                ->setPublished($published);
             $em->persist($event);
             $em->flush();
 
@@ -156,6 +157,14 @@ class EventController extends AbstractController
         $startDate =  $request->query->get("startDate");  
         $endDate =  $request->query->get("endDate");  
         $templateID =  $request->query->get("templateID");  
+        $published = $request->query->get("published");
+
+        if ($published) {
+            $published = 1;
+        }
+        else {
+            $published = 0;
+        }
 
         $event = $this->getDoctrine()
         ->getRepository(Event::class)
@@ -210,11 +219,6 @@ class EventController extends AbstractController
                         
                 return $this->render('app/private/event/modify.html.twig',['event' => $event]);
             }
-echo ('$eventName: '.$eventName.' - ');
-echo ('$cityName: '.$city->getName().' - ');
-echo ('$startDate: '.$startDate->format('d-m-Y').' - ');
-echo ('$endDate: '.$endDate->format('d-m-Y').' - ');
-echo ('$eventID: '.$eventID.' - ');
 
             $em = $this->getDoctrine()->getManager();
 
@@ -229,7 +233,7 @@ echo ('$eventID: '.$eventID.' - ');
                 ->setStartDate($startDate)
                 ->setEndDate($endDate)
                 ->setTemplate($template)
-                ->setPublished(0);
+                ->setPublished($published);
             $em->persist($event);
             $em->flush();
 

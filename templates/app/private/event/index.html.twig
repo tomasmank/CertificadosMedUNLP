@@ -87,6 +87,15 @@
                                     <button href="" class="btn" style="color:white;background-color:red" id="eventID" name="eventID" value={{event.id}}>Eliminar</button>
                                 </form>
                             </td>
+                            
+                                
+                                    {% if event.published == 0 %} 
+                                        <td style="color:red">No publicado</td>
+                                    {% else %}
+                                        <td style="color:green">Publicado</td>
+                                    {% endif %}
+                                
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
