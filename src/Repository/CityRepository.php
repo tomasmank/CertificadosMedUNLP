@@ -19,6 +19,12 @@ class CityRepository extends ServiceEntityRepository
         parent::__construct($registry, City::class);
     }
 
+    public function findAll()
+    {
+        return $this->findBy(array(), array('name' => 'ASC'));
+    }
+
+
     // /**
     //  * @return City[] Returns an array of City objects
     //  */

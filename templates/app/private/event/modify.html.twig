@@ -1,32 +1,33 @@
 {% extends '@layout/base.html.twig' %}
 
-{% block title %} Nuevo Evento {% endblock %}
+{% block title %} Ver evento {% endblock %}
 
 {% block content %}
 
 <div id="component" class="container">
     <div class="row mt-1">
         <div class="col">
-            <h3>Nuevo evento</h3>
+            <h3>Ver o modificar evento</h3>
         </div>
     </div>
-    <form action="{{path("createEvent")}}"> 
+    <form action="{{path("modifyEvent")}}">
+        <input type="hidden" id="eventID" name="eventID" value="{{event.id}}"> 
         <div class="container border rounded">
             <div class="container">
                 <h4 class="mt-3 mb-3">Datos del evento</h4>
                 <div class="mt-3 mb-3 row">
                     <label for="eventName" class="col-sm-2 col-form-label">Nombre</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="eventName" name="eventName" required>
+                        <input type="text" class="form-control" id="eventName" name="eventName" value="{{event.name}}" required>
                     </div>
                 </div>
                 <div class="mt-3 mb-3 row">
                     <label for="cityID" class="col-sm-2 col-form-label">Ubicación</label>
                     <div class="col-sm-10">     
                         <select name="cityID" class="form-select form-select-sm" aria-label=".form-select-sm example" required>
-                            <option selected disabled>Seleccionar...</option>
+                            <option selected value="{{event.city.id}}">{{event.city.name}}</option>
                             {% for c in cities %}
-                                <option value={{ c.id }}>{{ c.name }}</option>
+                                <option value="{{ c.id }}">{{ c.name }}</option>
                             {% endfor %}
                         </select>
                         <a href={{path("newCity")}} class="btn btn-secondary" style="background-color: #00889B; float: right;">Nueva ubicación</a>
@@ -36,11 +37,17 @@
                 <div class="mb-3 row">
                     <div class="col">
                         <label for="startDate" class="form-label">Fecha inicio</label>
-                        <input type="date" class="form-control" id="startDate" name="startDate">
+                        <input type="date" class="form-control" id="startDate" name="startDate" 
+                            {% if event.startDate is not empty %} 
+                                value={{event.startDate|date('Y-m-d')}}>
+                            {% endif %}
                     </div>
                     <div class="col">
                         <label for="endDate" class="form-label">Fecha fin</label>
-                        <input type="date" class="form-control" id="endDate" name="endDate">
+                        <input type="date" class="form-control" id="endDate" name="endDate"
+                            {% if event.endDate is not empty %} 
+                                value={{event.endDate|date('Y-m-d')}}>
+                            {% endif %}
                     </div>
                 </div>
             </div>
@@ -72,9 +79,11 @@
                     <div class="col-md-6">
                         <div class="input-group">
                             <select name="templateID" class="form-select form-select-sm" aria-label=".form-select-sm example">
-                                <option selected disabled>Seleccionar...</option>
+                                <option selected {% if (event.template != null) %} value="{{event.template.id}}"> {{event.template.name}} </option>
+                                                    {% else %} > Seleccionar... </option>
+                                                {% endif %}
                                 {% for t in templates %}
-                                    <option value={{ t.id }}>{{ t.name }}</option>
+                                    <option value="{{ t.id }}">{{ t.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -89,7 +98,12 @@
                     <div class="col-md-6">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-3">
                             <label class="switch">
-                                <input type="checkbox" id="published" name="published"  class="slider round" unchecked>
+                                <input type="checkbox" id="published" name="published"  class="slider round" 
+                                    {% if (event.published == 1) %}
+                                        checked>
+                                    {% else %}
+                                        unchecked>
+                                    {% endif %}
                             </label>
                         </div>
                     </div>
@@ -99,7 +113,7 @@
         <div class="container">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
                 <a class="btn btn-secondary mb-3" href={{ path('events') }}>Cancelar y volver</a>
-                <button class="btn btn-success mb-3">Crear evento</button>
+                <button class="btn btn-success mb-3">Modificar evento</button>
             </div>
         </div>
     </form>

@@ -6,6 +6,8 @@ use App\Entity\Event;
 use App\Entity\City;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Collections\Criteria;
+use \DateTime;
 
 /**
  * @method Event|null find($id, $lockMode = null, $lockVersion = null)
@@ -28,6 +30,18 @@ class EventRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
         ;
+    }
+
+    public function findDuplicated(int $eventID, string $eventName, City $city, DateTime $startDate, DateTime $endDate)
+    {
+        $criteria = new Criteria();
+        $criteria->andWhere($criteria->expr()->neq('id', $eventID));
+        $criteria->andWhere($criteria->expr()->eq('name', $eventName));
+        $criteria->andWhere($criteria->expr()->eq('city', $city));
+        $criteria->andWhere($criteria->expr()->eq('startDate', $startDate));
+        $criteria->andWhere($criteria->expr()->eq('endDate', $endDate));
+        
+        return $this->matching($criteria)->count();
     }
 
      /**
