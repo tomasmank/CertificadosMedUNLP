@@ -72,101 +72,11 @@
                         <div class="container">
                             <div class="row">
                                 <h3>Certificados</h3>
-                                {% if events %}
+                                {% if events|length > 0 %}
                                 <!-- Si se encontraron Eventos para ese Asistente -->
                                 <div class="container">
                                     <ul class="list-group">
                                         {% for event in events %}
-                                        <li class="list-group-item">
-                                            {{ event.startdate|date('d/m/Y') }} - {{ event.name }}
-                                            <button type="button" class="btn btn-light ms-2" title="Recibir al mail">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                                    <path fill-rule="evenodd"
-                                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-                                                </svg>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
-                                                </svg>
-                                            </button>
-                                        </li>
-                                        <li class="list-group-item">
-                                            {{ event.startdate|date('d/m/Y') }} - {{ event.name }}
-                                            <button type="button" class="btn btn-light ms-2" title="Recibir al mail">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                                    <path fill-rule="evenodd"
-                                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-                                                </svg>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
-                                                </svg>
-                                            </button>
-                                        </li>
-                                        <li class="list-group-item">
-                                            {{ event.startdate|date('d/m/Y') }} - {{ event.name }}
-                                            <button type="button" class="btn btn-light ms-2" title="Recibir al mail">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                                    <path fill-rule="evenodd"
-                                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-                                                </svg>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
-                                                </svg>
-                                            </button>
-                                        </li>
-                                        <li class="list-group-item">
-                                            {{ event.startdate|date('d/m/Y') }} - {{ event.name }}
-                                            <button type="button" class="btn btn-light ms-2" title="Recibir al mail">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                                    <path fill-rule="evenodd"
-                                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-                                                </svg>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
-                                                </svg>
-                                            </button>
-                                        </li>
-                                        <li class="list-group-item">
-                                            {{ event.startdate|date('d/m/Y') }} - {{ event.name }}
-                                            <button type="button" class="btn btn-light ms-2" title="Recibir al mail">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                                    <path fill-rule="evenodd"
-                                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-                                                </svg>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
-                                                </svg>
-                                            </button>
-                                        </li>
-                                        <li class="list-group-item">
-                                            {{ event.startdate|date('d/m/Y') }} - {{ event.name }}
-                                            <button type="button" class="btn btn-light ms-2" title="Recibir al mail">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                                    <path fill-rule="evenodd"
-                                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-                                                </svg>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
-                                                </svg>
-                                            </button>
-                                        </li>
                                         <li class="list-group-item">
                                             {{ event.startdate|date('d/m/Y') }} - {{ event.name }}
                                             <button type="button" class="btn btn-light ms-2" title="Recibir al mail">
@@ -187,7 +97,7 @@
                                 </div>
                                 {% else %}
                                 <!-- Si NO se encontraron Eventos para ese Asistente -->
-                                <p>No se encontraron certificados asociados a esta persona.</p>
+                                <p>No se encontraron certificados activos asociados a esta persona.</p>
                                 {% endif %}
                             </div>
                         </div>

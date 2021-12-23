@@ -38,9 +38,7 @@ class HomeController extends AbstractController
                 ->getRepository(Attendee::class)
                 ->findAttendeeByDni($dni);
             if ($attendee) {
-                $events = $this->getDoctrine()
-                    ->getRepository(Event::class)
-                    ->getAllAttendedBy(1);
+                $events = $attendee->getEvents();
             }
         }
 

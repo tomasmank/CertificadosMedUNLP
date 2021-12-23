@@ -45,7 +45,7 @@ class Template
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private $commnets;
+    private $comments;
 
     public function getId(): ?int
     {
