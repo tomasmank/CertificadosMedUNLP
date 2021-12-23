@@ -79,7 +79,11 @@
                                         {% for event in events %}
                                         <li class="list-group-item">
                                             {{ event.startdate|date('d/m/Y') }} - {{ event.name }}
-                                            <button type="button" class="btn btn-light ms-2" title="Recibir al mail">
+
+                                            <!-- Boton para abrir Modal de confirmacion -->
+                                            <button type="button" class="btn btn-light ms-2" title="Recibir al mail"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmSendModal{{ loop.index }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
                                                     <path fill-rule="evenodd"
@@ -91,6 +95,59 @@
                                                         d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
                                                 </svg>
                                             </button>
+
+                                            <!-- Modal confirmar envio de mail -->
+                                            <div class="modal fade" id="confirmSendModal{{ loop.index }}" tabindex="-1"
+                                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">
+                                                                Confirmar envío de mail
+                                                            </h5>
+                                                            <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Verifique que los datos sean correctos antes de
+                                                                confirmar.</p>
+                                                            <div class="row mt-2">
+                                                                <div class="col">
+                                                                    <label for="eventName">Nombre</label>
+                                                                    <h6>{{ event.name }}</h6>
+                                                                </div>
+                                                                <div class="col">
+                                                                    <label for="eventName">Ubicación</label>
+                                                                    <h6>{{ event.city.name }}</h6>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mt-2">
+                                                                <div class="col">
+                                                                    <label for="eventName">Inicio</label>
+                                                                    <h6>{{ event.startdate|date('d/m/Y') }}</h6>
+                                                                </div>
+                                                                <div class="col">
+                                                                    <label for="eventName">Fin</label>
+                                                                    <h6>{{ event.enddate|date('d/m/Y') }}</h6>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mt-2">
+                                                                <div class="col">
+                                                                    <label for="eventName">Se enviará al E-Mail</label>
+                                                                    <h6>{{ attendee.email }}</h6>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-danger"
+                                                                data-bs-dismiss="modal">Cancelar</button>
+                                                            <button type="button" class="btn btn-success">Confirmar
+                                                                envío</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </li>
                                         {% endfor %}
                                     </ul>
