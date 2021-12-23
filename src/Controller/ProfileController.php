@@ -30,9 +30,9 @@ class ProfileController extends AbstractController
      */
     public function Create(): Response
     {
-            return $this->render('app/private/profile/new.html.twig',[
-            'roles' => $roleRepository->findAll(),
-        ]);
+        $roles = $this->getDoctrine()->getRepository(Role::Class)->findAll();
+
+        return $this->render('app/private/profile/new.html.twig',['roles' => $roles ]);
         
     }
 
