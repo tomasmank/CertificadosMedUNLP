@@ -13,21 +13,21 @@
             <h3>Nuevo template</h3>
         </div>
     </div>
-    <form action="">
+    <form action={{ path('createTemplate') }} method="post">
         <div class="container border rounded">
             <div class="container">
                 <h4 class="mt-3 mb-3">Datos del template</h4>
                 <div class="mt-3 mb-3 row">
                     <label for="inputName" class="col-sm-2 col-form-label">Nombre</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="inputName" id="inputName"
+                        <input type="text" class="form-control" name="name" id="inputName"
                             placeholder="Ingrese un nombre para identificarlo más tarde...">
                     </div>
                 </div>
                 <div class="mt-3 mb-3 row">
                     <label for="inputDescription" class="col-sm-2 col-form-label">Descripción</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="inputDescription" id="inputDescription"
+                        <input type="text" class="form-control" name="comments" id="inputDescription"
                             placeholder="Breve descripción del template...">
                     </div>
                 </div>
@@ -116,7 +116,7 @@
                         </div>
                     </div>
                     <div class="col-sm-10">
-                        <textarea class="form-control" name="inputBody" id="inputBody" cols="30" rows="10"
+                        <textarea class="form-control" name="body" id="inputBody" cols="30" rows="10"
                             placeholder="Ingresar cuerpo de texto del certificado..."></textarea>
                     </div>
                 </div>
@@ -124,7 +124,8 @@
                 <div class="mt-3 mb-3 row">
                     <label for="inputBackgroundColor" class="col-sm-2 col-form-label">Color de fondo</label>
                     <div class="col-sm-10" style="width: 70px;">
-                        <input type="color" class="form-control" name="inputBackgroundColor" id="inputBackgroundColor">
+                        <input type="color" class="form-control" name="background_color" id="inputBackgroundColor"
+                            value="#000000">
                     </div>
                 </div>
             </div>
@@ -137,7 +138,7 @@
                         <label for="headerFile" class="col-md-2 col-form-label">Encabezamiento</label>
                         <div class="col-md-10">
                             <div class="input-group">
-                                <input type="file" class="form-control" id="headerFile"
+                                <input type="file" class="form-control" name="headerImg" id="headerFile"
                                     aria-describedby="resetHeaderFile" aria-label="Upload">
                                 <button class="btn btn-outline-secondary" type="reset" id="resetHeaderFile">x</button>
                             </div>
@@ -148,7 +149,7 @@
                         <label for="signaturesFile" class="col-md-2 col-form-label">Firmas</label>
                         <div class="col-md-10">
                             <div class="input-group">
-                                <input type="file" class="form-control" id="signaturesFile"
+                                <input type="file" class="form-control" name="signaturesImg" id="signaturesFile"
                                     aria-describedby="resetSignaturesFile" aria-label="Upload">
                                 <button class="btn btn-outline-secondary" type="reset"
                                     id="resetSignaturesFile">x</button>
@@ -160,7 +161,7 @@
                         <label for="footerFile" class="col-md-2 col-form-label">Pie de certificado</label>
                         <div class="col-md-10">
                             <div class="input-group">
-                                <input type="file" class="form-control" id="footerFile"
+                                <input type="file" class="form-control" name="footerImg" id="footerFile"
                                     aria-describedby="resetFooterFile" aria-label="Upload">
                                 <button class="btn btn-outline-secondary" type="reset" id="resetFooterFile">x</button>
                             </div>
@@ -171,8 +172,8 @@
         </div>
         <div class="container">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                <a class="btn btn-secondary mb-3" href={{ path('events') }}>Cancelar y volver</a>
-                <button class="btn btn-success mb-3">Crear evento</button>
+                <a class="btn btn-secondary mb-3" href={{ path('templates') }}>Cancelar y volver</a>
+                <button type="submit" class="btn btn-success mb-3">Crear evento</button>
             </div>
         </div>
     </form>

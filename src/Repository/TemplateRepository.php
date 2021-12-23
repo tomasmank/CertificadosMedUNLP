@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Template;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * @method Template|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,6 +18,20 @@ class TemplateRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Template::class);
+    }
+
+    public function alreadyExists(string $templateName): bool
+    {
+        $criteria = new Criteria();
+        $criteria->andWhere($criteria->expr()->eq('name', $templateName));
+        
+        if (($this->matching($criteria)->count()) == 0 ){
+            $ret = False;
+        } else {
+            $ret = True;
+        }
+
+        return $ret;
     }
 
     // /**
