@@ -26,10 +26,10 @@
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">Inicio</a>
+                                <a class="nav-link" aria-current="page" href={{path("home")}}>Inicio</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href={{path("events")}}>Eventos</a>
+                                <a class="nav-link active" href={{path("events")}}>Eventos</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="#">Templates</a>
@@ -66,11 +66,49 @@
             </nav>
         </div>
 
-        <div id="component">
+        <div id="component" class="container">
+            <div class="row mt-1">
+                <div class="col">
+                    <h3>Nuevo Rol</h3>
+                </div>
+            </div>
+            <form action="">
+                <div class="container border rounded">
+                    <div class="container">
+                        <h4 class="mt-3 mb-3">Datos del Rol</h4>
+                        <div class="mt-3 mb-3 row">
+                            <label for="inputName" class="col-sm-2 col-form-label">Nombre de Rol: </label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="inputName">
+                            </div>
+                        </div>
+                        <div class="mt-3 mb-3 row">
+                            <label for="inputUbicationName" class="col-sm-2 col-form-label">Seleccionar Permisos: </label>
+                            <div class="col-sm-10">
+                           {% for rol in roles %}
+                             <tr>
+                                 <input type="checkbox" name="checkBox[]"  id="ic" value="{{ rol.id }}" />
+                                 <td >{{ rol.name }}</td>
+                             </tr>
+                         {% endfor %}   
+                            </div>
+                        </div>
 
+                        
+                    </div>
+
+                </div>
+               
+                
+                <div class="container">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                        <button class="btn btn-secondary mb-3">Cancelar y volver</button>
+                        <button class="btn btn-success mb-3">Crear Rol</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-
     <footer class="py-4 bg-dark">
         <p class="text-center text-light">© 2021 Grupo 6, TTPS.</p>
     </footer>
