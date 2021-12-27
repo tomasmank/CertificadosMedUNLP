@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Repository\TemplateRepository;
 use App\Entity\Template;
+use App\Form\TemplateType;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,45 +30,80 @@ class TemplateController extends AbstractController
     /**
      * @Route("/new", name="newTemplate")
      */
-    public function newTemplate(): Response
+    public function newTemplate(Request $request): Response
     {
-        return $this->render('app/private/template/new.html.twig');
-    }
+        $template = new Template();
+        $form = $this->createForm(TemplateType::class, $template);
+        $form->handleRequest($request);
 
-    /**
-     * @Route("/create", name="createTemplate")
-     */
-    public function createTemplate(Request $request): Response
-    {
-        $name = $request->request->get("name");  
-        $comments = $request->request->get("comments"); 
-        $body = $request->request->get("body");
-        $background_color = $request->request->get("background_color");  
-        $header_img = $request->request->get("headerImg");  
-        $signatures_img = $request->request->get("signaturesImg");  
-        $footer_img = $request->request->get("footerImg");
+        if ($form->isSubmitted() && $form->isValid()) {
 
-        $tr = $this->getDoctrine()               // busco otro evento con los datos ingresados
-            ->getRepository(Template::class);
-        
-        if ($tr->alreadyExists($name)){
-            $this->addFlash("error", "Ya existe un template con nombre {$name}");
-            return $this->render('app/private/template/new.html.twig');
+            $template = $form->getData();
+
+            /** @var UploadedFile $headerFile */
+            $headerFile = $form->get('header')->getData();
+            if ($headerFile) {
+                $originalFilename = pathinfo($headerFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$headerFile->guessExtension();
+                
+                try {
+                    $headerFile->move(
+                        $this->getParameter('headers_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // manejar excepcion
+                }
+                $template->setHeader($newFilename);
+            }
+
+            /** @var UploadedFile $signaturesFile */
+            $signaturesFile = $form->get('signatures')->getData();
+            if ($signaturesFile) {
+                $originalFilename = pathinfo($signaturesFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$signaturesFile->guessExtension();
+                
+                try {
+                    $signaturesFile->move(
+                        $this->getParameter('signatures_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // manejar excepcion
+                }
+                $template->setSigns($newFilename);
+            }
+
+            /** @var UploadedFile $footerFile */
+            $footerFile = $form->get('footer')->getData();
+            if ($footerFile) {
+                $originalFilename = pathinfo($footerFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$footerFile->guessExtension();
+                
+                try {
+                    $footerFile->move(
+                        $this->getParameter('footers_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // manejar excepcion
+                }
+                $template->setFooter($newFilename);
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($template);
+            $em->flush();
+            $this->addFlash("success", "Template creado con éxito.");
         }
 
-        $template = new Template();
-        $template->setName($name)
-            ->setComments($comments)
-            ->setBody($body)
-            ->setHeader($header_img)
-            ->setSigns($signatures_img)
-            ->setFooter($footer_img);
 
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($template);
-        $em->flush();
-
-        $this->addFlash("success", "Template '{$name}' creado con éxito.");
-        return $this->redirectToRoute('templates');
+        
+        return $this->render('app/private/template/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }
