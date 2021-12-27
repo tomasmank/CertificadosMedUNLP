@@ -106,4 +106,24 @@ class TemplateController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    /**
+     * @Route("/detail/{id}", name="detailTemplate")
+     */
+    public function detailTemplate(Request $request, int $id): Response
+    {
+        $template = $this->getDoctrine()
+            ->getRepository(Template::class)
+            ->find($id);
+
+        if ($template) {
+            return $this->render('app/private/template/detail.html.twig', [
+                'template' => $template,
+                'uploads' => $this->getParameter('uploads_directory'),
+            ]);
+        } else {
+            $this->addFlash("error", "No existe template con id: $id.");
+            return $this->redirectToRoute('templates');
+        }
+    }
 }
