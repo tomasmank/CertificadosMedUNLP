@@ -19,9 +19,20 @@ class TemplateType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class)
+            ->add('name', TextType::class, [
+                'label' => 'Nombre'
+            ])
+            ->add('body', TextareaType::class, [
+                'label' => 'Cuerpo del certificado'
+            ])
+            ->add('comments', TextType::class, [
+                'label' => 'Comentarios'
+            ])
+            ->add('backgroundColor', ColorType::class, [
+                'label' => 'Color de fondo'
+            ])
             ->add('header', FileType::class, [
-                'label' => 'Header',
+                'label' => 'Encabezamiento',
 
                 // unmapped means that this field is not associated to any entity property
                 'mapped' => false,
@@ -44,9 +55,8 @@ class TemplateType extends AbstractType
                     ])
                 ],
             ])
-            ->add('body', TextareaType::class)
             ->add('signatures', FileType::class, [
-                'label' => 'Signatures',
+                'label' => 'Firmas',
 
                 'mapped' => false,
 
@@ -65,7 +75,7 @@ class TemplateType extends AbstractType
                 ],
             ])
             ->add('footer', FileType::class, [
-                'label' => 'Footer',
+                'label' => 'Pie',
 
                 'mapped' => false,
 
@@ -83,9 +93,9 @@ class TemplateType extends AbstractType
                     ])
                 ],
             ])
-            ->add('comments', TextType::class)
-            ->add('backgroundColor', ColorType::class)
-            ->add('Crear', SubmitType::class)
+            ->add('submit', SubmitType::class, [
+                'label' => 'Crear template'
+            ])
         ;
     }
 
