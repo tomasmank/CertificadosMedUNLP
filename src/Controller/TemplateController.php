@@ -11,6 +11,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
+
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
+
 
 /**
  * @Route("/template")
@@ -94,14 +99,15 @@ class TemplateController extends AbstractController
                 $template->setFooter($newFilename);
             }
 
+            $template_name = $template->getName();
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($template);
             $em->flush();
-            $this->addFlash("success", "Template creado con éxito.");
+            $this->addFlash("success", "Template '$template_name' creado con éxito.");
+            return $this->redirectToRoute('templates');
         }
 
-
-        
         return $this->render('app/private/template/new.html.twig', [
             'form' => $form->createView(),
         ]);
@@ -125,5 +131,48 @@ class TemplateController extends AbstractController
             $this->addFlash("error", "No existe template con id: $id.");
             return $this->redirectToRoute('templates');
         }
+    }
+
+     /**
+     * @Route("/delete/{id}", name="deleteTemplate")
+     */
+    public function deleteTemplate(Request $request, int $id): Response
+    {
+        $template = $this->getDoctrine()
+            ->getRepository(Template::class)
+            ->find($id);
+
+        if($template){
+            try {
+                $filesystem = new Filesystem();
+
+                if($template->getHeader() !== NULL){
+                    $filesystem->remove($this->getParameter('headers_directory') . DIRECTORY_SEPARATOR . $template->getHeader());
+                }
+                if($template->getSigns() !== NULL){
+                    $filesystem->remove($this->getParameter('signatures_directory') . DIRECTORY_SEPARATOR . $template->getSigns());
+                }
+                if($template->getFooter() !== NULL){
+                    $filesystem->remove($this->getParameter('footers_directory') . DIRECTORY_SEPARATOR . $template->getFooter());
+                }
+
+                $template_name = $template->getName();
+                $em = $this->getDoctrine()->getManager();
+                $em->remove($template);
+                $em->flush();
+                $this->addFlash("success", "Se elimino correctamente el template: $template_name.");
+
+            } catch (IOExceptionInterface $exception) {
+                echo "Ocurrió un error intentando eliminar el archivo ".$exception->getPath();
+            } catch (ForeignKeyConstraintViolationException $exception) {
+                $this->addFlash("error", "No se puede eliminar el template porque existen eventos que lo usan. Cambie el template en estos eventos o elimine los eventos y vuelva a intentarlo.");
+                return $this->redirectToRoute('detailTemplate', [ 'id' => $id ]);
+            }
+
+        } else {
+            $this->addFlash("error", "No se puede eliminar el template porque no existe.");
+        }
+
+        return $this->redirectToRoute('templates');
     }
 }
