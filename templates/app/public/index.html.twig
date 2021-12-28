@@ -22,17 +22,23 @@
                 </div>
             </nav>
         </div>
-        <div id="component" class="container-sm mt-5">
+
+        <div id="component" class="container-sm mt-4">
             <div class="row justify-content-md-center">
                 <div class="col col-lg-9 align-self-center">
+
+                    <div class="row">
+                        {% include '@layout/display_messages.html.twig' %}
+                    </div>
+
                     <div class="card">
                         <div class="card-body">
                             <h2 class="card-title">Buscar certificados</h2>
-                            <form method="post" action="{{ path('public') }}">
+                            <form method="get" action="{{ path('public') }}">
                                 <div class="row">
                                     <div class="col-sm-9 mb-3">
                                         <input type="number" min="0" step="any" class="form-control" id="_dni"
-                                            name="_dni" aria-describedby="dniHelp"
+                                            name="dni" aria-describedby="dniHelp"
                                             placeholder="Ingrese su número de documento">
                                         <div id="dniHelp" class="form-text">Sin puntos.</div>
                                     </div>
@@ -44,6 +50,7 @@
                             </form>
                         </div>
                     </div>
+
 
                     {% if dni %}
                     <!-- Si se ingreso DNI -->
@@ -141,8 +148,9 @@
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-danger"
                                                                 data-bs-dismiss="modal">Cancelar</button>
-                                                            <button type="button" class="btn btn-success">Confirmar
-                                                                envío</button>
+                                                            <a href="{{ path('sendEmail', {'attendeeID': attendee.id, 'eventID': event.id}) }}"
+                                                                class="btn btn-success">Confirmar
+                                                                envío</a>
                                                         </div>
                                                     </div>
                                                 </div>

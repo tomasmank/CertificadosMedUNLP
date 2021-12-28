@@ -32,8 +32,8 @@ class HomeController extends AbstractController
         $attendee = null;
         $events = null;
 
-        if ($request->request->has('_dni')) {
-            $dni = $request->request->get('_dni');
+        if ($request->query->has('dni')) {
+            $dni = $request->query->get('dni');
             $attendee = $this->getDoctrine()
                 ->getRepository(Attendee::class)
                 ->findAttendeeByDni($dni);
@@ -44,12 +44,4 @@ class HomeController extends AbstractController
 
         return $this->render('app/public/index.html.twig', [ 'dni' => $dni , 'attendee' => $attendee , 'events' => $events ]);
     }
-
-  #  /**
-  #   * @Route("/login", name="login")
-  #   */
-  #  public function login(): Response
-  #  {
-  #      return $this->render('app/private/user/login.html.twig');
-  #  }
 }

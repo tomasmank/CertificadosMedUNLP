@@ -19,7 +19,9 @@
 
     <div style="min-height: 100vh; background-color: whitesmoke;">
         {% include ('@layout/navbar.html') %}
-        {% include ('@layout/display_messages.html.twig') %}
+        <div class="mt-3">
+            {% include ('@layout/display_messages.html.twig') %}
+        </div>
         {% block content %}
         {% endblock %}
     </div>

@@ -4,10 +4,16 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Knp\Snappy\Pdf;
+
+use App\Repository\AttendeeRepository;
+use App\Entity\Attendee;
+use App\Repository\EventRepository;
+use App\Entity\Event;
 
 class MailerController extends AbstractController
 {
@@ -21,10 +27,7 @@ class MailerController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/pdf", name="pdf")
-     */
-    public function indexAction(\Knp\Snappy\Pdf $snappy)
+    public function indexAction(Pdf $snappy)
     {
         $html = $this->renderView('index.html.twig');
 
@@ -32,24 +35,30 @@ class MailerController extends AbstractController
     }
     
     /**
-     * @Route("/email/{sendTo}/{eventName}", name="send_email")
+     * @Route("/email/{attendeeID}/{eventID}", name="sendEmail")
      */
-    public function sendEmail(MailerInterface $mailer, string $sendTo, $eventName): Response
+    public function sendEmail(Request $request, MailerInterface $mailer, string $attendeeID, int $eventID)
     {
-        $snappy = new Pdf('/usr/bin/wkhtmltopdf');
-        $pdfFile = $this->indexAction($snappy);
-        $email = (new Email())
-            ->from('backup.dario@gmail.com')
-            ->to($sendTo)
-            ->subject('Certificado de asistencia - Evento: '.$eventName)
-            ->text('El archivo adjunto fue generado desde una vista HTML. El nombre del archivo y el nombre del evento que figura en el asunto se generaron a partir de variables. (Contenido: texto)')
-     #       ->text('Adjuntamos al presente su certificado de asistencia al evento del asunto.')
-            ->html('<p style="color:red;font-size:200%;"> El archivo adjunto fue generado desde una vista HTML y tanto su nombre como el nombre del evento que figura en el asunto se generaron a partir de variables.</p><br/><p style="color:blue;font-size:150%;">El texto en rojo y este texto están escritos en HTML/Twig.</p>')
-     #       ->attachFromPath('../src/filesRepository/RCP diplomas.pdf');
-            ->attach($pdfFile, 'Certificado '.$eventName.'.pdf');
-            
-        $mailer->send($email);
+        $attendee = $this->getDoctrine()
+            ->getRepository(Attendee::class)
+            ->find($attendeeID);
+        
+        $event = $this->getDoctrine()
+            ->getRepository(Event::class)
+            ->find($eventID);
 
-        return new Response('Su certificado fue enviado a la cuenta de correo '.$sendTo.'.');
+        # $snappy = new Pdf('/usr/bin/wkhtmltopdf');
+        # $pdfFile = $this->indexAction($snappy);
+        $email = (new Email())
+            ->from('lauchaoleastro3@gmail.com')
+            ->to($attendee->getEmail())
+            ->subject('Certificado - ' . $event->getName())
+            ->text('Este mensaje ha sido generado automáticamente. Por favor, no responder.');
+            
+        # $mailer->send($email);
+
+        $this->addFlash("success", "Certificado enviado correctamente al mail: " . $attendee->getEmail() );
+        
+        return $this->redirectToRoute('public', [ 'dni' => $attendee->getDni() ]);
     }
 }
