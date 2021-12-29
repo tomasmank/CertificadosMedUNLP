@@ -9,7 +9,22 @@
 </head>
 
 <body>
-    <h1>HOla!!!</h1>
+    <div id="header">
+        {% if event.template.header %}
+        <img src="" alt="Imagen de encabezamiento">
+        {% else %}
+        <p>Sin imagen</p>
+        {% endif %}
+    </div>
+    <div id="body">
+        {{ event.template.body }}
+    </div>
+    <div id="signatures">
+        {{ event.template.signs }}
+    </div>
+    <div id="footer">
+        {{ event.template.footer }}
+    </div>
 </body>
 
 </html>

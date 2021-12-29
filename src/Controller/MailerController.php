@@ -32,18 +32,16 @@ class MailerController extends AbstractController
     public function pdfAction(Attendee $attendee, Event $event)
     {
         $knpSnappyPdf = new Pdf('/usr/bin/wkhtmltopdf');
+        $knpSnappyPdf->setOption('lowquality', false);
+        $knpSnappyPdf->setOption('disable-javascript', true);
+        $knpSnappyPdf->setOption('orientation', 'Landscape');
 
         $html = $this->renderView('app/public/certificate.html.twig', [
             'attendee'  => $attendee,
             'event' => $event
         ]);
 
-        $filename = $attendee->getLastName() . $attendee->getFirstName() . '-' . $event->getName() . '.pdf';
-
-        return new PdfResponse(
-            $knpSnappyPdf->getOutputFromHtml($html),
-            $filename
-        );
+        return $knpSnappyPdf->getOutputFromHtml($html);
     }
     
     /**
@@ -61,15 +59,18 @@ class MailerController extends AbstractController
 
         $pdfFile = $this->pdfAction($attendee, $event);
         
+        $filename = $attendee->getLastName() . $attendee->getFirstName() . '-' . $event->getName() . '.pdf';
+
         $email = (new Email())
             ->from('lauchaoleastro3@gmail.com')
             ->to($attendee->getEmail())
             ->subject('Certificado - ' . $event->getName())
-            ->text('Este mensaje ha sido generado automáticamente. Por favor, no responder.');
-            
+            ->text('Este mensaje ha sido generado automáticamente. Por favor, no responder.')
+            ->attach($pdfFile, $filename);
 
-        # $mailer->send($email);
 
+        $mailer->send($email);
+# 
         $this->addFlash("success", "Certificado enviado correctamente al mail: " . $attendee->getEmail() );
         
         return $this->redirectToRoute('public', [ 'dni' => $attendee->getDni() ]);
