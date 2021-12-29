@@ -24,8 +24,17 @@ class MailerController extends AbstractController
      */
     public function index()
     {
-        return $this->render('mailer/index.html.twig', [
-            'controller_name' => 'MailerController',
+        $attendee = $this->getDoctrine()
+            ->getRepository(Attendee::class)
+            ->find(1);
+        
+        $event = $this->getDoctrine()
+            ->getRepository(Event::class)
+            ->find(1);
+
+        return $this->render('app/private/certificate/certificate.html.twig', [
+            'attendee'  => $attendee,
+            'event' => $event,
         ]);
     }
 
@@ -35,13 +44,24 @@ class MailerController extends AbstractController
         $knpSnappyPdf->setOption('lowquality', false);
         $knpSnappyPdf->setOption('disable-javascript', true);
         $knpSnappyPdf->setOption('orientation', 'Landscape');
+        $knpSnappyPdf->setOption('enable-local-file-access', true);
+        $knpSnappyPdf->setOption('images', true);
 
-        $html = $this->renderView('app/public/certificate.html.twig', [
+
+        $html = $this->renderView('app/private/certificate/certificate.html.twig', [
             'attendee'  => $attendee,
-            'event' => $event
+            'event' => $event,
         ]);
 
         return $knpSnappyPdf->getOutputFromHtml($html);
+
+        # return new PdfResponse(
+        #     $knpSnappyPdf->getOutputFromHtml($html),
+        #     'file.pdf',
+        #     array(
+        #         'images' =>true,            
+        #     )
+        # );
     }
     
     /**
@@ -68,11 +88,14 @@ class MailerController extends AbstractController
             ->text('Este mensaje ha sido generado automáticamente. Por favor, no responder.')
             ->attach($pdfFile, $filename);
 
+        
 
         $mailer->send($email);
-# 
+        
         $this->addFlash("success", "Certificado enviado correctamente al mail: " . $attendee->getEmail() );
         
         return $this->redirectToRoute('public', [ 'dni' => $attendee->getDni() ]);
+
+        # return $pdfFile;
     }
 }

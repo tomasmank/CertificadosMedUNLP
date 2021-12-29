@@ -10,20 +10,16 @@
 
 <body>
     <div id="header">
-        {% if event.template.header %}
-        <img src="" alt="Imagen de encabezamiento">
-        {% else %}
-        <p>Sin imagen</p>
-        {% endif %}
+        <img src="/uploads/headers/{{ event.template.header }}" alt="">
     </div>
     <div id="body">
         {{ event.template.body }}
     </div>
     <div id="signatures">
-        {{ event.template.signs }}
+        <img src="/uploads/signatures/{{ event.template.signs }}" alt="">
     </div>
     <div id="footer">
-        {{ event.template.footer }}
+        <img src="/uploads/footers/{{ event.template.footer }}" alt="">
     </div>
 </body>
 
