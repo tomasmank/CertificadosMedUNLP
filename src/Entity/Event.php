@@ -156,9 +156,10 @@ class Event
     public function addAttendee(Attendee $attendee): self
     {
         if (!$this->attendees->contains($attendee)) {
+
             $this->attendees[] = $attendee;
         }
-
+        
         return $this;
     }
 

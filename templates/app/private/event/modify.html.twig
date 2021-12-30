@@ -59,14 +59,17 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="input-group">
-                            <input type="file" class="form-control" id="inputAsistentesFile"
-                                aria-describedby="inputAsistentesAddon" aria-label="Upload">
-                            <button class="btn btn-outline-secondary" type="reset" id="inputAsistentesAddon">x</button>
+                            <input type="file" class="form-control" id="inputAttendeesFile" name="inputAttendeesFile"
+                                aria-describedby="inputAttendeesAddon" aria-label="Upload">
+                            <button class="btn btn-outline-secondary" type="reset" id="inputAttendeesAddon">x</button>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="text-muted">
-                            Cantidad de asistentes: XX. <a href="#">(Ver detalle)</a>
+                            Cantidad de asistentes: {{qty}} 
+                            
+                                <a href="{{path('viewAttendees', {eventID: event.id})}}" >Ver detalle</a>
+                            
                         </div>
                     </div>
                 </div>
@@ -98,7 +101,7 @@
                     <div class="col-md-6">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-3">
                             <label class="switch">
-                                <input type="checkbox" id="published" name="published"  class="slider round" 
+                                <input type="checkbox" id="published" name="published" class="slider round" 
                                     {% if (event.published == 1) %}
                                         checked>
                                     {% else %}
@@ -112,8 +115,39 @@
         </div>
         <div class="container">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                <a class="btn btn-secondary mb-3" href={{ path('events') }}>Cancelar y volver</a>
-                <button class="btn btn-success mb-3">Modificar evento</button>
+                <div>
+                    <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
+                        Eliminar
+                    </button>
+                </div>
+                <div>
+                    <a class="btn btn-secondary mb-3" href={{ path('events') }}>Cancelar y volver</a>
+                    <button class="btn btn-success mb-3">Modificar evento</button>
+                </div>
+            </div>
+            <!-- Delete modal -->
+            <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">¿Eliminar evento definitivamente?
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><b>Nombre:</b> {{ event.name }}</p>
+                            <p><b>Ciudad:</b> {{ event.city.name }}</p>
+                            <p><b>Desde :</b> {{ event.startDate|date('Y-m-d') }}</p>
+                            <p><b>Hasta :</b> {{ event.endDate|date('Y-m-d') }}</p>
+                            <p>(Esta acción no puede deshacerse)</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <a href="{{ path('deleteEvent', {eventID: event.id}) }}" class="btn btn-danger">Sí,
+                                eliminar</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

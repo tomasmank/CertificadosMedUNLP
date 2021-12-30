@@ -21,7 +21,7 @@
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#flush-collapseOne" aria-expanded="false"
                                 aria-controls="flush-collapseOne" style="color: black;">
-                                Filtar...
+                                Filtrar...
                             </button>
                         </h2>
                         <div id="flush-collapseOne" class="accordion-collapse collapse"
@@ -70,36 +70,27 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <!-- <button <a href="" class="btn" name="eventObject" >
+                                {% if event.published == 0 %} 
+                                    <td style="color:red">No publicado</td>
+                                {% else %}
+                                    <td style="color:green">Publicado</td>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a class="btn" href="{{ path('viewEvent', {eventID: event.id}) }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-three-dots" viewBox="0 0 16 16">
+                                        class="bi bi-three-dots" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#showOptionsModal">
                                         <path
                                             d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
                                     </svg>
-                                </button> -->
-
-                                <form action="{{path("viewEvent")}}">
-                                    <button href="" class="btn" style="color:black;background-color:yellow" id="eventID" name="eventID" value={{event.id}}>Ver-Modificar</button>
-                                </form>
-                            </td>
-                            <td>
-                                <form action="{{path("deleteEvent")}}">
-                                    <button href="" class="btn" style="color:white;background-color:red" id="eventID" name="eventID" value={{event.id}}>Eliminar</button>
-                                </form>
-                            </td>
-                            
-                                
-                                    {% if event.published == 0 %} 
-                                        <td style="color:red">No publicado</td>
-                                    {% else %}
-                                        <td style="color:green">Publicado</td>
-                                    {% endif %}
-                                
+                                </a>
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+                
+                
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-center">
                         <li class="page-item disabled">

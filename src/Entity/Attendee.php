@@ -7,6 +7,7 @@ use App\Repository\AttendeeRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=AttendeeRepository::class)
@@ -37,6 +38,10 @@ class Attendee
 
     /**
      * @ORM\Column(type="string", length=320)
+     * @Assert\Email(
+     *     message = "El mail '{{ value }}' no es una dirección de mail válida.",
+     *     mode = "strict"
+     * )
      */
     private $email;
 
