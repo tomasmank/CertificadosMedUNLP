@@ -1,26 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends '@certificate_path/base.html.twig' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+{% block content %}
 
-<body>
-    <div id="header">
-        <img src="/uploads/headers/{{ event.template.header }}" alt="">
+<div id="header">
+    <div class="row">
+        <img src="{{ pathToUploads }}/headers/{{ event.template.header }}" alt="" class="img-fluid">
     </div>
-    <div id="body">
-        {{ event.template.body }}
+</div>
+<div id="body" class="h-100" style="height: max-content;">
+    <div class="row">
+        <div class="text-center">
+            <p>
+                {{ event.template.body }}
+            </p>
+            <p>dd</p>
+            <p>dd</p>
+            <p>dd</p>
+            <p>dd</p>
+        </div>
     </div>
-    <div id="signatures">
-        <img src="/uploads/signatures/{{ event.template.signs }}" alt="">
-    </div>
-    <div id="footer">
-        <img src="/uploads/footers/{{ event.template.footer }}" alt="">
-    </div>
-</body>
+</div>
 
-</html>
+<div id="signatures">
+    <div class="row">
+        <img src="{{ pathToUploads }}/signatures/{{ event.template.signs }}" alt="">
+    </div>
+</div>
+<div id="footer">
+    <div class="row">
+        <img src="{{ pathToUploads }}/footers/{{ event.template.footer }}" alt="">
+    </div>
+</div>
+
+
+{% endblock %}

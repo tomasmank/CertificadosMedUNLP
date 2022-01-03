@@ -46,22 +46,25 @@ class MailerController extends AbstractController
         $knpSnappyPdf->setOption('orientation', 'Landscape');
         $knpSnappyPdf->setOption('enable-local-file-access', true);
         $knpSnappyPdf->setOption('images', true);
-
-
+        $knpSnappyPdf->setOption('margin-bottom', 0);
+        $knpSnappyPdf->setOption('margin-left', 0);
+        $knpSnappyPdf->setOption('margin-right', 0);
+        $knpSnappyPdf->setOption('margin-top', 0);
+        
         $html = $this->renderView('app/private/certificate/certificate.html.twig', [
             'attendee'  => $attendee,
             'event' => $event,
         ]);
 
-        return $knpSnappyPdf->getOutputFromHtml($html);
+        # return $knpSnappyPdf->getOutputFromHtml($html);
 
-        # return new PdfResponse(
-        #     $knpSnappyPdf->getOutputFromHtml($html),
-        #     'file.pdf',
-        #     array(
-        #         'images' =>true,            
-        #     )
-        # );
+        return new PdfResponse(
+            $knpSnappyPdf->getOutputFromHtml($html),
+            'file.pdf',
+            array(
+                'images' =>true,            
+            )
+        );
     }
     
     /**
@@ -90,12 +93,12 @@ class MailerController extends AbstractController
 
         
 
-        $mailer->send($email);
+        # $mailer->send($email);
         
         $this->addFlash("success", "Certificado enviado correctamente al mail: " . $attendee->getEmail() );
         
-        return $this->redirectToRoute('public', [ 'dni' => $attendee->getDni() ]);
+        # return $this->redirectToRoute('public', [ 'dni' => $attendee->getDni() ]);
 
-        # return $pdfFile;
+        return $pdfFile;
     }
 }

@@ -2,8 +2,9 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     paths: 
         '%kernel.project_dir%/templates/app/private/layout': layout
+        '%kernel.project_dir%/templates/app/private/certificate': certificate_path
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     exception_controller: null
     globals:
-        pathToUploads: '%kernel.project_dir%'
+        pathToUploads: '%kernel.project_dir%/public/uploads'
