@@ -53,18 +53,15 @@ class EventController extends AbstractController
     {
         $eventName = $request->query->get("eventName");  
         $cityID = $request->query->get("cityID");  
-        $startDate = $request->query->get("startDate");  
-        $endDate = $request->query->get("endDate");  
+        $startDateString = $request->query->get("startDate");  
+        $endDateString = $request->query->get("endDate");  
         $templateID = $request->query->get("templateID");  
         $published = $request->query->get("published");  
         $CSVFile = $request->query->get("inputAttendeesFile");
         
         if (is_null($eventName) or is_null($cityID)) {
-                /*    PONER MENSAJE DE ERROR
         
-                $this->addFlash('notice', 'El evento '.$eventName.' ya existe.');  */
-        
-            echo('El nombre del evento y el nombre de la ubicación no pueden estar vacíos.');
+            $this->addFlash("error", "Ni el nombre del evento ni el nombre de la ubicación pueden estar vacíos.");
                         
             return $this->render('app/private/event/new.html.twig',[]);
         }
@@ -85,14 +82,14 @@ class EventController extends AbstractController
             $template = null;
         }
 
-        if ($startDate != '') {
-            $startDate = \DateTime::createFromFormat('Y-m-d', $startDate);
+        if ($startDateString != '') {
+            $startDate = \DateTime::createFromFormat('Y-m-d', $startDateString);
         }
         else {
             $startDate = null;
         }
-        if ($endDate != '') {            
-            $endDate = \DateTime::createFromFormat('Y-m-d', $endDate);
+        if ($endDateString != '') {            
+            $endDate = \DateTime::createFromFormat('Y-m-d', $endDateString);
         }
         else {
             $endDate = null;
@@ -110,11 +107,10 @@ class EventController extends AbstractController
         if (($startDate != null) and ($endDate != null)) {  // si tengo nombre, ciudad y las dos fechas busco duplicados
 
             if ($endDate < $startDate) {
-                 /*    Y ACA UNO DE ERROR
-        
-                $this->addFlash('notice', 'El evento '.$eventName.' ya existe.');  */
-                        
-                return $this->render('app/private/event/new.html.twig',[]);
+
+                $this->addFlash("error", "La fecha de finalización no puede ser anterior a la fecha de inicio.");        
+                
+                return $this->redirectToRoute('newEvent');
             }
             
             $duplicated = $this->getDoctrine()               // busco otro evento con los datos ingresados
@@ -140,23 +136,19 @@ class EventController extends AbstractController
             $events = $this->getDoctrine()
                 ->getRepository(Event::class)
                 ->findAll(); 
-                
+            
+            $cityName = $city->getName();
+            $this->addFlash("success", "Evento '$eventName - $cityName' creado con éxito.");
+            
             return $this->render('app/private/event/index.html.twig',[
                 'events' => $events,
             ]);  
-
-            /*    $this->addFlash('success', 'Evento creado con éxito!');
-        
-                ACA HABRIA QUE PONER UN POPUP DE CONFIRMACION */
         }
         else {
-                /*    MENSAJE DE ERROR
-    
-                $this->addFlash('notice', 'El evento '.$eventName.' ya existe.');  */
+            $cityName = $city->getName();
+            $this->addFlash("error", "Ya existe otro evento con nombre $eventName realizado en $cityName desde el $startDateString hasta el $endDateString.");
         
-            echo('Ya existe un evento con los mismos datos que los ingresados.');
-                            
-            return $this->render('app/private/event/new.html.twig',[]);
+            return $this->redirectToRoute('newEvent');
         }
     }  
 
@@ -168,8 +160,8 @@ class EventController extends AbstractController
         $eventID = $request->query->get("eventID");  
         $eventName = $request->query->get("eventName");  
         $cityID =  $request->query->get("cityID");  
-        $startDate =  $request->query->get("startDate");  
-        $endDate =  $request->query->get("endDate");  
+        $startDateString =  $request->query->get("startDate");  
+        $endDateString =  $request->query->get("endDate");  
         $templateID =  $request->query->get("templateID");  
         $published = $request->query->get("published");
         $CSVFile = $request->query->get("inputAttendeesFile");
@@ -181,20 +173,17 @@ class EventController extends AbstractController
             $published = 0;
         }
 
+        if ($eventName == '' or $cityID == '') {
+
+            $this->addFlash("error", "Ni el nombre del evento ni el nombre de la ubicación pueden estar vacíos.");
+
+            return $this->redirectToRoute('events');
+        }
+        
         $event = $this->getDoctrine()
         ->getRepository(Event::class)
         ->find($eventID);
-
-        if (is_null($eventName) or is_null($cityID)) {
-                /*    PONER MENSAJE DE ERROR
-        
-                $this->addFlash('notice', 'El evento '.$eventName.' ya existe.');  */
-        
-            echo('El nombre del evento y la ubicación no pueden estar vacíos.');
-                        
-            return $this->render('app/private/event/modify.html.twig',['event' => $event]);
-        }
-
+      
         $em = $this->getDoctrine()->getManager();
 
         $city = $this->getDoctrine()
@@ -211,14 +200,14 @@ class EventController extends AbstractController
             $template = null;
         }
 
-        if ($startDate != '') {
-            $startDate = \DateTime::createFromFormat('Y-m-d', $startDate);
+        if ($startDateString != '') {
+            $startDate = \DateTime::createFromFormat('Y-m-d', $startDateString);
         }
         else {
             $startDate = null;
         }
-        if ($endDate != '') {            
-            $endDate = \DateTime::createFromFormat('Y-m-d', $endDate);
+        if ($endDateString != '') {            
+            $endDate = \DateTime::createFromFormat('Y-m-d', $endDateString);
         }
         else {
             $endDate = null;
@@ -229,13 +218,10 @@ class EventController extends AbstractController
         if (($startDate != null) and ($endDate != null)) {  // si tengo nombre, ciudad y las dos fechas busco duplicados
 
             if ($endDate < $startDate) {
-                 /*    Y ACA UNO DE ERROR
         
-                $this->addFlash('notice', 'El evento '.$eventName.' ya existe.');  */
-        
-                echo('La fecha de finalización es anterior a la decha de inicio.');
-                        
-                return $this->render('app/private/event/modify.html.twig',['event' => $event]);
+                $this->addFlash("error", "La fecha de finalización no puede ser anterior a la fecha de inicio.");        
+                
+                return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
             }
 
             $em = $this->getDoctrine()->getManager();
@@ -255,31 +241,27 @@ class EventController extends AbstractController
             $em->persist($event);
             $em->flush();
 
-            if ($CSVFile != '') {
-                $this->updateAttendees($event, $CSVFile);
-            }
-
-            $events = $this->getDoctrine()
-            ->getRepository(Event::class)
-            ->findAll(); 
+            $result = 0;
             
-            return $this->render('app/private/event/index.html.twig',[
-                'events' => $events,
-        ]);  
-
-               /*    $this->addFlash('success', 'Evento creado con éxito!');
-        
-                ACA HABRIA QUE PONER UN POPUP DE CONFIRMACION */
-         
+            if ($CSVFile != '') {
+                $response = $this->updateAttendees($event, $CSVFile);
+                $result = $response->getContent();
+            }
+            
+            if ($result == 0) {
+                $this->addFlash("success", 'Evento modificado con éxito!');
+                return $this->redirectToRoute('events');           
+            }
+            else {
+                $this->addFlash("error", 'El evento no se modificó correctamente.');
+                return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
+            }
         }
         else {
-            /*    MENSAJE DE ERROR
-
-            $this->addFlash('notice', 'El evento '.$eventName.' ya existe.');  */
-        
-            echo('Ya existe un evento con los mismos datos que los ingresados.');
+            $cityName = $city->getName();
+            $this->addFlash("error", "Ya existe otro evento con nombre $eventName realizado en $cityName desde el $startDateString hasta el $endDateString.");
                             
-            return $this->render('app/private/event/modify.html.twig',['event' => $event]);
+            return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
         }       
          
     }
@@ -394,7 +376,7 @@ class EventController extends AbstractController
                 ]); */
                 
                 if ($data[1] == '' or $data[2] == '' or $data[3] == '' or $data[4] == '' or $data[5] == '') {
-                    $errors[] = 'Error - Existen campos vacíos en la planilla importada.';
+                    $errors[] = 'Existen campos vacíos en la planilla importada.';
                 }
 
                 $responseLN = $this->forward('App\Controller\ValidateController::validateName', [
@@ -435,10 +417,16 @@ class EventController extends AbstractController
 
                 if (($responseC->getContent()) != 0) {
                     $errors[] = 'La condición del asistente con DNI '.$data[4].' es incorrecta.';
-                } 
+                }
 
                 if (count($errors) > 0) {
-                    return $this->render('test/prueba.html.twig', ['nombreColeccion' => 'Errores encontrados al actualizar datos desde archivo CSV', 'coleccion' => $errors]);
+
+                    $this->addFlash("error", "El archivo de asistentes no pudo procesarse correctamente. Corrija los siguientes errores y vuelva a procesarlo.");
+                    
+                    foreach ($errors as $error) {
+                        $this->addFlash("error", $error);
+                    }
+                    return new Response (1);
                 }
                 else {
                     $attendee = $this->getDoctrine()
@@ -486,8 +474,11 @@ class EventController extends AbstractController
                 $em->flush();
             }
             fclose($file);
+            
+            $this->addFlash("success", "El archivo de asistentes se procesó correctamente.");
         }
-        return new Response('El archivo se cargó correctamente.');
+        
+        return new Response (0);
     }
 
     /**
