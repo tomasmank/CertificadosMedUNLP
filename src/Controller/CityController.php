@@ -68,6 +68,6 @@ class CityController extends AbstractController
                 return $this->render('app/private/event/new.html.twig',[]);
         }
 
-        return $this->render('app/private/event/index.html.twig',['cityObject' => $city]);
+        return $this->redirectToRoute('newEvent');
     }
 }

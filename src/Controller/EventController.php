@@ -6,6 +6,7 @@ use App\Entity\Event;
 use App\Entity\Attendee;
 use App\Repository\EventRepository;
 use App\Entity\City;
+use App\Entity\EventAttendee;
 use App\Entity\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -366,7 +367,7 @@ class EventController extends AbstractController
             ->getRepository(Template::class)
             ->findAll();
 
-        $attendeesQty = count($event->getAttendees());
+        $attendeesQty = count($event->getEventAttendees());
         
         return $this->render('app/private/event/modify.html.twig',[
             'event' => $event,
@@ -446,24 +447,41 @@ class EventController extends AbstractController
 
                     if ($attendee != null) {
                         $attendee->setLastName($data[1])
-                            ->setFirstName($data[2])
-                            ->setEmail($data[3])
-                            ->setCond($data[5]);
+                            ->setFirstName($data[2]);
                         $em->flush();
                     }
                     else{        
                         $attendee = new Attendee();
                         $attendee->setFirstName($data[1])
                             ->setLastname($data[2])
-                            ->setEmail($data[3])
-                            ->setDni($data[4])
-                            ->setCond($data[5]);
+                            ->setDni($data[4]);
                             
                         $em->persist($attendee);
                         $em->flush();
                     }
-                                        
-                    $event->addAttendee($attendee);
+                    $newEventAttendee = $this->getDoctrine()
+                        ->getRepository(EventAttendee::class)
+                        ->findOneBy([
+                            'event' => $event,
+                            'attendee' => $attendee,
+                        ]);
+                    
+                    if ($newEventAttendee == null) {               //si el asistente no está registrado en este evento
+                        $newEventAttendee = new EventAttendee();
+                        $newEventAttendee->setEvent($event)
+                            ->setAttendee($attendee)
+                            ->setEmail($data[3])
+                            ->setCond($data[5]);
+                        $em->persist($newEventAttendee);
+                        $em->flush();
+                    }
+                    else {
+                        $newEventAttendee->setEmail($data[3])
+                            ->setCond($data[5]);
+                        $em->flush();
+                    }
+                                                            
+                    $event->addEventAttendee($newEventAttendee);
                 }
                 $em->flush();
             }
@@ -478,13 +496,20 @@ class EventController extends AbstractController
     public function viewAttendees(Request $request)
     {
         $eventID = $request->query->get("eventID");
-        echo('>>>> EventID: '.$eventID);
+    
         $event = $this->getDoctrine()
             ->getRepository(Event::class)
             ->find($eventID);
     
+        $eventAttendees = $this->getDoctrine()
+            ->getRepository(EventAttendee::class)
+            ->findBy([
+                'event' => $event,
+            ]);
+    
         return $this->render('app/private/attendee/index.html.twig',[
             'event' => $event,
+            'eventAttendees' => $eventAttendees,
         ]);
     }
 }

@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Event;
 use App\Entity\Attendee;
+use App\Entity\EventAttendee;
 
 /**
  * @Route("/attendee")
@@ -55,13 +56,6 @@ class AttendeeController extends AbstractController
         $dni = $request->query->get("dni"); 
         $cond = $request->query->get("cond"); 
 
-echo(' - eventID: '.$eventID);
-echo(' - firstName: '.$firstName);
-echo(' - lastName: '.$lastName);
-echo(' - Email: '.$email);
-echo(' - DNI: '.$dni);
-echo(' - Condición: '.$cond);
-
         $event = $this->getDoctrine()
             ->getRepository(Event::class)
             ->find($eventID);
@@ -76,26 +70,44 @@ echo(' - Condición: '.$cond);
 
         if ($attendee != null) {
             $attendee->setFirstName($firstName)
-                ->setLastName($lastName)
-                ->setEmail($email)
-                ->setCond($cond);
+                ->setLastName($lastName);
             $em->flush();
         }
         else {
             $attendee = new Attendee();
             $attendee->setFirstName($firstName)
                 ->setLastName($lastName)
-                ->setEmail($email)
-                ->setDni($dni)
-                ->setCond($cond);
+                ->setDni($dni);
             $em->persist($attendee);
             $em->flush();
         }
-        echo('  -  Nombre del evento: '.$event->getName());
-        echo('  -  ID del evento: '.$event->getId());
         
-        $event->addAttendee($attendee);
+        $newEventAttendee = $this->getDoctrine()
+            ->getRepository(EventAttendee::class)
+            ->findOneBy([
+                'event' => $event,
+                'attendee' => $attendee,
+            ]);
+        
+        if($newEventAttendee != null) {
+            $newEventAttendee->setEmail($email)
+                ->setCond($cond);
+            $em->flush();
+        }
+        else {
+            $newEventAttendee = new EventAttendee();
+            $newEventAttendee->setEvent($event)
+                ->setAttendee($attendee)
+                ->setEmail($email)
+                ->setCond($cond);
+            $em->persist($newEventAttendee);
+            $em->flush();
+        }
 
-        return new Response ('El asistente se cargó correctamente.');
+        $event->addEventAttendee($newEventAttendee);
+
+        return $this->redirectToRoute('viewAttendees',[
+            'eventID' => $event->getId(),
+        ]);;
     }
 }

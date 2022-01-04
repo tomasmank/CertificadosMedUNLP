@@ -37,29 +37,13 @@ class Attendee
     private $dni;
 
     /**
-     * @ORM\Column(type="string", length=320)
-     * @Assert\Email(
-     *     message = "El mail '{{ value }}' no es una dirección de mail válida.",
-     *     mode = "strict"
-     * )
+     * @ORM\OneToMany(targetEntity=EventAttendee::class, mappedBy="attendee", orphanRemoval=true)
      */
-    private $email;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $cond;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection|Event[]
-     *
-     * @ORM\ManyToMany(targetEntity="Event", mappedBy="attendees")
-     */
-    private $events;
+    private $eventAttendees;
 
     public function __construct()
     {
-        $this->events = new ArrayCollection();
+        $this->eventAttendees = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -103,32 +87,33 @@ class Attendee
         return $this;
     }
 
-    public function getEmail(): ?string
+    /**
+     * @return Collection|EventAttendee[]
+     */
+    public function getEventAttendees(): Collection
     {
-        return $this->email;
+        return $this->eventAttendees;
     }
 
-    public function setEmail(string $email): self
+    public function addEventAttendee(EventAttendee $eventAttendee): self
     {
-        $this->email = $email;
+        if (!$this->eventAttendees->contains($eventAttendee)) {
+            $this->eventAttendees[] = $eventAttendee;
+            $eventAttendee->setAttendee($this);
+        }
 
         return $this;
     }
 
-    public function getCond(): ?string
+    public function removeEventAttendee(EventAttendee $eventAttendee): self
     {
-        return $this->cond;
-    }
-
-    public function setCond(string $cond): self
-    {
-        $this->cond = $cond;
+        if ($this->eventAttendees->removeElement($eventAttendee)) {
+            // set the owning side to null (unless already changed)
+            if ($eventAttendee->getAttendee() === $this) {
+                $eventAttendee->setAttendee(null);
+            }
+        }
 
         return $this;
-    }
-
-    public function getEvents(): Collection
-    {
-        return $this->events;
     }
 }
