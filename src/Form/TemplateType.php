@@ -48,6 +48,7 @@ class TemplateType extends AbstractType
                         'maxSize' => '1024k',
                         'mimeTypes' => [
                             'image/png',
+                            'image/jpeg',
                             'application/png',
                             'application/x-png',
                         ],
@@ -67,6 +68,7 @@ class TemplateType extends AbstractType
                         'maxSize' => '1024k',
                         'mimeTypes' => [
                             'image/png',
+                            'image/jpeg',
                             'application/png',
                             'application/x-png',
                         ],
@@ -86,6 +88,7 @@ class TemplateType extends AbstractType
                         'maxSize' => '1024k',
                         'mimeTypes' => [
                             'image/png',
+                            'image/jpeg',
                             'application/png',
                             'application/x-png',
                         ],
