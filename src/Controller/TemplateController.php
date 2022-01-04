@@ -16,6 +16,8 @@ use Symfony\Component\Filesystem\Filesystem;
 
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 
+use Knp\Snappy\Pdf;
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 
 /**
  * @Route("/template")
@@ -127,6 +129,45 @@ class TemplateController extends AbstractController
                 'template' => $template,
                 'uploads' => $this->getParameter('uploads_directory'),
             ]);
+        } else {
+            $this->addFlash("error", "No existe template con id: $id.");
+            return $this->redirectToRoute('templates');
+        }
+    }
+
+    /**
+     * @Route("/example/{id}", name="exampleTemplate")
+     */
+    public function exampleTemplate(Request $request, int $id)
+    {
+        $template = $this->getDoctrine()
+            ->getRepository(Template::class)
+            ->find($id);
+
+        if ($template) {
+            $knpSnappyPdf = new Pdf('/usr/bin/wkhtmltopdf');
+            $knpSnappyPdf->setOption('lowquality', false);
+            $knpSnappyPdf->setOption('disable-javascript', true);
+            $knpSnappyPdf->setOption('page-size', 'A4');
+            $knpSnappyPdf->setOption('orientation', 'Landscape');
+            $knpSnappyPdf->setOption('enable-local-file-access', true);
+            $knpSnappyPdf->setOption('images', true);
+            $knpSnappyPdf->setOption('margin-bottom', 0);
+            $knpSnappyPdf->setOption('margin-left', 0);
+            $knpSnappyPdf->setOption('margin-right', 0);
+            $knpSnappyPdf->setOption('margin-top', 0);
+
+            $html = $this->renderView('app/private/certificate/example.html.twig', [
+                'template'  => $template,
+            ]);
+        
+            return new PdfResponse(
+                $knpSnappyPdf->getOutputFromHtml($html),
+                'example.pdf',
+                array(
+                    'images' =>true,            
+                )
+            );
         } else {
             $this->addFlash("error", "No existe template con id: $id.");
             return $this->redirectToRoute('templates');

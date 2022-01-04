@@ -1,0 +1,33 @@
+{% extends '@certificate_path/base.html.twig' %}
+
+{% block content %}
+
+<div class="container p-0 m-0 page">
+    <div class="row row-cols-1 ml-0 mr-0 page" style="background-color: red;">
+        <div class="col align-self-start p-0">
+            <div class="row">
+                {% if template.header %}
+                <img src="{{ pathToUploads }}/headers/{{ template.header }}" alt="" class="p-0">
+                {% endif %}
+            </div>
+        </div>
+        <div class="col align-self-center">
+            {{ template.body }}
+        </div>
+        <div class="col align-self-end p-0">
+            <div class="row">
+                {% if template.signs %}
+                <img src="{{ pathToUploads }}/signatures/{{ template.signs }}" alt="" class="p-0">
+                {% endif %}
+            </div>
+            <div class="row">
+                {% if template.footer %}
+                <img src="{{ pathToUploads }}/footers/{{ template.footer }}" alt="" class="p-0">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
