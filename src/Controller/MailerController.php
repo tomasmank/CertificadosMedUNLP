@@ -43,6 +43,7 @@ class MailerController extends AbstractController
         $knpSnappyPdf = new Pdf('/usr/bin/wkhtmltopdf');
         $knpSnappyPdf->setOption('lowquality', false);
         $knpSnappyPdf->setOption('disable-javascript', true);
+        $knpSnappyPdf->setOption('page-size', 'A4');
         $knpSnappyPdf->setOption('orientation', 'Landscape');
         $knpSnappyPdf->setOption('enable-local-file-access', true);
         $knpSnappyPdf->setOption('images', true);

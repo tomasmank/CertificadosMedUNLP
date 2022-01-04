@@ -2,33 +2,26 @@
 
 {% block content %}
 
-<div id="header">
-    <div class="row">
-        <img src="{{ pathToUploads }}/headers/{{ event.template.header }}" alt="" class="img-fluid">
-    </div>
-</div>
-<div id="body" class="h-100" style="height: max-content;">
-    <div class="row">
-        <div class="text-center">
-            <p>
-                {{ event.template.body }}
-            </p>
-            <p>dd</p>
-            <p>dd</p>
-            <p>dd</p>
-            <p>dd</p>
+<div class="container p-0 m-0 page">
+    <div class="row row-cols-1 ml-0 mr-0 page" style="background-color: red;">
+        <div class="col align-self-start p-0">
+            <div class="row">
+                <img src="{{ pathToUploads }}/headers/{{ event.template.header }}" alt="" class="p-0">
+            </div>
         </div>
-    </div>
-</div>
-
-<div id="signatures">
-    <div class="row">
-        <img src="{{ pathToUploads }}/signatures/{{ event.template.signs }}" alt="">
-    </div>
-</div>
-<div id="footer">
-    <div class="row">
-        <img src="{{ pathToUploads }}/footers/{{ event.template.footer }}" alt="">
+        <div class="col align-self-center">
+            {{ event.template.body }}
+            {{ event.template.body }}
+            {{ event.template.body }}
+        </div>
+        <div class="col align-self-end p-0">
+            <div class="row">
+                <img src="{{ pathToUploads }}/signatures/{{ event.template.signs }}" alt="" class="p-0">
+            </div>
+            <div class="row">
+                <img src="{{ pathToUploads }}/footers/{{ event.template.footer }}" alt="" class="p-0">
+            </div>
+        </div>
     </div>
 </div>
 
