@@ -38,18 +38,6 @@ class ValidateController extends AbstractController
         ]);
 
         return new Response(count($violations));
-
-    /*    if (0 !== count($violations)) {
-            
-            foreach ($violations as $violation) {
-                echo $violation->getMessage().'<br>';
-            }
-            return new Response('El nombre ingresado ('.$name.') es incorrecto'); 
-
-        }
-        else {
-            return new Response('El nombre ingresado ('.$name.') es correcto');
-        } */
     }
 
     /**
@@ -98,41 +86,48 @@ class ValidateController extends AbstractController
     }
 
     /**
-     * @Route("/validateAttendeesData", name="validateAttendeesData")
+     * @Route("/validateAttendeeData", name="validateAttendeeData")
      */
-    public function validateAttendeesData(array $data)
-    { 
+    public function validateAttendeeData(string $firstName, $lastName, $email, $dni, $cond)
+    {
         $errors = [];
-        echo('Tipo de dato de $errores1: '.gettype($errors));
-        if ($data[1] == '' or $data[2] == '' or $data[3] == '' or $data[4] == '' or $data[5] == '') {
-            $errors[] = 'Error - Existen campos vacíos en la planilla importada.';
-        }
-        echo('Tipo de dato de $errores2: '.gettype($errors));
-        if (($this->validateName($data[1])->getContent()) != 0) {
-            $errors[] = 'El apellido del asistente con DNI '.$data[4].' es incorrecto.';
-        }
-        echo('Tipo de dato de $errores3: '.gettype($errors));
-        echo('    $data[2]: '.$data[2]);
-        if (($this->validateName($data[2])->getContent()) != 0) {
-            $errors[] = 'El nombre del asistente con DNI '.$data[4].' es incorrecto.';
-            echo('Nombre incorrecto');
-        }
-        echo('Tipo de dato de $errores4: '.gettype($errors));
-        if (($this->validateEmail($data[3])->getContent()) != 0) {
-            $errors[] = 'El email del asistente con DNI '.$data[4].' es incorrecto.';
-        }
-        echo('Tipo de dato de $errores5: '.gettype($errors));
-        if (($this->validateDni($data[4])->getContent()) != 0) {
-            $errors[] = 'El DNI del asistente '.$data[1].', '.$data[2].' es incorrecto.';
-            echo('    DNI incorrecto   ');
-        }
-        echo('Tipo de dato de $errores6: '.gettype($errors));
-        if (($this->validateName($data[5])->getContent()) != 0) {
-            $errors[] = 'La condición del asistente con DNI '.$data[4].' es incorrecta.';
-        }
-        echo('Tipo de dato de $errores7: '.gettype($errors));
-echo('Cantidad de errores: '.count($errors));
-        return new JsonResponse($errors);
-    }
 
+        $verifyFN = $this->validateName($firstName)->getContent();
+
+        if ($verifyFN != 0) {
+            $errors[] = 'El nombre ingresado ('.$firstName.') contiene caracteres no admitidos.';
+        }
+
+        $verifyLN = $this->validateName($lastName)->getContent();
+
+        if ($verifyLN != 0) {
+            $errors[] = 'El apellido ingresado ('.$lastName.') contiene caracteres no admitidos.';
+        }
+
+        $verifyEmail = $this->validateEmail($email)->getContent();
+
+        if ($verifyEmail != 0) {
+            $errors[] = 'El email ingresado ('.$email.') no tiene un formato correcto o contiene caracteres no admitidos.';
+        }
+
+        $verifyCond = $this->validateName($cond)->getContent();
+
+        if ($verifyCond != 0) {
+            $errors[] = 'La condición ingresada ('.$cond.') contiene caracteres no admitidos.';
+        }
+
+        $verifyDNI = $this->validateDni($dni)->getContent();
+
+        if ($verifyDNI != 0) {
+            $errors[] = 'El DNI ingresado ('.$dni.') contiene caracteres no admitidos.';
+        }
+
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $this->addFlash("error", $error);
+            }
+        }
+
+        return new Response(count($errors));
+    }
 }

@@ -250,20 +250,17 @@ class EventController extends AbstractController
             
             if ($result == 0) {
                 $this->addFlash("success", 'Evento modificado con éxito!');
-                return $this->redirectToRoute('events');           
             }
             else {
                 $this->addFlash("error", 'El evento no se modificó correctamente.');
-                return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
             }
         }
         else {
             $cityName = $city->getName();
             $this->addFlash("error", "Ya existe otro evento con nombre $eventName realizado en $cityName desde el $startDateString hasta el $endDateString.");
-                            
-            return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
-        }       
-         
+        }
+
+        return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
     }
 
     /**
@@ -370,65 +367,25 @@ class EventController extends AbstractController
 
             while (($data = fgetcsv($file, 0, ",")) !== FALSE) {
 
-                $errors = [];
-                /*$response = $this->forward('App\Controller\ValidateController::validateAttendeesData', [
-                    'data'  => $data,
-                ]); */
-                
                 if ($data[1] == '' or $data[2] == '' or $data[3] == '' or $data[4] == '' or $data[5] == '') {
-                    $errors[] = 'Existen campos vacíos en la planilla importada.';
+                    $this->addFlash("error", "Existen campos vacíos en la planilla importada.");
+                    return new Response (1);
                 }
 
-                $responseLN = $this->forward('App\Controller\ValidateController::validateName', [
-                    'name'  => $data[1],
+                $response = $this->forward('App\Controller\ValidateController::validateAttendeeData',[
+                    'lastName' => $data[1],
+                    'firstName' => $data[2],
+                    'dni' => $data[4],
+                    'email' => $data[3],
+                    'cond' => $data[5],
                 ]);
-
-                if (($responseLN->getContent()) != 0) {
-                    $errors[] = 'El apellido del asistente con DNI '.$data[4].' es incorrecto.';
-                }
-
-                $responseFN = $this->forward('App\Controller\ValidateController::validateName', [
-                    'name'  => $data[2],
-                ]);
-
-                if (($responseFN->getContent()) != 0) {
-                    $errors[] = 'El nombre del asistente con DNI '.$data[4].' es incorrecto.';
-                }
-
-                $responseE = $this->forward('App\Controller\ValidateController::validateEmail', [
-                    'email'  => $data[3],
-                ]);
-
-                if (($responseE->getContent()) != 0) {
-                    $errors[] = 'El email del asistente con DNI '.$data[4].' es incorrecto.';
-                }
-
-                $responseD = $this->forward('App\Controller\ValidateController::validateDni', [
-                    'dni'  => $data[4],
-                ]);
-
-                if (($responseD->getContent()) != 0) {
-                    $errors[] = 'El DNI del asistente '.$data[1].', '.$data[2].' es incorrecto.';
-                }
-
-                $responseC = $this->forward('App\Controller\ValidateController::validateName', [
-                    'name'  => $data[5],
-                ]);
-
-                if (($responseC->getContent()) != 0) {
-                    $errors[] = 'La condición del asistente con DNI '.$data[4].' es incorrecta.';
-                }
-
-                if (count($errors) > 0) {
-
+        
+                if ($response->getContent() > 0) {   
                     $this->addFlash("error", "El archivo de asistentes no pudo procesarse correctamente. Corrija los siguientes errores y vuelva a procesarlo.");
-                    
-                    foreach ($errors as $error) {
-                        $this->addFlash("error", $error);
-                    }
                     return new Response (1);
                 }
                 else {
+
                     $attendee = $this->getDoctrine()
                         ->getRepository(Attendee::class)
                         ->findOneBy(['dni' => $data[4]]);
@@ -480,7 +437,7 @@ class EventController extends AbstractController
         
         return new Response (0);
     }
-
+    
     /**
      * @Route("/viewAttendees", name="viewAttendees")
      */

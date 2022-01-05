@@ -7,9 +7,18 @@
 <div id="component" class="container">
 
     <div class="row m-2">
-        <div class="col">
-            <h3>Asistentes al evento: {{event.name}}</h3>
+        <div class="col-10">
+            <h4>Asistentes al evento</h4>
+            <h5>{{event.name}}, {{event.city.name}},  
+                {% if (event.startDate != '' and event.endDate != '') %}
+                    {% if (event.startDate == event.endDate) %}
+                        {{event.startDate|date('d-m-Y')}}</h5>
+                    {% else %}
+                        {{event.startDate|date('d-m-Y')}} al {{event.endDate|date('d-m-Y')}}</h5>
+                    {% endif %}
+                {% endif %}
         </div>
+        <div class="col-2">
                 <div class="col">
                     <a href="{{path('newAttendee',{eventID: event.id})}}" class="btn btn-secondary" style="background-color: #00889B; float: right;">Nuevo asistente</a>
                 </div>
@@ -35,18 +44,23 @@
                     <td>{{eventAttendee.attendee.dni}}</td>
                     <td>{{eventAttendee.cond}}</td>
                     <td>
-                        <button class="btn">
+                        <a class="btn" href="{{ path('viewEventAttendee', {eventAttendeeID: eventAttendee.id}) }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-three-dots" viewBox="0 0 16 16">
                                 <path
                                     d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
                             </svg>
-                        </button>
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+            <div>
+                <a class="btn btn-secondary mb-3" href="{{ path('viewEvent', {eventID: event.id}) }}">Volver</a>
+            </div>
+        </div>
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
                 <li class="page-item disabled">
