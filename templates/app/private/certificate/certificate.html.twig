@@ -6,20 +6,24 @@
     <div class="row row-cols-1 ml-0 mr-0 page" style="background-color: red;">
         <div class="col align-self-start p-0">
             <div class="row">
+                {% if event.template.header %}
                 <img src="{{ pathToUploads }}/headers/{{ event.template.header }}" alt="" class="p-0">
+                {% endif %}
             </div>
         </div>
         <div class="col align-self-center">
-            {{ event.template.body }}
-            {{ event.template.body }}
-            {{ event.template.body }}
+            {{ event.template.body|raw }}
         </div>
         <div class="col align-self-end p-0">
             <div class="row">
+                {% if event.template.signs %}
                 <img src="{{ pathToUploads }}/signatures/{{ event.template.signs }}" alt="" class="p-0">
+                {% endif %}
             </div>
             <div class="row">
+                {% if event.template.footer %}
                 <img src="{{ pathToUploads }}/footers/{{ event.template.footer }}" alt="" class="p-0">
+                {% endif %}
             </div>
         </div>
     </div>

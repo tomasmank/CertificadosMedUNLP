@@ -8,3 +8,5 @@ twig:
     exception_controller: null
     globals:
         pathToUploads: '%kernel.project_dir%/public/uploads'
+    form_themes:
+        - '@FOSCKEditor/Form/ckeditor_widget.html.twig'

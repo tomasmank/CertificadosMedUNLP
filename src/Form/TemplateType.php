@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 
 class TemplateType extends AbstractType
 {
@@ -22,8 +23,13 @@ class TemplateType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Nombre'
             ])
-            ->add('body', TextareaType::class, [
-                'label' => 'Cuerpo del certificado'
+            ->add('body', CKEditorType::class, [
+                'label' => 'Cuerpo del certificado',
+                'required' => true,
+                'config' => [
+                    'toolbar' => 'my_toolbar',
+                    'language' => 'es'
+                ]
             ])
             ->add('comments', TextType::class, [
                 'label' => 'Comentarios'
