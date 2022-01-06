@@ -33,9 +33,7 @@ class AttendeeController extends AbstractController
     public function newAttendee(Request $request): Response
     {
         $eventID = $request->query->get("eventID"); 
-        
-        echo(' - EventID en newAttendee: '.$eventID);
-
+    
         $event = $this->getDoctrine()
             ->getRepository(Event::class)
             ->find($eventID);
@@ -174,7 +172,7 @@ class AttendeeController extends AbstractController
         $em->remove($eventAttendee);
         $em->flush();
 
-        $this->addFlash("success", "El asistente $attendeeFirstName $attendeeLastName fue removido del evento $eventName, $cityName.");
+        $this->addFlash("success", "El asistente $attendeeFirstName $attendeeLastName ha sido removido del evento $eventName, $cityName.");
        
         return $this->redirectToRoute('viewAttendees',[
             'eventID' => $event->getId(),
@@ -247,11 +245,11 @@ class AttendeeController extends AbstractController
             $em->flush();
     
             if ($firstName != $originalFirstName or $lastName != $originalLastName or $email != $originalEmail or $cond != $originalCond) {
-                $this->addFlash("success", "El asistente se ha modificado con éxito.");
+                $this->addFlash("success", "El asistente con dni $dni ha sido modificado con éxito.");
             }
 
-            return $this->redirectToRoute('viewEventAttendee',[
-                'eventAttendeeID' => $eventAttendee->getId(),
+            return $this->redirectToRoute('viewEvent',[
+                'eventID' => $eventAttendee->getEvent()->getId(),
             ]); 
         }
     }
