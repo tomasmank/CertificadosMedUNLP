@@ -30,7 +30,7 @@ class HomeController extends AbstractController
         
         $dni = null;
         $attendee = null;
-        $assistedEvents = null;
+        $attendances = null;
 
         if ($request->query->has('dni')) {
             $dni = $request->query->get('dni');
