@@ -11,7 +11,10 @@ use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Repository\CityRepository;
+use App\Repository\TemplateRepository;
+use App\Entity\City;
+use App\Entity\Template;
 
 class ValidateController extends AbstractController
 {
@@ -122,6 +125,65 @@ class ValidateController extends AbstractController
             $errors[] = 'El DNI ingresado ('.$dni.') contiene caracteres no admitidos.';
         }
 
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $this->addFlash("error", $error);
+            }
+        }
+
+        return new Response(count($errors));
+    }
+
+    /**
+     * @Route("/validateEventData", name="validateEventData")
+     */
+    public function validateEventData(int $cityID, $templateID, string $startDate, $endDate, $fileName)
+    {   $errors = [];
+
+        $city = $this->getDoctrine()
+            ->getRepository(City::class)
+            ->find($cityID);
+
+        if ($city == null) {
+        
+            $errors[] = 'La ubicación ingresada no existe en la base de datos.';
+        }
+
+        if ($templateID != '') {
+            $template = $this->getDoctrine()
+                ->getRepository(Template::class)
+                ->find($templateID);
+
+            if ($template == null) {
+                $errors[] = 'El template ingresado no existe en la base de datos.';
+            }
+        }
+        
+        if ($startDate != '') {
+            $verifySD = $this->validateDateAsString($startDate)->getContent();
+
+            if ($verifySD != 0) {
+                $errors[] = 'La fecha de inicio ingresada ('.$startDate.') no tiene el formato correcto.';
+            }
+        }
+        
+        if ($endDate != '') {
+            $verifyED = $this->validateDateAsString($endDate)->getContent();
+
+            if ($verifyED != 0) {
+                $errors[] = 'La fecha de finalización ingresada ('.$endDate.') no tiene el formato correcto.';
+            }
+        }
+        
+        if ($fileName != '') {
+            
+            $extension = substr($fileName, -4);
+
+            if ( $extension != '.csv' and $extension != '.CSV') {
+                $errors[] = 'El archivo seleccionado no es de tipo CSV.';
+            }
+        }
+        
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $this->addFlash("error", $error);

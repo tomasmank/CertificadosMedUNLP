@@ -30,7 +30,7 @@ class EventController extends AbstractController
     /**
      * @Route("/new", name="newEvent")
      */
-    public function newEvent(): Response
+    public function newEvent()
     {
         $cities = $this->getDoctrine()
             ->getRepository(City::class)
@@ -59,96 +59,118 @@ class EventController extends AbstractController
         $published = $request->query->get("published");  
         $CSVFile = $request->query->get("inputAttendeesFile");
         
-        if (is_null($eventName) or is_null($cityID)) {
+        if ($eventName == '') {
         
-            $this->addFlash("error", "Ni el nombre del evento ni el nombre de la ubicación pueden estar vacíos.");
+            $this->addFlash("error", "El nombre del evento no puede quedar en blanco.");
                         
             return $this->render('app/private/event/new.html.twig',[]);
         }
 
-        $em = $this->getDoctrine()->getManager();
-
-        $city = $this->getDoctrine()
-        ->getRepository(City::class)
-        ->find($cityID);
-
-        if ($templateID != '') {
-                    
-            $template = $this->getDoctrine()
-                ->getRepository(Template::class)
-                ->find($templateID);
-        }
-        else {
-            $template = null;
-        }
-
-        if ($startDateString != '') {
-            $startDate = \DateTime::createFromFormat('Y-m-d', $startDateString);
-        }
-        else {
-            $startDate = null;
-        }
-        if ($endDateString != '') {            
-            $endDate = \DateTime::createFromFormat('Y-m-d', $endDateString);
-        }
-        else {
-            $endDate = null;
-        }
+        if ($cityID == '') {
         
-        if ($published) {            
-            $published = 1;
+            $this->addFlash("error", "La ubicación no puede quedar en blanco.");
+                        
+            return $this->render('app/private/event/new.html.twig',[]);
+        }
+
+        $response = $this->forward('App\Controller\ValidateController::validateEventData',[
+            'cityID' => $cityID,
+            'startDate' => $startDateString,
+            'endDate' => $endDateString,
+            'templateID' => $templateID,
+            'fileName' => $CSVFile,
+        ]);
+
+        if ($response->getContent() > 0) {
+            
+            return $this->redirectToRoute('newEvent');
         }
         else {
-            $published = 0;
-        }
+            
+            $em = $this->getDoctrine()->getManager();
 
-        $duplicated = 0;
+            $city = $this->getDoctrine()
+            ->getRepository(City::class)
+            ->find($cityID);
 
-        if (($startDate != null) and ($endDate != null)) {  // si tengo nombre, ciudad y las dos fechas busco duplicados
+            if ($templateID != '') {
+                        
+                $template = $this->getDoctrine()
+                    ->getRepository(Template::class)
+                    ->find($templateID);
+            }
+            else {
+                $template = null;
+            }
 
-            if ($endDate < $startDate) {
+            if ($startDateString != '') {
+                $startDate = \DateTime::createFromFormat('Y-m-d', $startDateString);
+            }
+            else {
+                $startDate = null;
+            }
+            if ($endDateString != '') {            
+                $endDate = \DateTime::createFromFormat('Y-m-d', $endDateString);
+            }
+            else {
+                $endDate = null;
+            }
+            
+            if ($published) {            
+                $published = 1;
+            }
+            else {
+                $published = 0;
+            }
 
-                $this->addFlash("error", "La fecha de finalización no puede ser anterior a la fecha de inicio.");        
+            $duplicated = 0;
+
+            if (($startDate != null) and ($endDate != null)) {  // si tengo nombre, ciudad y las dos fechas busco duplicados
+
+                if ($endDate < $startDate) {
+
+                    $this->addFlash("error", "La fecha de finalización no puede ser anterior a la fecha de inicio.");        
+                    
+                    return $this->redirectToRoute('newEvent');
+                }
                 
+                $duplicated = $this->getDoctrine()               // busco otro evento con los datos ingresados
+                    ->getRepository(Event::class)
+                    ->findDuplicated(0, $eventName, $city, $startDate, $endDate);
+            }
+            if ($duplicated == 0) {
+                    
+                $event = new Event();
+                $event->setName($eventName)
+                    ->setCity($city)
+                    ->setStartDate($startDate)
+                    ->setEndDate($endDate)
+                    ->setTemplate($template)
+                    ->setPublished($published);
+                $em->persist($event);
+                $em->flush();
+
+                if ($CSVFile != '') {
+                    $this->updateAttendees($event, $CSVFile);
+                }
+
+                $events = $this->getDoctrine()
+                    ->getRepository(Event::class)
+                    ->findAll(); 
+                
+                $cityName = $city->getName();
+                $this->addFlash("success", "El evento '$eventName - $cityName' ha sido creado con éxito.");
+                
+                return $this->render('app/private/event/index.html.twig',[
+                    'events' => $events,
+                ]);  
+            }
+            else {
+                $cityName = $city->getName();
+                $this->addFlash("error", "Ya existe otro evento con nombre'$eventName' realizado en $cityName desde el $startDateString hasta el $endDateString.");
+            
                 return $this->redirectToRoute('newEvent');
             }
-            
-            $duplicated = $this->getDoctrine()               // busco otro evento con los datos ingresados
-                ->getRepository(Event::class)
-                ->findDuplicated(0, $eventName, $city, $startDate, $endDate);
-        }
-        if ($duplicated == 0) {
-                
-            $event = new Event();
-            $event->setName($eventName)
-                ->setCity($city)
-                ->setStartDate($startDate)
-                ->setEndDate($endDate)
-                ->setTemplate($template)
-                ->setPublished($published);
-            $em->persist($event);
-            $em->flush();
-
-            if ($CSVFile != '') {
-                $this->updateAttendees($event, $CSVFile);
-            }
-
-            $events = $this->getDoctrine()
-                ->getRepository(Event::class)
-                ->findAll(); 
-            
-            $cityName = $city->getName();
-            $this->addFlash("success", "Evento '$eventName - $cityName' creado con éxito.");
-            
-            return $this->render('app/private/event/index.html.twig',[
-                'events' => $events,
-            ]);  
-        }
-        else {
-            $cityName = $city->getName();
-            $this->addFlash("error", "Ya existe otro evento con nombre $eventName realizado en $cityName desde el $startDateString hasta el $endDateString.");
-        
-            return $this->redirectToRoute('newEvent');
         }
     }  
 
@@ -166,6 +188,21 @@ class EventController extends AbstractController
         $published = $request->query->get("published");
         $CSVFile = $request->query->get("inputAttendeesFile");
 
+        if ($eventID != '') {
+            $event = $this->getDoctrine()
+                ->getRepository(Event::class)
+                ->find($eventID);
+
+            if ($event == null) {
+                $this->addFlash("error", "El ID del evento no puede ser modificado.");
+                return $this->redirectToRoute('events');
+            }
+        }
+        else {
+            $this->addFlash("error", "El ID del evento no puede ser modificado.");
+            return $this->redirectToRoute('events');
+        }
+
         if ($published) {
             $published = 1;
         }
@@ -173,94 +210,113 @@ class EventController extends AbstractController
             $published = 0;
         }
 
-        if ($eventName == '' or $cityID == '') {
+        if ($eventName == '') {
+        
+            $this->addFlash("error", "El nombre del evento no puede quedar en blanco.");
+                        
+            return $this->redirectToRoute('events');
+        }
 
-            $this->addFlash("error", "Ni el nombre del evento ni el nombre de la ubicación pueden estar vacíos.");
-
+        if ($cityID == '') {
+        
+            $this->addFlash("error", "La ubicación no puede quedar en blanco.");
+                        
             return $this->redirectToRoute('events');
         }
         
-        $event = $this->getDoctrine()
-        ->getRepository(Event::class)
-        ->find($eventID);
-      
-        $em = $this->getDoctrine()->getManager();
+        $response = $this->forward('App\Controller\ValidateController::validateEventData',[
+            'cityID' => $cityID,
+            'startDate' => $startDateString,
+            'endDate' => $endDateString,
+            'templateID' => $templateID,
+            'fileName' => $CSVFile,
+        ]);
 
-        $city = $this->getDoctrine()
-        ->getRepository(City::class)
-        ->find($cityID);
-
-        if ($templateID != '') {
-                    
-            $template = $this->getDoctrine()
-                ->getRepository(Template::class)
-                ->find($templateID);
+        if ($response->getContent() > 0) {
+            
+            return $this->redirectToRoute('newEvent');
         }
         else {
-            $template = null;
-        }
-
-        if ($startDateString != '') {
-            $startDate = \DateTime::createFromFormat('Y-m-d', $startDateString);
-        }
-        else {
-            $startDate = null;
-        }
-        if ($endDateString != '') {            
-            $endDate = \DateTime::createFromFormat('Y-m-d', $endDateString);
-        }
-        else {
-            $endDate = null;
-        }
-
-        $duplicated = 0;
-
-        if (($startDate != null) and ($endDate != null)) {  // si tengo nombre, ciudad y las dos fechas busco duplicados
-
-            if ($endDate < $startDate) {
-        
-                $this->addFlash("error", "La fecha de finalización no puede ser anterior a la fecha de inicio.");        
-                
-                return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
-            }
 
             $em = $this->getDoctrine()->getManager();
 
-            $duplicated = $this->getDoctrine()
-                ->getRepository(Event::class)
-                ->findDuplicated($eventID, $eventName, $city, $startDate, $endDate);
-        }
-        if ($duplicated == 0) {
-            
-            $event->setName($eventName)
-                ->setCity($city)
-                ->setStartDate($startDate)
-                ->setEndDate($endDate)
-                ->setTemplate($template)
-                ->setPublished($published);
-            $em->persist($event);
-            $em->flush();
+            $city = $this->getDoctrine()
+            ->getRepository(City::class)
+            ->find($cityID);
 
-            $result = 0;
-            
-            if ($CSVFile != '') {
-                $response = $this->updateAttendees($event, $CSVFile);
-                $result = $response->getContent();
-            }
-            
-            if ($result == 0) {
-                $this->addFlash("success", 'Evento modificado con éxito!');
+            if ($templateID != '') {
+                        
+                $template = $this->getDoctrine()
+                    ->getRepository(Template::class)
+                    ->find($templateID);
             }
             else {
-                $this->addFlash("error", 'El evento no se modificó correctamente.');
+                $template = null;
             }
-        }
-        else {
-            $cityName = $city->getName();
-            $this->addFlash("error", "Ya existe otro evento con nombre $eventName realizado en $cityName desde el $startDateString hasta el $endDateString.");
-        }
 
-        return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
+            if ($startDateString != '') {
+                $startDate = \DateTime::createFromFormat('Y-m-d', $startDateString);
+            }
+            else {
+                $startDate = null;
+            }
+            if ($endDateString != '') {            
+                $endDate = \DateTime::createFromFormat('Y-m-d', $endDateString);
+            }
+            else {
+                $endDate = null;
+            }
+
+            $duplicated = 0;
+
+            if (($startDate != null) and ($endDate != null)) {  // si tengo nombre, ciudad y las dos fechas busco duplicados
+
+                if ($endDate < $startDate) {
+            
+                    $this->addFlash("error", "La fecha de finalización no puede ser anterior a la fecha de inicio.");        
+                    
+                    return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
+                }
+
+                $em = $this->getDoctrine()->getManager();
+
+                $duplicated = $this->getDoctrine()
+                    ->getRepository(Event::class)
+                    ->findDuplicated($eventID, $eventName, $city, $startDate, $endDate);
+            }
+            if ($duplicated == 0) {
+                
+                $event->setName($eventName)
+                    ->setCity($city)
+                    ->setStartDate($startDate)
+                    ->setEndDate($endDate)
+                    ->setTemplate($template)
+                    ->setPublished($published);
+                $em->persist($event);
+                $em->flush();
+
+                $result = 0;
+                
+                if ($CSVFile != '') {
+                    $response = $this->updateAttendees($event, $CSVFile);
+                    $result = $response->getContent();
+                }
+                
+                if ($result == 0) {
+                    $this->addFlash("success", "El evento '$eventName' ha sido modificado con éxito.");
+                    return $this->redirectToRoute('events');
+                }
+                else {
+                    $this->addFlash("error", 'El evento no se modificó correctamente.');
+                }
+            }
+            else {
+                $cityName = $city->getName();
+                $this->addFlash("error", "Ya existe otro evento con nombre '$eventName' realizado en $cityName desde el $startDateString hasta el $endDateString.");
+            }
+
+            return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
+        }
     }
 
     /**
@@ -432,7 +488,7 @@ class EventController extends AbstractController
             }
             fclose($file);
             
-            $this->addFlash("success", "El archivo de asistentes se procesó correctamente.");
+            $this->addFlash("success", "El archivo de asistentes ha sido procesado correctamente.");
         }
         
         return new Response (0);
