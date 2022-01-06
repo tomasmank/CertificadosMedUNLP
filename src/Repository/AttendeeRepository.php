@@ -19,7 +19,7 @@ class AttendeeRepository extends ServiceEntityRepository
         parent::__construct($registry, Attendee::class);
     }
 
-    public function findAttendeeByDni(string $value): ?Attendee
+    /*public function findAttendeeByDni(string $value): ?Attendee
     {
         $attendee = new Attendee();
         
@@ -32,7 +32,7 @@ class AttendeeRepository extends ServiceEntityRepository
         $attendee = $query->setMaxResults(1)->getOneOrNullResult();
 
         return $attendee;
-    }
+    } */
 
     // /**
     //  * @return Attendee[] Returns an array of Attendee objects

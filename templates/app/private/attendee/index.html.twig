@@ -1,0 +1,82 @@
+{% extends "@layout/base.html.twig" %}
+
+{% block title %}Asistentes{% endblock %}
+
+{% block content %}
+
+<div id="component" class="container">
+
+    <div class="row m-2">
+        <div class="col-10">
+            <h4>Asistentes al evento</h4>
+            <h5>{{event.name}}, {{event.city.name}},  
+                {% if (event.startDate != '' and event.endDate != '') %}
+                    {% if (event.startDate == event.endDate) %}
+                        {{event.startDate|date('d-m-Y')}}</h5>
+                    {% else %}
+                        {{event.startDate|date('d-m-Y')}} al {{event.endDate|date('d-m-Y')}}</h5>
+                    {% endif %}
+                {% endif %}
+        </div>
+        <div class="col-2">
+                <div class="col">
+                    <a href="{{path('newAttendee',{eventID: event.id})}}" class="btn btn-secondary" style="background-color: #00889B; float: right;">Nuevo asistente</a>
+                </div>
+        </div>
+    </div>
+    <div class="border rounded mt-2 mb-2">
+        <table class="table table-striped table-hover">
+            <thead>
+                <th scope="col">ID</th>
+                <th scope="col" class="d-none d-md-table-cell">Nombre</th>
+                <th scope="col" class="d-none d-md-table-cell">Apellido</th>
+                <th scope="col">Email</th>
+                <th scope="col">DNI</th>
+                <th scope="col">Condición</th>
+            </thead>
+            <tbody>
+                {% for eventAttendee in eventAttendees %}
+                <tr>
+                    <th scope="row">{{eventAttendee.id}}</th>
+                    <td class="d-none d-md-table-cell">{{eventAttendee.attendee.firstName}}</td>
+                    <td class="d-none d-md-table-cell">{{eventAttendee.attendee.lastName}}</td>
+                    <td>{{eventAttendee.email}}</td>
+                    <td>{{eventAttendee.attendee.dni}}</td>
+                    <td>{{eventAttendee.cond}}</td>
+                    <td>
+                        <a class="btn" href="{{ path('viewEventAttendee', {eventAttendeeID: eventAttendee.id}) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-three-dots" viewBox="0 0 16 16">
+                                <path
+                                    d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+                            </svg>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+            <div>
+                <a class="btn btn-secondary mb-3" href="{{ path('viewEvent', {eventID: event.id}) }}">Volver</a>
+            </div>
+        </div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                        </a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">10</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+{% endblock %}

@@ -53,21 +53,13 @@ class CityController extends AbstractController
             $em->persist($city);
             $em->flush();
 
-/*            $this->addFlash('success', 'Ciudad creada con éxito!');
-
-                ACA HABRIA QUE PONER UN POPUP DE CONFIRMACION (el addFlash no está funcionando, analizarlo)  */         
+            $this->addFlash("success", "Ciudad creada con éxito!");
         }
         else {
-/*            $this->addFlash('notice', 'La ciudad '.$cityName.' ya existe.');
-
-                ACA IRIA UN MENSAJE DE ERROR   */
-                echo('');
-                echo('La ciudad '.$cityName.' ya existe.');
-                echo('');
-                
-                return $this->render('app/private/event/new.html.twig',[]);
+            $this->addFlash("error", "La ciudad '$cityName' ya existe.");
+        //    return $this->render('app/private/event/new.html.twig',[]);
         }
 
-        return $this->render('app/private/event/index.html.twig',['cityObject' => $city]);
+        return $this->redirectToRoute('newEvent');
     }
 }

@@ -30,18 +30,18 @@ class HomeController extends AbstractController
         
         $dni = null;
         $attendee = null;
-        $events = null;
+        $assistedEvents = null;
 
         if ($request->query->has('dni')) {
             $dni = $request->query->get('dni');
             $attendee = $this->getDoctrine()
                 ->getRepository(Attendee::class)
-                ->findAttendeeByDni($dni);
+                ->findOneBy(['dni' => $dni]);
             if ($attendee) {
-                $events = $attendee->getEvents();
+                $attendances = $attendee->getEventAttendees();
             }
         }
 
-        return $this->render('app/public/index.html.twig', [ 'dni' => $dni , 'attendee' => $attendee , 'events' => $events ]);
+        return $this->render('app/public/index.html.twig', [ 'dni' => $dni , 'attendee' => $attendee, 'attendances' => $attendances ]);
     }
 }

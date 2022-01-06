@@ -69,9 +69,9 @@ class MailerController extends AbstractController
     }
     
     /**
-     * @Route("/certificados/{attendeeID}/{eventID}", name="sendEmail")
+     * @Route("/certificados/{attendeeID}/{eventID}/{destinationEmail}", name="sendEmail")
      */
-    public function sendEmail(Request $request, MailerInterface $mailer, string $attendeeID, int $eventID)
+    public function sendEmail(Request $request, MailerInterface $mailer, string $attendeeID, int $eventID, string $destinationEmail)
     {
         $attendee = $this->getDoctrine()
             ->getRepository(Attendee::class)
@@ -87,7 +87,7 @@ class MailerController extends AbstractController
 
         $email = (new Email())
             ->from('lauchaoleastro3@gmail.com')
-            ->to($attendee->getEmail())
+            ->to($destinationEmail)
             ->subject('Certificado - ' . $event->getName())
             ->text('Este mensaje ha sido generado automáticamente. Por favor, no responder.')
             ->attach($pdfFile, $filename);
@@ -96,7 +96,7 @@ class MailerController extends AbstractController
 
         # $mailer->send($email);
         
-        $this->addFlash("success", "Certificado enviado correctamente al mail: " . $attendee->getEmail() );
+        $this->addFlash("success", "Certificado enviado correctamente al mail: " . $destinationEmail );
         
         # return $this->redirectToRoute('public', [ 'dni' => $attendee->getDni() ]);
 

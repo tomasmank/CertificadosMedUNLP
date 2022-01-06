@@ -77,11 +77,11 @@ class User implements UserInterface
     // Código original creado con make:user  
     // $roles = $this->roles;
     // guarantee every user at least has ROLE_USER
-    // $roles[] = 'ROLE_USER';
+        $roles[] = 'ROLE_USER';
 
     // modificación para manejar los roles (o nombres de los permisos...) según el profile
     
-        $roles = $this->roles;
+    //    $roles = $this->roles;
 
         foreach($this->profile->getRoles() as $roleObject) {
             $roles[] = $roleObject->getName();

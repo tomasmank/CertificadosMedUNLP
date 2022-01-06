@@ -79,13 +79,13 @@
                         <div class="container">
                             <div class="row">
                                 <h3>Certificados</h3>
-                                {% if events|length > 0 %}
+                                {% if attendances|length > 0 %}
                                 <!-- Si se encontraron Eventos para ese Asistente -->
                                 <div class="container">
                                     <ul class="list-group">
-                                        {% for event in events %}
+                                        {% for attendance in attendances %}
                                         <li class="list-group-item">
-                                            {{ event.startdate|date('d/m/Y') }} - {{ event.name }}
+                                            {{ attendance.event.startdate|date('d/m/Y') }} - {{ attendance.event.name }}
 
                                             <!-- Boton para abrir Modal de confirmacion -->
                                             <button type="button" class="btn btn-light ms-2" title="Recibir al mail"
@@ -121,34 +121,36 @@
                                                             <div class="row mt-2">
                                                                 <div class="col">
                                                                     <label for="eventName">Nombre</label>
-                                                                    <h6>{{ event.name }}</h6>
+                                                                    <h6>{{ attendance.event.name }}</h6>
                                                                 </div>
                                                                 <div class="col">
                                                                     <label for="eventName">Ubicación</label>
-                                                                    <h6>{{ event.city.name }}</h6>
+                                                                    <h6>{{ attendance.event.city.name }}</h6>
                                                                 </div>
                                                             </div>
                                                             <div class="row mt-2">
                                                                 <div class="col">
                                                                     <label for="eventName">Inicio</label>
-                                                                    <h6>{{ event.startdate|date('d/m/Y') }}</h6>
+                                                                    <h6>{{ attendance.event.startdate|date('d/m/Y') }}
+                                                                    </h6>
                                                                 </div>
                                                                 <div class="col">
                                                                     <label for="eventName">Fin</label>
-                                                                    <h6>{{ event.enddate|date('d/m/Y') }}</h6>
+                                                                    <h6>{{ attendance.event.enddate|date('d/m/Y') }}
+                                                                    </h6>
                                                                 </div>
                                                             </div>
                                                             <div class="row mt-2">
                                                                 <div class="col">
                                                                     <label for="eventName">Se enviará al E-Mail</label>
-                                                                    <h6>{{ attendee.email }}</h6>
+                                                                    <h6>{{ attendance.email }}</h6>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-danger"
                                                                 data-bs-dismiss="modal">Cancelar</button>
-                                                            <a href="{{ path('sendEmail', {'attendeeID': attendee.id, 'eventID': event.id}) }}"
+                                                            <a href="{{ path('sendEmail', {'attendeeID': attendee.id, 'eventID': attendance.event.id, 'destinationEmail': attendance.email}) }}"
                                                                 class="btn btn-success">Confirmar
                                                                 envío</a>
                                                         </div>

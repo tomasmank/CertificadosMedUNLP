@@ -50,22 +50,13 @@ class Event
     private $template;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Attendee::class, inversedBy="events")
-     * @ORM\JoinTable(
-     *  name="event_attendee",
-     *  joinColumns={
-     *      @ORM\JoinColumn(name="event_id", referencedColumnName="id")
-     *  },
-     *  inverseJoinColumns={
-     *      @ORM\JoinColumn(name="attendee_id", referencedColumnName="id")
-     *  }
-     * )
+     * @ORM\OneToMany(targetEntity=EventAttendee::class, mappedBy="event", orphanRemoval=true)
      */
-    private $attendees;
+    private $eventAttendees;
 
     public function __construct()
     {
-        $this->attendees = new ArrayCollection();
+        $this->eventAttendees = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -146,25 +137,31 @@ class Event
     }
 
     /**
-     * @return Collection|Attendee[]
+     * @return Collection|EventAttendee[]
      */
-    public function getAttendees(): Collection
+    public function getEventAttendees(): Collection
     {
-        return $this->attendees;
+        return $this->eventAttendees;
     }
 
-    public function addAttendee(Attendee $attendee): self
+    public function addEventAttendee(EventAttendee $eventAttendee): self
     {
-        if (!$this->attendees->contains($attendee)) {
-            $this->attendees[] = $attendee;
+        if (!$this->eventAttendees->contains($eventAttendee)) {
+            $this->eventAttendees[] = $eventAttendee;
+            $eventAttendee->setEvent($this);
         }
 
         return $this;
     }
 
-    public function removeAttendee(Attendee $attendee): self
+    public function removeEventAttendee(EventAttendee $eventAttendee): self
     {
-        $this->attendees->removeElement($attendee);
+        if ($this->eventAttendees->removeElement($eventAttendee)) {
+            // set the owning side to null (unless already changed)
+            if ($eventAttendee->getEvent() === $this) {
+                $eventAttendee->setEvent(null);
+            }
+        }
 
         return $this;
     }

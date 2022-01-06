@@ -108,13 +108,13 @@ class TestController extends AbstractController
      */
     public function newPerson(string $fn, $ln)
     {
-        $response = $this->forward('App\Controller\ValidateController::validateNames', [
+        $response = $this->forward('App\Controller\ValidateController::validateName', [
             'name'  => $fn,
         ]);
         
         if (($response->getContent()) == 0) {
             
-            $response = $this->forward('App\Controller\ValidateController::validateNames', [
+            $response = $this->forward('App\Controller\ValidateController::validateName', [
                 'name'  => $ln,
             ]);
             
@@ -456,6 +456,36 @@ class TestController extends AbstractController
         $em->flush();
 
         return new Response('Se registró el template '.$template->getName().' con ID '.$template->getID());
+    }
+
+    /**
+     * @Route("/importcsv", name="importcsv")
+     */
+    public function importCSV2()
+    {   
+        if (($file = fopen("../Libro1.csv", "r")) !== FALSE) {
+            $em = $this->getDoctrine()->getManager();
+            $row = 0;
+            while (($data = fgetcsv($file, 0, ",")) !== FALSE) {
+                $number = count($data);
+                $row++;
+                echo "<p> Campos leidos en fila $row: $number <br/></p>\n";
+                
+                echo "<p>$data[1]<br/></p>\n";
+                echo "<p>$data[2]<br/></p>\n";
+                if ($data[3] == '') {
+                    echo "<p>Campo vacío<br/></p>\n";
+                }
+                else {
+                    echo "<p>$data[3]<br/></p>\n";
+                }
+                echo "<p>$data[4]<br/></p>\n";
+                echo "<p>$data[5]<br/></p>\n";        
+                
+            }
+            fclose($file);
+        }
+        return new Response();
     }
 
 }
