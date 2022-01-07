@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Event;
 use App\Entity\Attendee;
 use App\Entity\EventAttendee;
+use App\Repository\EventRepository;
+use App\Repository\AttendeeRepository;
+use App\Repository\EventAttendeeRepository;
 use App\Entity\ValidateController;
 
 /**
@@ -253,4 +256,53 @@ class AttendeeController extends AbstractController
             ]); 
         }
     }
+
+    /**
+     * @Route("/fullSearchAttendees", name="fullSearchAttendees")
+     */
+    public function fullSearchAttendees(Request $request)
+    {
+        $toSearch = $request->query->get("toSearch"); 
+        $eventID = $request->query->get("eventID");
+
+        if ($eventID == '') {
+            $this->addFlash("error", "El ID del evento no puede ser modificado A.");
+            return $this->redirectToRoute('events');
+        }
+        else {
+            $event = $this->getDoctrine()
+                ->getRepository(Event::class)
+                ->find($eventID);
+
+            if ($event == null) {
+                $this->addFlash("error", "El ID del evento no puede ser modificado B.");
+                return $this->redirectToRoute('events');
+            }
+        }
+
+        $em = $this->getDoctrine()->getManager();
+
+        $qb = $em->createQueryBuilder('ea');
+        
+        $eventAttendees = $qb->select('ea')
+            ->from('App\Entity\EventAttendee', 'ea')
+            ->where('ea.email LIKE ?1')
+            ->orWhere('ea.cond LIKE ?1')
+            ->orWhere('a.first_name LIKE ?1')
+            ->orWhere('a.last_name LIKE ?1')
+            ->orWhere('a.dni LIKE ?1')
+            ->andWhere('ea.event = ?2')
+            ->innerJoin(
+                Attendee::class, 'a', 'WITH', 'ea.attendee = a.id')
+            ->setParameter(1, '%'.$toSearch.'%')
+            ->setParameter(2, $eventID)
+            ->getQuery()
+            ->execute();
+
+        return $this->render('app/private/attendee/index.html.twig',[
+            'eventAttendees' => $eventAttendees,
+            'event' => $event,
+        ]);
+    }
+
 }
