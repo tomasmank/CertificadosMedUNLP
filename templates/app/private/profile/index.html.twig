@@ -90,11 +90,12 @@
                             <tr>
                             <td>{{perfil.name}}</td>
                            
+                            
                             <td>
-                                <button type="button" class="btn btn-outline-danger">Eliminar</button>
+                                <a href="{{ path('deleteProfile', {'id': perfil.id}) }}"  class="btn btn-outline-secondary" >Eliminar</a>
                                 <a href="#" class="btn btn-outline-secondary" >Editar</a>
                             </td>
-                           
+                                                      
                         </tr>
                         {% endfor %}
                     </tbody>

@@ -51,6 +51,7 @@ class Profile
         return $this;
     }
 
+    
     /**
      * @return Collection|Role[]
      */
@@ -74,4 +75,5 @@ class Profile
 
         return $this;
     }
+
 }
