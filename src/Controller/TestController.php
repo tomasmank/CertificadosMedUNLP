@@ -488,4 +488,36 @@ class TestController extends AbstractController
         return new Response();
     }
 
+    /**
+     * @Route("/strpos", name="strpos")
+     */
+    public function strpos()
+    {   $data = [];
+        $data[0] = "apellido";
+        if (strpos("Apellidosapellido", $data[0]) !== false) {
+            echo ($data[0].' se encuentra en la cadena.');
+        }
+        else {
+            echo ($data[0].' no se encuentra en la cadena.');
+        }
+        return new Response();
+    }
+
+    /**
+     * @Route("/strrchr", name="strrchr")
+     */
+    public function strrchr()
+    {   $caracter = '.';
+        
+        $x = strrchr("Ap.ellid.osape.ido", $caracter);
+
+        if ($x !== false) {
+            echo ("Posición del último caracter '$caracter': ".$x);
+        }
+        else {
+            echo ('El caracter elegido no se encuentra en la cadena.');
+        }
+        return new Response();
+    }
+
 }

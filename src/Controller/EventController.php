@@ -187,7 +187,8 @@ class EventController extends AbstractController
         $templateID =  $request->query->get("templateID");  
         $published = $request->query->get("published");
         $CSVFile = $request->query->get("inputAttendeesFile");
-
+        $x=gettype($CSVFile);
+        $this->addFlash("error","Tipo de dato CSVFile: $x");
         if ($eventID != '') {
             $event = $this->getDoctrine()
                 ->getRepository(Event::class)
@@ -298,6 +299,29 @@ class EventController extends AbstractController
                 $result = 0;
                 
                 if ($CSVFile != '') {
+
+/*
+
+
+                    if ($CSVFile) {
+                        $originalFilename = pathinfo($CSVFile->getClientOriginalName(), PATHINFO_FILENAME);
+                        $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                        $newFilename = $safeFilename.'-'.uniqid().'.'.$CSVFile->guessExtension();
+                        
+                        try {
+                            $CSVFile->move(
+                                $this->getParameter('headers_directory'),
+                                $newFilename
+                            );
+                        } catch (FileException $e) {
+                            // manejar excepcion
+                        }
+                    }*/
+            
+
+
+
+
                     $response = $this->updateAttendees($event, $CSVFile);
                     $result = $response->getContent();
                 }
@@ -419,43 +443,94 @@ class EventController extends AbstractController
     {           
         if (($file = fopen("../".$CSVFile, "r")) !== FALSE) {
 
+            if (($data = fgetcsv($file, 0, ",")) !== FALSE) {
+                if (count($data) < 5) {
+                    
+                    $this->addFlash("error", "El archivo de asistentes no contiene los datos requeridos (apellido, nombre, e-mail, documento y condición).");
+                    
+                    return new Response (1);
+                }
+
+                if (count($data) > 20) {
+                    $this->addFlash("error", "El archivo de asistentes no puede tener más de 20 columnas.");
+                    return new Response (1);
+                }
+                
+                $columnsFound = 0;
+                $i = 0;
+
+                while ($i <= (count($data)-1) and $columnsFound < 5) {
+                    
+                    if ($data[$i] != '' and stripos("apellidos", $data[$i]) !== false) {
+                        $ln = $i;
+                        $columnsFound++;
+                    }
+                    elseif ($data[$i] != '' and stripos("nombres", $data[$i]) !== false) {
+                        $fn = $i;
+                        $columnsFound++;
+                    }
+                    elseif ($data[$i] != '' and stripos("documentos-dni", $data[$i]) !== false) {
+                        $dni = $i;
+                        $columnsFound++;
+                    }
+                    elseif ($data[$i] != '' and stripos("emails-e-mails-correo", $data[$i]) !== false) {
+                        $email = $i;
+                        $columnsFound++;
+                    }
+                    elseif ($data[$i] != '' and stripos("condicion-condición", $data[$i]) !== false) {
+                        $cond = $i;
+                        $columnsFound++;
+                    }
+                    $i++;
+                }
+
+                if ($columnsFound < 5) {
+                    $this->addFlash("error", "El archivo seleccionado no contiene los encabezados correctos.");
+                    return new Response(1);
+                }       
+            }
+            else {
+                $this->addFlash("error", "Error al abrir el archivo $CSVFile. Verifique que sea de tipo CSV y que contenga los campos requeridos.");
+                    return new Response(1);
+            }
+            
             $em = $this->getDoctrine()->getManager();
 
             while (($data = fgetcsv($file, 0, ",")) !== FALSE) {
 
-                if ($data[1] == '' or $data[2] == '' or $data[3] == '' or $data[4] == '' or $data[5] == '') {
+                if ($data[$ln] == '' or $data[$fn] == '' or $data[$email] == '' or $data[$dni] == '' or $data[$cond] == '') {
                     $this->addFlash("error", "Existen campos vacíos en la planilla importada.");
                     return new Response (1);
                 }
 
                 $response = $this->forward('App\Controller\ValidateController::validateAttendeeData',[
-                    'lastName' => $data[1],
-                    'firstName' => $data[2],
-                    'dni' => $data[4],
-                    'email' => $data[3],
-                    'cond' => $data[5],
+                    'lastName' => $data[$ln],
+                    'firstName' => $data[$fn],
+                    'email' => $data[$email],
+                    'dni' => $data[$dni],
+                    'cond' => $data[$cond],
                 ]);
         
                 if ($response->getContent() > 0) {   
-                    $this->addFlash("error", "El archivo de asistentes no pudo procesarse correctamente. Corrija los siguientes errores y vuelva a procesarlo.");
+                    $this->addFlash("error", "El archivo de asistentes no pudo procesarse. Corrija los errores y vuelva a procesarlo.");
                     return new Response (1);
                 }
                 else {
 
                     $attendee = $this->getDoctrine()
                         ->getRepository(Attendee::class)
-                        ->findOneBy(['dni' => $data[4]]);
+                        ->findOneBy(['dni' => $data[$dni]]);
 
                     if ($attendee != null) {
-                        $attendee->setLastName($data[1])
-                            ->setFirstName($data[2]);
+                        $attendee->setLastName($data[$ln])
+                            ->setFirstName($data[$fn]);
                         $em->flush();
                     }
                     else{        
                         $attendee = new Attendee();
-                        $attendee->setFirstName($data[1])
-                            ->setLastname($data[2])
-                            ->setDni($data[4]);
+                        $attendee->setFirstName($data[$ln])
+                            ->setLastname($data[$fn])
+                            ->setDni($data[$dni]);
                             
                         $em->persist($attendee);
                         $em->flush();
@@ -467,18 +542,18 @@ class EventController extends AbstractController
                             'attendee' => $attendee,
                         ]);
                     
-                    if ($newEventAttendee == null) {               //si el asistente no está registrado en este evento
+                    if ($newEventAttendee == null) {
                         $newEventAttendee = new EventAttendee();
                         $newEventAttendee->setEvent($event)
                             ->setAttendee($attendee)
-                            ->setEmail($data[3])
-                            ->setCond($data[5]);
+                            ->setEmail($data[$email])
+                            ->setCond($data[$cond]);
                         $em->persist($newEventAttendee);
                         $em->flush();
                     }
                     else {
-                        $newEventAttendee->setEmail($data[3])
-                            ->setCond($data[5]);
+                        $newEventAttendee->setEmail($data[$email])
+                            ->setCond($data[$cond]);
                         $em->flush();
                     }
                                                             
@@ -487,11 +562,13 @@ class EventController extends AbstractController
                 $em->flush();
             }
             fclose($file);
-            
             $this->addFlash("success", "El archivo de asistentes ha sido procesado correctamente.");
-        }
-        
-        return new Response (0);
+            return new Response (0);
+        }   
+        else {
+            $this->addFlash("error", "Error al abrir el archivo $CSVFile. Verifique que sea de tipo CSV y que contenga los campos requeridos.");
+            return new Response(1);
+        } 
     }
     
     /**
@@ -516,4 +593,5 @@ class EventController extends AbstractController
             'eventAttendees' => $eventAttendees,
         ]);
     }
+    
 }

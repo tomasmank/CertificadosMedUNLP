@@ -83,7 +83,7 @@
                         <div class="input-group">
                             <select name="templateID" class="form-select form-select-sm" aria-label=".form-select-sm example">
                                 <option selected {% if (event.template != null) %} value="{{event.template.id}}"> {{event.template.name}} </option>
-                                                    {% else %} > Seleccionar... </option>
+                                                    {% else %} value=""> Seleccionar... </option>
                                                 {% endif %}
                                 {% for t in templates %}
                                     <option value="{{ t.id }}">{{ t.name }}</option>

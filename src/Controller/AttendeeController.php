@@ -160,7 +160,7 @@ class AttendeeController extends AbstractController
     public function deleteEventAttendee(Request $request): Response
     {   
         $eventAttendeeID = $request->query->get("eventAttendeeID"); 
-        
+        echo('   $eventAttendeeID: '.$eventAttendeeID);
         $eventAttendee = $this->getDoctrine()
             ->getRepository(EventAttendee::class)
             ->find($eventAttendeeID);

@@ -177,9 +177,13 @@ class ValidateController extends AbstractController
         
         if ($fileName != '') {
             
-            $extension = substr($fileName, -4);
+            if (strlen($fileName) < 5) {
+                $errors[] = 'El nombre del archivo no tiene ninguna de las extensiones admitidas.';
+            }
 
-            if ( $extension != '.csv' and $extension != '.CSV') {
+            $extension = strrchr($fileName, '.');
+
+            if ( stripos('.csv', $extension) === false) {
                 $errors[] = 'El archivo seleccionado no es de tipo CSV.';
             }
         }
