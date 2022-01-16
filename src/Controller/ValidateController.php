@@ -137,50 +137,40 @@ class ValidateController extends AbstractController
     /**
      * @Route("/validateEventData", name="validateEventData")
      */
-    public function validateEventData(int $cityID, $templateID, string $startDate, $endDate, $fileName)
+    public function validateEventData(?City $city, ?\DateTime $startDate, $endDate, ?string $eventName, $fileName)
     {   $errors = [];
-
-        $city = $this->getDoctrine()
+        
+        if ($city == null) {
+            $errors[] = 'La ubicación no puede quedar en blanco.';
+        }
+        
+        else {
+            $cityID = $city->getId();
+            $cityFound = $this->getDoctrine()
             ->getRepository(City::class)
             ->find($cityID);
-
-        if ($city == null) {
-        
-            $errors[] = 'La ubicación ingresada no existe en la base de datos.';
-        }
-
-        if ($templateID != '') {
-            $template = $this->getDoctrine()
-                ->getRepository(Template::class)
-                ->find($templateID);
-
-            if ($template == null) {
-                $errors[] = 'El template ingresado no existe en la base de datos.';
+            if ($cityFound == null) {
+                $errors[] = 'La ubicación ingresada no se encuentra en la base de datos.';
             }
         }
-        
-        if ($startDate != '') {
-            $verifySD = $this->validateDateAsString($startDate)->getContent();
 
-            if ($verifySD != 0) {
-                $errors[] = 'La fecha de inicio ingresada ('.$startDate.') no tiene el formato correcto.';
-            }
+        if ($startDate != null and $endDate != null and $startDate > $endDate) {
+                $errors[] = 'La fecha de inicio no puede ser posterior a la fecha de finalización.';
         }
-        
-        if ($endDate != '') {
-            $verifyED = $this->validateDateAsString($endDate)->getContent();
 
-            if ($verifyED != 0) {
-                $errors[] = 'La fecha de finalización ingresada ('.$endDate.') no tiene el formato correcto.';
-            }
+        if ($eventName == null) {
+            $errors[] = 'El nombre del evento no puede quedar en blanco.';
         }
-        
-        if ($fileName != '') {
-            
-            $extension = substr($fileName, -4);
 
-            if ( $extension != '.csv' and $extension != '.CSV') {
-                $errors[] = 'El archivo seleccionado no es de tipo CSV.';
+        if ($fileName != null) {
+            if (strlen($fileName) < 5) {
+                $errors[] = 'El nombre del archivo no tiene extensión CSV.';
+            }
+
+            $extension = strrchr($fileName, '.');
+
+            if (stripos('.csv.txt', $extension) === false) {
+                $errors[] = 'El archivo seleccionado debe tener extensión CSV.';
             }
         }
         
@@ -191,5 +181,5 @@ class ValidateController extends AbstractController
         }
 
         return new Response(count($errors));
-    }
+    } 
 }

@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\EventAttendee;
+use App\Entity\Event;
+use App\Entity\Attendee;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * @method EventAttendee|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,6 +21,20 @@ class EventAttendeeRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, EventAttendee::class);
     }
+
+    public function sortedAttendees(Event $event) {
+                
+        return $this->createQueryBuilder('ea')
+            ->where('ea.event = :value')
+            ->setParameter('value', $event)
+            ->innerJoin('App\Entity\Attendee', 'a', 'WITH', 'ea.attendee = a.id')
+            ->orderBy('a.last_name', 'ASC')
+            ->addOrderBy('a.first_name', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 
     // /**
     //  * @return EventAttendee[] Returns an array of EventAttendee objects

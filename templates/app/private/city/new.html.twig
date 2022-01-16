@@ -10,7 +10,8 @@
             <h3>Nueva ubicación</h3>
         </div>
     </div>
-    <form action="{{path('createCity')}}">                 <!-- Falta acción en caso de que la ciudad ya exista -->
+    <form action="{{path('createCity')}}">
+        <input type="hidden" id="eventID" name="eventID" value={{eventID}}>
         <div class="container border rounded">
             <div class="container">
                 <h4 class="mt-3 mb-3">Datos de la ubicación</h4>
@@ -23,7 +24,11 @@
         </div>
         <div class="container">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                <a class="btn btn-secondary mb-3" href={{ path('newEvent') }}>Cancelar y volver</a>
+                {% if (eventID is null) %}
+                    <a class="btn btn-secondary mb-3" href={{ path('viewEvent', {eventID: eventID, action: 'new'}) }}>Cancelar y volver</a>
+                {% else %}
+                    <a class="btn btn-secondary mb-3" href={{ path('viewEvent', {eventID: eventID, action: 'view'}) }}>Cancelar y volver</a>
+                {% endif %}
                 <button class="btn btn-success mb-3">Crear ubicación</button>
             </div>
         </div>

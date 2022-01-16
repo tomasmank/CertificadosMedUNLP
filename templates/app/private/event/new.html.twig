@@ -1,46 +1,60 @@
 {% extends '@layout/base.html.twig' %}
 
-{% block title %} Nuevo Evento {% endblock %}
+{% block title %} Datos del evento {% endblock %}
 
 {% block content %}
 
 <div id="component" class="container">
     <div class="row mt-1">
         <div class="col">
-            <h3>Nuevo evento</h3>
+            {% if (form.vars.value.id is null) %}
+                <h3>Nuevo evento</h3>
+            {% else %}
+                <h3>Ver o modificar evento</h3>
+            {% endif %}
         </div>
     </div>
-    <form action="{{path("createEvent")}}"> 
+    {{ form_start(form) }}      
         <div class="container border rounded">
             <div class="container">
                 <h4 class="mt-3 mb-3">Datos del evento</h4>
+                <div style="color:red;">{{ form_errors(form.name) }}</div>
                 <div class="mt-3 mb-3 row">
-                    <label for="eventName" class="col-sm-2 col-form-label">Nombre</label>
+                    <label for="eventName" class="col-sm-2 col-form-label">{{ form_label(form.name) }}</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="eventName" name="eventName" required>
+                        
+                        {{ form_widget(form.name,
+                            {'attr': {'class': 'form-control', 'placeholder': 'Nombre del evento...'}}) }}
+
+                    
                     </div>
                 </div>
                 <div class="mt-3 mb-3 row">
-                    <label for="cityID" class="col-sm-2 col-form-label">Ubicación</label>
+                    <label for="cityID" class="col-sm-2 col-form-label">{{ form_label(form.city) }}</label>
                     <div class="col-sm-10">     
-                        <select name="cityID" class="form-select form-select-sm" aria-label=".form-select-sm example" required>
-                                <option selected disabled>Seleccionar...</option>
-                                {% for c in cities %}
-                                    <option value={{ c.id }}>{{ c.name }}</option>
-                                {% endfor %}
-                        </select>
-                        <a href={{path("newCity")}} class="btn btn-secondary" style="background-color: #00889B; float: right;">Nueva ubicación</a>
+                        
+                        {{ form_widget(form.city,
+                            {'attr': {'class': 'form-control', 'placeholder': 'Ubicación donde se lleva a cabo el evento...'}}) }} 
+                        
+                            <a href="{{path('newCity', {eventID: form.vars.value.id})}}" class="btn btn-secondary" style="background-color: #00889B; float: right;">Nueva ubicación</a>
+                        
                     </div>
                 </div>
 
                 <div class="mb-3 row">
                     <div class="col">
-                        <label for="startDate" class="form-label">Fecha inicio</label>
-                        <input type="date" class="form-control" id="startDate" name="startDate">
+                        <label for="startDate" class="form-label">{{ form_label(form.startDate) }}</label>
+                       
+                        {{ form_widget(form.startDate,
+                            {'attr': {'class': 'form-control'}}) }}
+                    
                     </div>
                     <div class="col">
-                        <label for="endDate" class="form-label">Fecha fin</label>
-                        <input type="date" class="form-control" id="endDate" name="endDate">
+                        <label for="endDate" class="form-label">{{ form_label(form.endDate) }}</label>
+                        
+                        {{ form_widget(form.endDate,
+                            {'attr': {'class': 'form-control'}}) }}
+                       
                     </div>
                 </div>
             </div>
@@ -49,17 +63,24 @@
         <div class="container border rounded mt-3">
             <div class="container">
                 <h4 class="mt-3 mb-3 ">Asistentes</h4>
+                <div style="color:red;">{{ form_errors(form.attendeeFile) }}</div>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="input-group">
-                            <input type="file" class="form-control" id="inputAttendeesFile" name="inputAttendeesFile"
-                                aria-describedby="inputAttendeesAddon" aria-label="Upload">
-                            <button class="btn btn-outline-secondary" type="reset" id="inputAttendeesAddon">x</button>
+
+                            {{ form_widget(form.attendeeFile,
+                                {'attr': {'class': 'form-control'}}) }}
+                                
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="text-muted">
-                            Cantidad de asistentes: XX. <a href="#">(Ver detalle)</a>
+                            {% if (form.vars.value.id is not null) %}
+                                Cantidad de asistentes: {{ form.vars.value.eventAttendees.count }}                               
+                                {% if (form.vars.value.eventAttendees.count != 0) %}
+                                    <a href="{{path('viewAttendees', {eventID: form.vars.value.id})}}" class="btn btn-secondary" style="background-color: #00889B; float: right;">Ver asistentes</a>
+                                {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -67,16 +88,16 @@
         </div>
         <div class="container border rounded mt-3">
             <div class="container">
-                <h4 class="mt-3 mb-3 ">Template</h4>
+                <h4 class="mt-3 mb-3 ">{{ form_label(form.template) }}</h4>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="input-group">
-                            <select name="templateID" class="form-select form-select-sm" aria-label=".form-select-sm example">
-                                <option selected disabled>Seleccionar...</option>
-                                {% for t in templates %}
-                                    <option value={{ t.id }}>{{ t.name }}</option>
-                                {% endfor %}
-                            </select>
+                            
+                            {{ form_widget(form.template,
+                                {'attr': {'class': 'form-control'}}) }}
+                           
+                            
+                          
                         </div>
                     </div>
                 </div>
@@ -84,13 +105,14 @@
         </div>
         <div class="container border rounded mt-3">
             <div class="container">
-                <h4 class="mt-3 mb-3 ">Publicado</h4>
+                <h4 class="mt-3 mb-3 ">{{ form_label(form.published) }}</h4>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-3">
-                            <label class="switch">
-                                <input type="checkbox" id="published" name="published" class="slider round" unchecked>
-                            </label>
+                           
+                            {{ form_widget(form.published,
+                                {'attr': {'class': 'form-control'}}) }} 
+
                         </div>
                     </div>
                 </div>
@@ -98,11 +120,42 @@
         </div>
         <div class="container">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                <a class="btn btn-secondary mb-3" href={{ path('events') }}>Cancelar y volver</a>
-                <button class="btn btn-success mb-3">Crear evento</button>
+                {% if (form.vars.value.id is not null) %}
+                    <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
+                        Eliminar
+                    </button>
+                {% endif %}
+                <a class="btn btn-secondary mb-3" href={{ path('events') }}>Volver</a>
+                {{ form_widget(form.createEvent,
+                    {'attr': {'class': 'btn btn-success mb-3'}
+                    }) }}
             </div>
+            {% if (form.vars.value.id is not null) %}
+                <!-- Delete modal -->
+            <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">¿Eliminar evento definitivamente?</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><b>Nombre:</b> {{ form.vars.value.name }}</p>
+                            <p><b>Ciudad:</b> {{ form.vars.value.city.name }}</p>
+                            <p><b>Desde :</b> {{ form.vars.value.startDate|date('d-m-Y') }}</p>
+                            <p><b>Hasta :</b> {{ form.vars.value.endDate|date('d-m-Y') }}</p>
+                            <p>(Esta acción no puede deshacerse)</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <a href="{{ path('deleteEvent', {eventID: form.vars.value.id}) }}" class="btn btn-danger">Sí, eliminar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
-    </form>
+    {{ form_end(form) }}
 </div>
 
 {% endblock %}

@@ -11,7 +11,7 @@
                     <h3>Eventos</h3>
                 </div>
                 <div class="col">
-                    <a href={{path("newEvent")}} class="btn btn-secondary" style="background-color: #00889B; float: right;">Nuevo evento</a>
+                    <a href={{ path('viewEvent', {eventID: null, action: 'new'}) }} class="btn btn-secondary" style="background-color: #00889B; float: right;">Nuevo evento</a>
                 </div>
             </div>
             <div class="row">
@@ -35,7 +35,8 @@
                                         </div>
                                         <div class="col-md-3">
                                             <button href="" class="btn btn-secondary mt-2" style="width: 100%;">Aplicar filtro</button>
-                                            <button href={{path("events")}} class="btn btn-secondary mt-2" style="width: 100%;">Limpiar filtro</button>    
+                                            <a class="btn btn-secondary mt-2" style="width: 100%;" href={{ path('events') }}>Limpiar filtro</a>
+    
                                         </div>
                                     </div>
                                 </form>
@@ -49,7 +50,7 @@
                     <thead>
                         <th scope="col">ID</th>
                         <th scope="col">Nombre</th>
-                        <th scope="col">Ubicacion</th>
+                        <th scope="col">Ubicación</th>
                         <th scope="col" class="d-none d-md-table-cell">Inicio</th>
                         <th scope="col" class="d-none d-md-table-cell">Fin</th>
                     </thead>
@@ -73,11 +74,15 @@
                                 {% if event.published == 0 %} 
                                     <td style="color:red">No publicado</td>
                                 {% else %}
-                                    <td style="color:green">Publicado</td>
+                                    {% if event.template == null %}
+                                        <td style="color:tomato">Publicado</td>
+                                    {% else %}
+                                        <td style="color:green">Publicado</td>
+                                    {% endif %}
                                 {% endif %}
                             </td>
                             <td>
-                                <a class="btn" href="{{ path('viewEvent', {eventID: event.id}) }}">
+                                <a class="btn" href="{{ path('viewEvent', {eventID: event.id, action: 'view'}) }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-three-dots" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#showOptionsModal">
                                         <path

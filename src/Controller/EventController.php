@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use App\Form\EventType;
 
 /**
  * @Route("/event")
@@ -24,171 +25,26 @@ class EventController extends AbstractController
     public function Index(EventRepository $eventRepository): Response
     {
         return $this->render('app/private/event/index.html.twig',[
-            'events' => $eventRepository->findAll(),
+            'events' => $eventRepository->sortedEvents()
         ]);
     }
+    
     /**
-     * @Route("/new", name="newEvent")
+     * @Route("/view", name="viewEvent")
      */
-    public function newEvent()
+    public function viewEvent(Request $request)
     {
-        $cities = $this->getDoctrine()
-            ->getRepository(City::class)
-            ->findAll();
-
-        $templates = $this->getDoctrine()
-            ->getRepository(Template::class)
-            ->findAll();
-
-        return $this->render('app/private/event/new.html.twig',[
-            'templates' => $templates,
-            'cities' => $cities,
-        ]);
-    }
-
-    /**
-     * @Route("/create", name="createEvent")
-     */
-    public function create(Request $request)
-    {
-        $eventName = $request->query->get("eventName");  
-        $cityID = $request->query->get("cityID");  
-        $startDateString = $request->query->get("startDate");  
-        $endDateString = $request->query->get("endDate");  
-        $templateID = $request->query->get("templateID");  
-        $published = $request->query->get("published");  
-        $CSVFile = $request->query->get("inputAttendeesFile");
+        $action = $request->query->get("action");
         
-        if ($eventName == '') {
-        
-            $this->addFlash("error", "El nombre del evento no puede quedar en blanco.");
-                        
-            return $this->render('app/private/event/new.html.twig',[]);
-        }
-
-        if ($cityID == '') {
-        
-            $this->addFlash("error", "La ubicación no puede quedar en blanco.");
-                        
-            return $this->render('app/private/event/new.html.twig',[]);
-        }
-
-        $response = $this->forward('App\Controller\ValidateController::validateEventData',[
-            'cityID' => $cityID,
-            'startDate' => $startDateString,
-            'endDate' => $endDateString,
-            'templateID' => $templateID,
-            'fileName' => $CSVFile,
-        ]);
-
-        if ($response->getContent() > 0) {
-            
-            return $this->redirectToRoute('newEvent');
+        if ($action == 'new') {
+            $textToShow = 'creado';
+            $event = new Event();
+            $eventID = 0;
         }
         else {
-            
-            $em = $this->getDoctrine()->getManager();
-
-            $city = $this->getDoctrine()
-            ->getRepository(City::class)
-            ->find($cityID);
-
-            if ($templateID != '') {
-                        
-                $template = $this->getDoctrine()
-                    ->getRepository(Template::class)
-                    ->find($templateID);
-            }
-            else {
-                $template = null;
-            }
-
-            if ($startDateString != '') {
-                $startDate = \DateTime::createFromFormat('Y-m-d', $startDateString);
-            }
-            else {
-                $startDate = null;
-            }
-            if ($endDateString != '') {            
-                $endDate = \DateTime::createFromFormat('Y-m-d', $endDateString);
-            }
-            else {
-                $endDate = null;
-            }
-            
-            if ($published) {            
-                $published = 1;
-            }
-            else {
-                $published = 0;
-            }
-
-            $duplicated = 0;
-
-            if (($startDate != null) and ($endDate != null)) {  // si tengo nombre, ciudad y las dos fechas busco duplicados
-
-                if ($endDate < $startDate) {
-
-                    $this->addFlash("error", "La fecha de finalización no puede ser anterior a la fecha de inicio.");        
-                    
-                    return $this->redirectToRoute('newEvent');
-                }
-                
-                $duplicated = $this->getDoctrine()               // busco otro evento con los datos ingresados
-                    ->getRepository(Event::class)
-                    ->findDuplicated(0, $eventName, $city, $startDate, $endDate);
-            }
-            if ($duplicated == 0) {
-                    
-                $event = new Event();
-                $event->setName($eventName)
-                    ->setCity($city)
-                    ->setStartDate($startDate)
-                    ->setEndDate($endDate)
-                    ->setTemplate($template)
-                    ->setPublished($published);
-                $em->persist($event);
-                $em->flush();
-
-                if ($CSVFile != '') {
-                    $this->updateAttendees($event, $CSVFile);
-                }
-
-                $events = $this->getDoctrine()
-                    ->getRepository(Event::class)
-                    ->findAll(); 
-                
-                $cityName = $city->getName();
-                $this->addFlash("success", "El evento '$eventName - $cityName' ha sido creado con éxito.");
-                
-                return $this->render('app/private/event/index.html.twig',[
-                    'events' => $events,
-                ]);  
-            }
-            else {
-                $cityName = $city->getName();
-                $this->addFlash("error", "Ya existe otro evento con nombre'$eventName' realizado en $cityName desde el $startDateString hasta el $endDateString.");
-            
-                return $this->redirectToRoute('newEvent');
-            }
-        }
-    }  
-
-    /**
-     * @Route("/modify", name="modifyEvent")
-     */
-    public function modify(Request $request)
-    {
-        $eventID = $request->query->get("eventID");  
-        $eventName = $request->query->get("eventName");  
-        $cityID =  $request->query->get("cityID");  
-        $startDateString =  $request->query->get("startDate");  
-        $endDateString =  $request->query->get("endDate");  
-        $templateID =  $request->query->get("templateID");  
-        $published = $request->query->get("published");
-        $CSVFile = $request->query->get("inputAttendeesFile");
-
-        if ($eventID != '') {
+            $textToShow = 'modificado';
+            $eventID = $request->query->get("eventID"); 
+        
             $event = $this->getDoctrine()
                 ->getRepository(Event::class)
                 ->find($eventID);
@@ -198,127 +54,302 @@ class EventController extends AbstractController
                 return $this->redirectToRoute('events');
             }
         }
-        else {
-            $this->addFlash("error", "El ID del evento no puede ser modificado.");
-            return $this->redirectToRoute('events');
-        }
 
-        if ($published) {
-            $published = 1;
-        }
-        else {
-            $published = 0;
-        }
+        $form = $this->createForm(EventType::class, $event);
+                
+        $form->handleRequest($request);
 
-        if ($eventName == '') {
-        
-            $this->addFlash("error", "El nombre del evento no puede quedar en blanco.");
-                        
-            return $this->redirectToRoute('events');
-        }
+        if ($form->isSubmitted() && $form->isValid()) {
 
-        if ($cityID == '') {
-        
-            $this->addFlash("error", "La ubicación no puede quedar en blanco.");
-                        
-            return $this->redirectToRoute('events');
-        }
-        
-        $response = $this->forward('App\Controller\ValidateController::validateEventData',[
-            'cityID' => $cityID,
-            'startDate' => $startDateString,
-            'endDate' => $endDateString,
-            'templateID' => $templateID,
-            'fileName' => $CSVFile,
-        ]);
+            $event = $form->getData();
 
-        if ($response->getContent() > 0) {
-            
-            return $this->redirectToRoute('newEvent');
-        }
-        else {
+            $eventName = $event->getName();
+            $city = $event->getCity();
+            $published = $event->getPublished();
+            $template = $event->getTemplate();
+            $startDate = $event->getStartDate();
+            $endDate = $event->getEndDate();
 
-            $em = $this->getDoctrine()->getManager();
-
-            $city = $this->getDoctrine()
-            ->getRepository(City::class)
-            ->find($cityID);
-
-            if ($templateID != '') {
-                        
-                $template = $this->getDoctrine()
-                    ->getRepository(Template::class)
-                    ->find($templateID);
-            }
-            else {
-                $template = null;
-            }
-
-            if ($startDateString != '') {
-                $startDate = \DateTime::createFromFormat('Y-m-d', $startDateString);
-            }
-            else {
-                $startDate = null;
-            }
-            if ($endDateString != '') {            
-                $endDate = \DateTime::createFromFormat('Y-m-d', $endDateString);
-            }
-            else {
-                $endDate = null;
-            }
-
-            $duplicated = 0;
-
-            if (($startDate != null) and ($endDate != null)) {  // si tengo nombre, ciudad y las dos fechas busco duplicados
-
-                if ($endDate < $startDate) {
-            
-                    $this->addFlash("error", "La fecha de finalización no puede ser anterior a la fecha de inicio.");        
+            /** @var UploadedFile $attendeeFile */
+            $attendeeFile = $form->get('attendeeFile')->getData();
+            $newFileName = '';
                     
-                    return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
+            if ($attendeeFile) {
+                $originalFileName = pathinfo($attendeeFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFileName = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFileName);
+                $newFileName = $safeFileName.'-'.uniqid().'.'.$attendeeFile->guessExtension();
+                
+                try {
+                    $attendeeFile->move(
+                        $this->getParameter('attendees_directory'),
+                        $newFileName
+                    );
+                    
+                } catch (FileException $e) {
+                    // manejar excepcion
+                    return $this->redirectToRoute('viewEvent', [
+                        'eventID' => $eventID,
+                        'action' => $action,  
+                    ]);  
                 }
-
-                $em = $this->getDoctrine()->getManager();
-
-                $duplicated = $this->getDoctrine()
-                    ->getRepository(Event::class)
-                    ->findDuplicated($eventID, $eventName, $city, $startDate, $endDate);
             }
-            if ($duplicated == 0) {
-                
-                $event->setName($eventName)
-                    ->setCity($city)
-                    ->setStartDate($startDate)
-                    ->setEndDate($endDate)
-                    ->setTemplate($template)
-                    ->setPublished($published);
-                $em->persist($event);
-                $em->flush();
 
-                $result = 0;
+            $response = $this->forward('App\Controller\ValidateController::validateEventData',[
+                'eventName' => $eventName,
+                'city' => $city,
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'fileName' => $newFileName,
+            ]);
+            
+            if ($response->getContent() > 0) { 
                 
-                if ($CSVFile != '') {
-                    $response = $this->updateAttendees($event, $CSVFile);
-                    $result = $response->getContent();
-                }
+                return $this->redirectToRoute('viewEvent', [
+                    'eventID' => $eventID,
+                    'action' => $action,
+                ]);
+            }
+
+            else {
                 
-                if ($result == 0) {
-                    $this->addFlash("success", "El evento '$eventName' ha sido modificado con éxito.");
-                    return $this->redirectToRoute('events');
+                $em = $this->getDoctrine()->getManager();
+                
+                if ($published) {            
+                    $published = 1;
                 }
                 else {
-                    $this->addFlash("error", 'El evento no se modificó correctamente.');
+                    $published = 0;
+                }
+
+                $duplicated = 0;
+
+                if (($startDate != null) and ($endDate != null)) {
+                    $eventID = $event->getId();
+                    if ($eventID == null) {                    
+                        $eventID = 0;
+                    }
+                    $duplicated = $this->getDoctrine()            
+                        ->getRepository(Event::class)
+                        ->findDuplicated($eventID, $eventName, $city, $startDate, $endDate);
+                }
+
+                $cityName = $city->getName();
+
+                if ($duplicated == 0) {
+                        
+                    $event->setName($eventName)
+                        ->setCity($city)
+                        ->setStartDate($startDate)
+                        ->setEndDate($endDate)
+                        ->setTemplate($template)
+                        ->setPublished($published);
+                    if ($action == 'new') {
+                        $em->persist($event);
+                    }
+                    $em->flush();
+
+                    if ($newFileName != '') {
+                        $response = $this->updateAttendees($event, $newFileName);
+                        $result = $response->getContent();
+                               
+                        if ($result != 0) {
+                            $this->addFlash("error", "El evento '$eventName - $cityName' no pudo ser $textToShow correctamente.");          
+                            return $this->redirectToRoute('events');          
+                        }
+                    }
+                    
+                    if ($template == null and $published == 1) {
+                        $this->addFlash("error", "ATENCION: El evento '$eventName - $cityName' fue publicado sin tener un template asignado.");
+                    }
+                    $this->addFlash("success", "El evento '$eventName - $cityName' ha sido $textToShow con éxito.");          
+                    return $this->redirectToRoute('events');  
+                }
+                else {
+                    $start = $startDate->format('d-m-Y');
+                    $end = $endDate->format('d-m-Y');
+                    $this->addFlash("error", "Ya existe otro evento con nombre '$eventName' realizado en $cityName desde el $start hasta el $end.");
+                    return $this->redirectToRoute('viewEvent', [
+                        'eventID' => $eventID,
+                        'action' => $action,
+                    ]);
                 }
             }
-            else {
-                $cityName = $city->getName();
-                $this->addFlash("error", "Ya existe otro evento con nombre '$eventName' realizado en $cityName desde el $startDateString hasta el $endDateString.");
-            }
-
-            return $this->redirectToRoute('viewEvent',['eventID' => $event->getId()]);
         }
+
+        return $this->render('app/private/event/new.html.twig',[
+            'form' => $form->createView(),
+        ]);
     }
 
+
+    /**
+     * @Route("/updateAttendees", name="updateAttendees")
+     */
+    public function updateAttendees(Event $event, string $newFileName)
+    {           
+        $pathToUploadFiles = $this->getParameter('attendees_directory');
+        
+        if (($file = fopen($pathToUploadFiles.'/'.$newFileName, "r")) !== FALSE) {
+
+            if (($data = fgetcsv($file, 0, ",")) !== FALSE) {
+                
+                if (count($data) < 5) {
+                    
+                    $this->addFlash("error", "El archivo de asistentes no contiene los datos requeridos (apellido, nombre, e-mail, documento y condición).");
+                    
+                    return new Response (1);
+                }
+
+                if (count($data) > 20) {
+                    $this->addFlash("error", "El archivo de asistentes no puede tener más de 20 columnas.");
+                    return new Response (1);
+                }
+                
+                $columnsFound = 0;
+                $i = 0;
+
+                while ($i <= (count($data)-1) and $columnsFound < 5) {
+                    
+                    if ($data[$i] != '' and stripos("apellidos", $data[$i]) !== false) {
+                        $ln = $i;
+                        $columnsFound++;
+                    }
+                    elseif ($data[$i] != '' and stripos("nombres", $data[$i]) !== false) {
+                        $fn = $i;
+                        $columnsFound++;
+                    }
+                    elseif ($data[$i] != '' and stripos("documentos-dni", $data[$i]) !== false) {
+                        $dni = $i;
+                        $columnsFound++;
+                    }
+                    elseif ($data[$i] != '' and stripos("emails-e-mails-correo", $data[$i]) !== false) {
+                        $email = $i;
+                        $columnsFound++;
+                    }
+                    elseif ($data[$i] != '' and stripos("condicion-condición", $data[$i]) !== false) {
+                        $cond = $i;
+                        $columnsFound++;
+                    }
+                    $i++;
+                }
+
+                if ($columnsFound < 5) {
+                    $this->addFlash("error", "El archivo seleccionado no contiene los encabezados correctos.");
+                    return new Response(1);
+                }       
+            }
+            else {
+                $this->addFlash("error", "Error al abrir el archivo. Verifique que sea de tipo CSV y que contenga los campos requeridos.");
+                    return new Response(1);
+            }
+            
+            $em = $this->getDoctrine()->getManager();
+
+            if (($data = fgetcsv($file, 0, ",")) === FALSE) {
+                $this->addFlash("error", "El archivo seleccionado solo contiene los encabezamientos.");
+                return new Response (1);
+            }
+
+            do {
+
+                if ($data[$ln] == '' or $data[$fn] == '' or $data[$email] == '' or $data[$dni] == '' or $data[$cond] == '') {
+                    $this->addFlash("error", "Existen campos vacíos en la planilla importada (pueden haberse procesado algunos asistentes).");
+                    return new Response (1);
+                }
+
+                $response = $this->forward('App\Controller\ValidateController::validateAttendeeData',[
+                    'lastName' => $data[$ln],
+                    'firstName' => $data[$fn],
+                    'email' => $data[$email],
+                    'dni' => $data[$dni],
+                    'cond' => $data[$cond],
+                ]);
+        
+                if ($response->getContent() > 0) {   
+                    $this->addFlash("error", "El archivo de asistentes no pudo procesarse correctamente.");
+                    return new Response (1);
+                }
+                else {
+
+                    $attendee = $this->getDoctrine()
+                        ->getRepository(Attendee::class)
+                        ->findOneBy(['dni' => $data[$dni]]);
+
+                    if ($attendee != null) {
+                        $attendee->setLastName($data[$ln])
+                            ->setFirstName($data[$fn]);
+                        $em->flush();
+                    }
+                    else{        
+                        $attendee = new Attendee();
+                        $attendee->setFirstName($data[$ln])
+                            ->setLastname($data[$fn])
+                            ->setDni($data[$dni]);
+                            
+                        $em->persist($attendee);
+                        $em->flush();
+                    }
+                    $newEventAttendee = $this->getDoctrine()
+                        ->getRepository(EventAttendee::class)
+                        ->findOneBy([
+                            'event' => $event,
+                            'attendee' => $attendee,
+                        ]);
+                    
+                    if ($newEventAttendee == null) {
+                        $newEventAttendee = new EventAttendee();
+                        $newEventAttendee->setEvent($event)
+                            ->setAttendee($attendee)
+                            ->setEmail($data[$email])
+                            ->setCond($data[$cond]);
+                            $iidd = $event->getId();
+                            $aid = $attendee->getId();
+                        $em->persist($newEventAttendee);
+                        $em->flush();
+                    }
+                    else {
+                        $newEventAttendee->setEmail($data[$email])
+                            ->setCond($data[$cond]);
+                        $em->flush();
+                    }
+                                                            
+                    $event->addEventAttendee($newEventAttendee);
+                }
+                $em->flush();
+
+            } while (($data = fgetcsv($file, 0, ",")) !== FALSE);
+
+            fclose($file);
+            $this->addFlash("success", "El archivo de asistentes ha sido procesado correctamente.");
+            return new Response (0);
+        }   
+        else {
+            $this->addFlash("error", "Error al abrir el archivo. Verifique que sea de tipo CSV y que contenga los campos requeridos.");
+            return new Response(1);
+        } 
+    }
+    
+    /**
+     * @Route("/viewAttendees", name="viewAttendees")
+     */
+    public function viewAttendees(Request $request)
+    {
+        $eventID = $request->query->get("eventID");
+    
+        $event = $this->getDoctrine()
+            ->getRepository(Event::class)
+            ->find($eventID);
+    
+        $eventAttendees = $this->getDoctrine()
+            ->getRepository(EventAttendee::class)
+            ->sortedAttendees($event);
+    
+        return $this->render('app/private/attendee/index.html.twig',[
+            'event' => $event,
+            'eventAttendees' => $eventAttendees,
+        ]);
+    }
+    
     /**
      * @Route("/fullSearch", name="fullSearchEvents")
      */
@@ -378,142 +409,6 @@ class EventController extends AbstractController
             ->getRepository(Event::class)
             ->findAll();
         
-        return $this->render('app/private/event/index.html.twig',[
-            'events' => $events,
-        ]);
-    }
-
-    /**
-     * @Route("/view", name="viewEvent")
-     */
-    public function viewEvent(Request $request)
-    {
-        $eventID = $request->query->get("eventID"); 
-
-        $event = $this->getDoctrine()
-            ->getRepository(Event::class)
-            ->find($eventID);
-        
-        $cities = $this->getDoctrine()
-            ->getRepository(City::class)
-            ->findAll();
-        
-        $templates = $this->getDoctrine()
-            ->getRepository(Template::class)
-            ->findAll();
-
-        $attendeesQty = count($event->getEventAttendees());
-        
-        return $this->render('app/private/event/modify.html.twig',[
-            'event' => $event,
-            'cities' => $cities,
-            'templates' => $templates,
-            'qty' => $attendeesQty,
-        ]);
-    }
-    
-    /**
-     * @Route("/updateAttendees", name="updateAttendees")
-     */
-    public function updateAttendees(Event $event, string $CSVFile)
-    {           
-        if (($file = fopen("../".$CSVFile, "r")) !== FALSE) {
-
-            $em = $this->getDoctrine()->getManager();
-
-            while (($data = fgetcsv($file, 0, ",")) !== FALSE) {
-
-                if ($data[1] == '' or $data[2] == '' or $data[3] == '' or $data[4] == '' or $data[5] == '') {
-                    $this->addFlash("error", "Existen campos vacíos en la planilla importada.");
-                    return new Response (1);
-                }
-
-                $response = $this->forward('App\Controller\ValidateController::validateAttendeeData',[
-                    'lastName' => $data[1],
-                    'firstName' => $data[2],
-                    'dni' => $data[4],
-                    'email' => $data[3],
-                    'cond' => $data[5],
-                ]);
-        
-                if ($response->getContent() > 0) {   
-                    $this->addFlash("error", "El archivo de asistentes no pudo procesarse correctamente. Corrija los siguientes errores y vuelva a procesarlo.");
-                    return new Response (1);
-                }
-                else {
-
-                    $attendee = $this->getDoctrine()
-                        ->getRepository(Attendee::class)
-                        ->findOneBy(['dni' => $data[4]]);
-
-                    if ($attendee != null) {
-                        $attendee->setLastName($data[1])
-                            ->setFirstName($data[2]);
-                        $em->flush();
-                    }
-                    else{        
-                        $attendee = new Attendee();
-                        $attendee->setFirstName($data[1])
-                            ->setLastname($data[2])
-                            ->setDni($data[4]);
-                            
-                        $em->persist($attendee);
-                        $em->flush();
-                    }
-                    $newEventAttendee = $this->getDoctrine()
-                        ->getRepository(EventAttendee::class)
-                        ->findOneBy([
-                            'event' => $event,
-                            'attendee' => $attendee,
-                        ]);
-                    
-                    if ($newEventAttendee == null) {               //si el asistente no está registrado en este evento
-                        $newEventAttendee = new EventAttendee();
-                        $newEventAttendee->setEvent($event)
-                            ->setAttendee($attendee)
-                            ->setEmail($data[3])
-                            ->setCond($data[5]);
-                        $em->persist($newEventAttendee);
-                        $em->flush();
-                    }
-                    else {
-                        $newEventAttendee->setEmail($data[3])
-                            ->setCond($data[5]);
-                        $em->flush();
-                    }
-                                                            
-                    $event->addEventAttendee($newEventAttendee);
-                }
-                $em->flush();
-            }
-            fclose($file);
-            
-            $this->addFlash("success", "El archivo de asistentes ha sido procesado correctamente.");
-        }
-        
-        return new Response (0);
-    }
-    
-    /**
-     * @Route("/viewAttendees", name="viewAttendees")
-     */
-    public function viewAttendees(Request $request)
-    {
-        $eventID = $request->query->get("eventID");
-    
-        $event = $this->getDoctrine()
-            ->getRepository(Event::class)
-            ->find($eventID);
-    
-        $eventAttendees = $this->getDoctrine()
-            ->getRepository(EventAttendee::class)
-            ->findBy([
-                'event' => $event,
-            ]);
-    
-        return $this->render('app/private/attendee/index.html.twig',[
-            'event' => $event,
-            'eventAttendees' => $eventAttendees,
-        ]);
+        return $this->redirectToRoute('events');
     }
 }

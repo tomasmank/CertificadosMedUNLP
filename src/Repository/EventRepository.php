@@ -21,7 +21,7 @@ class EventRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Event::class);
     }
-    
+
     public function findByName($value)
     {
         return $this->createQueryBuilder('e')
@@ -30,6 +30,10 @@ class EventRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
         ;
+    }
+
+    public function sortedEvents() {
+        return $this->findBy(array(), array('published' => 'DESC', 'name' => 'ASC'));
     }
 
     public function findDuplicated(int $eventID, string $eventName, City $city, DateTime $startDate, DateTime $endDate)
