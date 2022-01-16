@@ -139,6 +139,9 @@
     "seld/signal-handler": {
         "version": "1.2.0"
     },
+    "symfony/asset": {
+        "version": "v4.4.27"
+    },
     "symfony/cache": {
         "version": "v4.4.31"
     },

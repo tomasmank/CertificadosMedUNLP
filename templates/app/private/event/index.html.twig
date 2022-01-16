@@ -62,12 +62,12 @@
                             <td>{{event.city.name}}</td>
                             <td class="d-none d-md-table-cell">
                                 {% if event.startDate is not empty %} 
-                                    {{event.startDate|date('Y-m-d')}}
+                                    {{event.startDate|date('d-m-Y')}}
                                 {% endif %}
                             </td>
                             <td class="d-none d-md-table-cell">
                                 {% if event.endDate is not empty %} 
-                                    {{event.endDate|date('Y-m-d')}}
+                                    {{event.endDate|date('d-m-Y')}}
                                 {% endif %}
                             </td>
                             <td>
