@@ -27,9 +27,13 @@ class CityController extends AbstractController
     /**
      * @Route("/new", name="newCity")
      */
-    public function newCity(): Response
+    public function newCity(Request $request): Response
     {
-        return $this->render('app/private/city/new.html.twig',[]);
+        $eventID =  $request->query->get("eventID");  
+
+        return $this->render('app/private/city/new.html.twig',[
+            'eventID' => $eventID,
+        ]);
     }
 
     /**
@@ -38,6 +42,7 @@ class CityController extends AbstractController
     public function createCity(Request $request): Response
     {
         $cityName =  $request->query->get("cityName");  
+        $eventID =  $request->query->get("eventID");
 
         if ($cityName =='') {
         
@@ -63,7 +68,7 @@ class CityController extends AbstractController
                 'name' => $cityName,
             ]);
             
-            if (is_null($city)) {
+            if ($city == null) {
 
                 $em = $this->getDoctrine()->getManager();
                 $city = new City();
@@ -71,13 +76,24 @@ class CityController extends AbstractController
                 $em->persist($city);
                 $em->flush();
 
-                $this->addFlash("success", "Ciudad '$cityName' creada con éxito!");
+                $this->addFlash("success", "La ubicación '$cityName' fue creada con éxito!");
             }
             else {
-                $this->addFlash("error", "La ciudad '$cityName' ya existe.");
+                $this->addFlash("error", "La ubicación '$cityName' ya existe.");
+                return $this->redirectToRoute('newCity', [
+                    'eventID' => $eventID,
+                ]);
             }
-
-            return $this->redirectToRoute('newEvent');
+            if ($eventID == null) {
+                return $this->redirectToRoute('viewEvent', [
+                    'eventID' => null,
+                    'action' => 'new',
+                ]);
+            }
+            return $this->redirectToRoute('viewEvent', [
+                'eventID' => $eventID,
+                'action' => 'view',
+            ]);
         }
     }
 }

@@ -132,6 +132,8 @@ class AttendeeController extends AbstractController
 
             $event->addEventAttendee($newEventAttendee);
 
+            $this->addFlash("success", "El asistente con dni $dni ha sido creado con éxito.");
+
             return $this->redirectToRoute('viewAttendees',[
                 'eventID' => $event->getId(),
             ]);;
@@ -160,7 +162,7 @@ class AttendeeController extends AbstractController
     public function deleteEventAttendee(Request $request): Response
     {   
         $eventAttendeeID = $request->query->get("eventAttendeeID"); 
-        echo('   $eventAttendeeID: '.$eventAttendeeID);
+        
         $eventAttendee = $this->getDoctrine()
             ->getRepository(EventAttendee::class)
             ->find($eventAttendeeID);
@@ -251,7 +253,7 @@ class AttendeeController extends AbstractController
                 $this->addFlash("success", "El asistente con dni $dni ha sido modificado con éxito.");
             }
 
-            return $this->redirectToRoute('viewEvent',[
+            return $this->redirectToRoute('viewAttendees',[
                 'eventID' => $eventAttendee->getEvent()->getId(),
             ]); 
         }

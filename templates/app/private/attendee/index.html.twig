@@ -46,7 +46,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <button href="" class="btn btn-secondary mt-2" style="width: 100%;">Aplicar filtro</button>
-                                    <button href="{{ path('viewAttendees', {eventID: event.id}) }}" class="btn btn-secondary mt-2" style="width: 100%;">Limpiar filtro</button>    
+                                    <a class="btn btn-secondary mt-2" style="width: 100%;" href="{{ path('viewAttendees', {eventID: event.id}) }}">Limpiar filtro</a>    
                                 </div>
                             </div>
                         </form>
@@ -89,7 +89,7 @@
         </table>
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
             <div>
-                <a class="btn btn-secondary mb-3" href="{{ path('viewEvent', {eventID: event.id}) }}">Volver</a>
+                <a class="btn btn-secondary mb-3" href="{{ path('viewEvent', {eventID: event.id, action: 'view'}) }}">Volver</a>
             </div>
         </div>
         <nav aria-label="Page navigation example">

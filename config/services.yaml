@@ -8,6 +8,7 @@ parameters:
     headers_directory: '%kernel.project_dir%/public/uploads/headers'
     signatures_directory: '%kernel.project_dir%/public/uploads/signatures'
     footers_directory: '%kernel.project_dir%/public/uploads/footers'
+    attendees_directory: '%kernel.project_dir%/public/uploads/attendees'
 
 services:
     # default configuration for services in *this* file
