@@ -25,7 +25,8 @@ class EventController extends AbstractController
     public function Index(EventRepository $eventRepository): Response
     {
         return $this->render('app/private/event/index.html.twig',[
-            'events' => $eventRepository->sortedEvents()
+            'events' => $eventRepository->sortedEvents(),
+            'searchParameter' => null
         ]);
     }
     
@@ -355,6 +356,7 @@ class EventController extends AbstractController
      */
     public function fullSearchEvents(Request $request)
     {
+        $toSearch = null;
         $toSearch = $request->query->get("toSearch"); 
 
         $response = $this->forward('App\Controller\ValidateController::validateDateAsString', [
@@ -387,6 +389,7 @@ class EventController extends AbstractController
 
         return $this->render('app/private/event/index.html.twig',[
             'events' => $events,
+            'searchParameter' => $toSearch,
         ]);
     }
 
