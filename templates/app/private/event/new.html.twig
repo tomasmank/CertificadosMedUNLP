@@ -8,153 +8,169 @@
     <div class="row mt-1">
         <div class="col">
             {% if (form.vars.value.id is null) %}
-                <h3>Nuevo evento</h3>
+            <h3>Nuevo evento</h3>
             {% else %}
-                <h3>Ver o modificar evento</h3>
+            <h3>Ver o modificar evento</h3>
             {% endif %}
         </div>
     </div>
-    {{ form_start(form) }}      
-        <div class="container border rounded">
-            <div class="container">
-                <h4 class="mt-3 mb-3">Datos del evento</h4>
-                <div style="color:red;">{{ form_errors(form.name) }}</div>
-                <div class="mt-3 mb-3 row">
-                    <label for="eventName" class="col-sm-2 col-form-label">{{ form_label(form.name) }}</label>
-                    <div class="col-sm-10">
-                        
-                        {{ form_widget(form.name,
-                            {'attr': {'class': 'form-control', 'placeholder': 'Nombre del evento...', 'autofocus': 'autofocus'}}) }}
-
-                    
-                    </div>
-                </div>
-                <div class="mt-3 mb-3 row">
-                    <label for="cityID" class="col-sm-2 col-form-label">{{ form_label(form.city) }}</label>
-                    <div class="col-sm-10">     
-                        
-                        {{ form_widget(form.city,
-                            {'attr': {'class': 'form-control', 'placeholder': 'Ubicación donde se lleva a cabo el evento...'}}) }} 
-                        
-                            <a href="{{path('newCity', {eventID: form.vars.value.id})}}" class="btn btn-secondary" style="background-color: #00889B; float: right;">Nueva ubicación</a>
-                        
-                    </div>
-                </div>
-
-                <div class="mb-3 row">
-                    <div class="col">
-                        <label for="startDate" class="form-label">{{ form_label(form.startDate) }}</label>
-                       
-                        {{ form_widget(form.startDate,
-                            {'attr': {'class': 'form-control'}}) }}
-                    
-                    </div>
-                    <div class="col">
-                        <label for="endDate" class="form-label">{{ form_label(form.endDate) }}</label>
-                        
-                        {{ form_widget(form.endDate,
-                            {'attr': {'class': 'form-control'}}) }}
-                       
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <div class="container border rounded mt-3">
-            <div class="container">
-                <h4 class="mt-3 mb-3 ">Asistentes</h4>
-                <div style="color:red;">{{ form_errors(form.attendeeFile) }}</div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div class="input-group">
-
-                            {{ form_widget(form.attendeeFile,
-                                {'attr': {'class': 'form-control'}}) }}
-                                
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="text-muted">
-                            {% if (form.vars.value.id is not null) %}
-                                Cantidad de asistentes: {{ form.vars.value.eventAttendees.count }}                               
-                                {% if (form.vars.value.eventAttendees.count != 0) %}
-                                    <a href="{{path('viewAttendees', {eventID: form.vars.value.id})}}" class="btn btn-secondary" style="background-color: #00889B; float: right;">Ver asistentes</a>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container border rounded mt-3">
-            <div class="container">
-                <h4 class="mt-3 mb-3 ">{{ form_label(form.template) }}</h4>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div class="input-group">
-                            
-                            {{ form_widget(form.template,
-                                {'attr': {'class': 'form-control'}}) }}
-                           
-                            
-                          
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container border rounded mt-3">
-            <div class="container">
-                <h4 class="mt-3 mb-3 ">{{ form_label(form.published) }}</h4>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-3">
-                           
-                            {{ form_widget(form.published,
-                                {'attr': {'class': 'form-control'}}) }} 
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    {{ form_start(form) }}
+    <div class="container border rounded">
         <div class="container">
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                {% if (form.vars.value.id is not null) %}
-                    <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
-                        Eliminar
-                    </button>
-                {% endif %}
-                <a class="btn btn-secondary mb-3" href={{ path('events') }}>Volver</a>
-                {{ form_widget(form.createEvent,
-                    {'attr': {'class': 'btn btn-success mb-3'}
-                    }) }}
+            <h4 class="mt-3 mb-3">Datos del evento</h4>
+            <div style="color:red;">{{ form_errors(form.name) }}</div>
+            <div class="mt-3 mb-3 row">
+                <label for="eventName" class="col-sm-2 col-form-label">{{ form_label(form.name) }}</label>
+                <div class="col-sm-10">
+
+                    {{ form_widget(form.name,
+                    {'attr': {'class': 'form-control', 'placeholder': 'Nombre del evento...', 'autofocus':
+                    'autofocus'}}) }}
+
+
+                </div>
             </div>
-            {% if (form.vars.value.id is not null) %}
-                <!-- Delete modal -->
-            <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">¿Eliminar evento definitivamente?</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p><b>Nombre:</b> {{ form.vars.value.name }}</p>
-                            <p><b>Ciudad:</b> {{ form.vars.value.city.name }}</p>
-                            <p><b>Desde :</b> {{ form.vars.value.startDate|date('d-m-Y') }}</p>
-                            <p><b>Hasta :</b> {{ form.vars.value.endDate|date('d-m-Y') }}</p>
-                            <p>(Esta acción no puede deshacerse)</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <a href="{{ path('deleteEvent', {eventID: form.vars.value.id}) }}" class="btn btn-danger">Sí, eliminar</a>
-                        </div>
+            <div class="mt-3 mb-3 row">
+                <label for="cityID" class="col-sm-2 col-form-label">{{ form_label(form.city) }}</label>
+                <div class="col">
+                    {{ form_widget(form.city,
+                    {'attr': {'class': 'form-control', 'placeholder': 'Ubicación donde se lleva a cabo el evento...'}})
+                    }}
+                </div>
+                <div class="col-auto">
+                    <a href="{{path('newCity', {eventID: form.vars.value.id})}}" class="btn btn-secondary"
+                        style="background-color: #00889B; float: right;">
+                        Nueva ubicación
+                    </a>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <div class="col">
+                    <div class="form-label">
+                        {{ form_label(form.startDate) }}
+                    </div>
+
+                    {{
+                    form_widget(form.startDate,
+                    {'attr': {'class': 'form-control'}})
+                    }}
+
+                </div>
+                <div class="col">
+                    <div class="form-label">
+                        {{ form_label(form.endDate) }}
+                    </div>
+
+                    {{
+                    form_widget(form.endDate,
+                    {'attr': {'class': 'form-control'}})
+                    }}
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="container border rounded mt-3">
+        <div class="container">
+            <h4 class="mt-3 mb-3 ">Asistentes</h4>
+            <div style="color:red;">{{ form_errors(form.attendeeFile) }}</div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+
+                        {{ form_widget(form.attendeeFile,
+                        {'attr': {'class': 'form-control'}}) }}
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-muted">
+                        {% if (form.vars.value.id is not null) %}
+                        Cantidad de asistentes: {{ form.vars.value.eventAttendees.count }}
+                        {% if (form.vars.value.eventAttendees.count != 0) %}
+                        <a href="{{path('viewAttendees', {eventID: form.vars.value.id})}}" class="btn btn-secondary"
+                            style="background-color: #00889B; float: right;">Ver asistentes</a>
+                        {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
-            {% endif %}
         </div>
+    </div>
+    <div class="container border rounded mt-3">
+        <div class="container">
+            <h4 class="mt-3 mb-3 ">{{ form_label(form.template) }}</h4>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+
+                        {{ form_widget(form.template,
+                        {'attr': {'class': 'form-control'}}) }}
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container border rounded mt-3">
+        <div class="container">
+            <h4 class="mt-3 mb-3 ">{{ form_label(form.published) }}</h4>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-3">
+
+                        {{ form_widget(form.published,
+                        {'attr': {'class': 'form-control'}}) }}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+            {% if (form.vars.value.id is not null) %}
+            <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
+                Eliminar
+            </button>
+            {% endif %}
+            <a class="btn btn-secondary mb-3" href={{ path('events') }}>Volver</a>
+            {{ form_widget(form.createEvent,
+            {'attr': {'class': 'btn btn-success mb-3'}
+            }) }}
+        </div>
+        {% if (form.vars.value.id is not null) %}
+        <!-- Delete modal -->
+        <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">¿Eliminar evento definitivamente?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><b>Nombre:</b> {{ form.vars.value.name }}</p>
+                        <p><b>Ciudad:</b> {{ form.vars.value.city.name }}</p>
+                        <p><b>Desde :</b> {{ form.vars.value.startDate|date('d-m-Y') }}</p>
+                        <p><b>Hasta :</b> {{ form.vars.value.endDate|date('d-m-Y') }}</p>
+                        <p>(Esta acción no puede deshacerse)</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <a href="{{ path('deleteEvent', {eventID: form.vars.value.id}) }}" class="btn btn-danger">Sí,
+                            eliminar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
     {{ form_end(form) }}
 </div>
 
