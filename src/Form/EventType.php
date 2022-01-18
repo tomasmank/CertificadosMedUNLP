@@ -104,7 +104,7 @@ class EventType extends AbstractType
                     return $templ ? $templ->getId() : '';
                 },
                 'label' => 'Template',
-                'placeholder' => 'Elija un template',
+                'placeholder' => 'Seleccione un template...',
                 'required' => false,
                 'choices' => $this->em->getRepository(Template::class)->findAll(), 
             ])
