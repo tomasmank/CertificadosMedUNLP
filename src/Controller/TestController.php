@@ -246,20 +246,20 @@ class TestController extends AbstractController
 
 
     /**
-     * @Route("/new_user/{un}/{pass}/{idPerson}/{idProfile}", name="new_user")
+     * @Route("/new_user/{un}/{pass}/{firstName}/{lastName}/{idProfile}", name="new_user")
      */
-    public function newUser(UserPasswordEncoderInterface $passwordEncoder, string $un, $pass, int $idPerson, $idProfile)
+    public function newUser(UserPasswordEncoderInterface $passwordEncoder, string $un, $pass, $firstName, $lastName, $idProfile)
     {
         $em = $this->getDoctrine()->getManager();
        
-        $person = $em->find('App\Entity\Person', $idPerson);
         $profile = $em->find('App\Entity\Profile', $idProfile);
 
         $user = new User();
         $user
             ->setUsername($un)
             ->setPassword($passwordEncoder->encodePassword($user, $pass))
-            ->setPerson($person)
+            ->setFirstName($firstName)
+            ->setLastName($lastName)
             ->setProfile($profile);
         
         $em->persist($user);
