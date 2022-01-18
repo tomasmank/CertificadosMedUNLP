@@ -36,6 +36,36 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
+    public function findByUsername($value): User
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.username = :val')
+            ->setParameter('val',$value)
+            ->orderBy('u.username', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function findAdmins($userID): Array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.id != :valID')
+            ->andWhere('p.name = :valName')
+            ->setParameter('valID', $userID)
+            ->setParameter('valName','Administrador')
+            ->innerJoin('App\Entity\Profile', 'p', 'WITH', 'u.profile = p.id')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function sortedUsers(): Array
+    {
+        return $this->findBy(array(),array(
+            'username' => 'ASC'));
+    }
+
     // /**
     //  * @return User[] Returns an array of User objects
     //  */
@@ -53,12 +83,4 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
     */
 
-    public function findByUsername($value): User
-    {
-        return $this->createQueryBuilder('u')
-            ->where('u.username = :val')
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
 }

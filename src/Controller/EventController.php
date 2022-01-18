@@ -24,6 +24,8 @@ class EventController extends AbstractController
      */
     public function Index(EventRepository $eventRepository): Response
     {
+    //    $this->denyAccessUnlessGranted('ROLE_EVENT_LIST');
+
         return $this->render('app/private/event/index.html.twig',[
             'events' => $eventRepository->sortedEvents(),
             'searchParameter' => null
@@ -384,6 +386,8 @@ class EventController extends AbstractController
                 City::class, 'c', 'WITH', 'e.city = c.id')
             ->setParameter(1, '%'.$toSearch.'%')
             ->setParameter(2, $date)
+            ->orderBy('e.published', 'ASC')
+            ->addOrderBy('e.name', 'ASC')
             ->getQuery()
             ->execute();
 
@@ -404,14 +408,15 @@ class EventController extends AbstractController
             ->getRepository(Event::class)
             ->find($eventID);
 
+        $eventName = $event->getName();
+        $eventCity = $event->getCity()->getName();
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($event);
         $em->flush();
 
-        $events = $this->getDoctrine()
-            ->getRepository(Event::class)
-            ->findAll();
-        
+        $this->addFlash("success", "El evento '$eventName - $eventCity' ha sido eliminado con éxito.");
+
         return $this->redirectToRoute('events');
     }
 }

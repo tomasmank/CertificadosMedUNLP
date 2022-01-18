@@ -136,7 +136,7 @@ class AttendeeController extends AbstractController
 
             return $this->redirectToRoute('viewAttendees',[
                 'eventID' => $event->getId(),
-            ]);;
+            ]);
         }
     }
 

@@ -33,7 +33,7 @@ class EventRepository extends ServiceEntityRepository
     }
 
     public function sortedEvents() {
-        return $this->findBy(array(), array('published' => 'DESC', 'name' => 'ASC'));
+        return $this->findBy(array(), array('published' => 'ASC', 'name' => 'ASC'));
     }
 
     public function findDuplicated(int $eventID, string $eventName, City $city, DateTime $startDate, DateTime $endDate)

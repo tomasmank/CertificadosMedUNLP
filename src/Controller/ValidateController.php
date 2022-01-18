@@ -14,7 +14,9 @@ use Symfony\Component\Validator\Constraints\Email;
 use App\Repository\CityRepository;
 use App\Repository\TemplateRepository;
 use App\Entity\City;
+use App\Entity\Profile;
 use App\Entity\Template;
+use App\Repository\ProfileRepository;
 
 class ValidateController extends AbstractController
 {
@@ -53,7 +55,7 @@ class ValidateController extends AbstractController
             new Length(['min' => 10,
                         'max' => 10,]),
             new NotBlank(),
-            new Regex('/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/'),
+            new Regex('/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-[0-9]{4}$/'),
         ]);
 
         return new Response(count($violations));
@@ -85,6 +87,21 @@ class ValidateController extends AbstractController
             new Regex('/^[a-z0-9]{8,14}$/i'),
         ]);
         
+        return new Response(count($violations));
+    }
+
+    /**
+     * @Route("/validatePassword", name="validatePassword")
+     */
+    public function validatePassword(string $password): Response
+    {
+        $validator = Validation::createValidator();
+        $violations = $validator->validate($password, [
+            new Length(['min' => 3]),
+            new NotBlank(),
+            new Regex('/^[a-z0-9@%+#$?,{}():~\-_.`]{3,100}$/i'),
+        ]);
+
         return new Response(count($violations));
     }
 
@@ -172,6 +189,60 @@ class ValidateController extends AbstractController
             if (stripos('.csv.txt', $extension) === false) {
                 $errors[] = 'El archivo seleccionado debe tener extensión CSV.';
             }
+        }
+        
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $this->addFlash("error", $error);
+            }
+        }
+
+        return new Response(count($errors));
+    } 
+
+    /**
+     * @Route("/validateUserData", name="validateUserData")
+     */
+    public function validateUserData(string $firstName, $lastName, $password, $confirmPassword, $userName, int $profileID)
+    {           
+        $errors = [];
+        
+        $verifyFN = $this->validateName($firstName)->getContent();
+
+        if ($verifyFN != 0) {
+            $errors[] = 'El nombre ingresado ('.$firstName.') contiene caracteres no admitidos.';
+        }
+        
+        $verifyLN = $this->validateName($lastName)->getContent();
+
+        if ($verifyLN != 0) {
+            $errors[] = 'El apellido ingresado ('.$lastName.') contiene caracteres no admitidos.';
+        }
+        
+        $verifyUN = $this->validatePassword($userName)->getContent();
+
+        if ($verifyUN != 0) {
+            $errors[] = 'El nombre de usuario ingresado ('.$userName.') contiene caracteres no admitidos.';
+        }
+        
+        if ($password != $confirmPassword) {
+            $errors[] = 'Las contraseñas ingresadas no coinciden.';
+        }
+
+        if (strlen($password) != 0) {
+            $verifyPass = $this->validatePassword($password)->getContent();
+
+            if ($verifyPass != 0) {
+                $errors[] = 'La contraseña ingresada es demasiado corta (min: 3 caracteres) o contiene caracteres no admitidos.';
+            }
+        }
+        
+        $profileFound = $this->getDoctrine()
+            ->getRepository(Profile::class)
+            ->find($profileID);
+
+        if ($profileFound == null) {
+            $errors[] = 'El perfil ingresado no se encuentra en la base de datos.';
         }
         
         if (count($errors) > 0) {
