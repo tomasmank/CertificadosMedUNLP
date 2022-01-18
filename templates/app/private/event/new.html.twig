@@ -45,30 +45,20 @@
                 </div>
             </div>
 
-            <div class="mb-3 row">
+            <div class="mt-3 mb-3 row">
+
+                <label for="" class="col-sm-2 col-form-label">{{ form_label(form.startDate) }}</label>
                 <div class="col">
-                    <div class="form-label">
-                        {{ form_label(form.startDate) }}
-                    </div>
-
                     {{
-                    form_widget(form.startDate,
-                    {'attr': {'class': 'form-control'}})
+                    form_widget(form.startDate)
                     }}
-
                 </div>
+                <label for="" class="col-sm-2 col-form-label">{{ form_label(form.endDate) }}</label>
                 <div class="col">
-                    <div class="form-label">
-                        {{ form_label(form.endDate) }}
-                    </div>
-
                     {{
-                    form_widget(form.endDate,
-                    {'attr': {'class': 'form-control'}})
+                    form_widget(form.endDate)
                     }}
-
                 </div>
-
             </div>
         </div>
 
@@ -109,8 +99,6 @@
 
                         {{ form_widget(form.template,
                         {'attr': {'class': 'form-control'}}) }}
-
-
 
                     </div>
                 </div>
@@ -173,5 +161,20 @@
     </div>
     {{ form_end(form) }}
 </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+    rel="stylesheet" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.js-datepicker').datepicker({
+            format: 'dd-mm-yyyy',
+            monthNames: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+        });
+    });
+</script>
 
 {% endblock %}

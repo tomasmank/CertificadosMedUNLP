@@ -52,6 +52,14 @@ class EventType extends AbstractType
                 'required' => false,
                 'format' => 'dd-MM-yyyy',
                 'years' => range(2021,date('Y') + 5),
+                
+                'widget' => 'single_text',
+
+                // prevents rendering it as type="date", to avoid HTML5 date pickers
+                'html5' => false,
+
+                // adds a class that can be selected in JavaScript
+                'attr' => ['class' => 'js-datepicker form-control'],
             ])
 
             ->add('endDate', DateType::class, [
@@ -59,6 +67,14 @@ class EventType extends AbstractType
                 'required' => false,
                 'format' => 'dd-MM-yyyy',
                 'years' => range(2021,date('Y') + 5),
+
+                'widget' => 'single_text',
+
+                // prevents rendering it as type="date", to avoid HTML5 date pickers
+                'html5' => false,
+
+                // adds a class that can be selected in JavaScript
+                'attr' => ['class' => 'js-datepicker form-control'],
             ])
 
             ->add('attendeeFile', FileType::class, [
