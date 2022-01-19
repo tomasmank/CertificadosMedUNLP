@@ -264,6 +264,7 @@ class AttendeeController extends AbstractController
      */
     public function fullSearchAttendees(Request $request)
     {
+        $toSearch = null;
         $toSearch = $request->query->get("toSearch"); 
         $eventID = $request->query->get("eventID");
 
@@ -304,6 +305,7 @@ class AttendeeController extends AbstractController
         return $this->render('app/private/attendee/index.html.twig',[
             'eventAttendees' => $eventAttendees,
             'event' => $event,
+            'searchParameter' => $toSearch
         ]);
     }
 
