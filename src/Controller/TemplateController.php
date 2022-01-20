@@ -25,12 +25,26 @@ use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 class TemplateController extends AbstractController
 {
     /**
-     * @Route("/", name="templates", methods={"GET"})
+     * @Route("/index/{currentPage}", name="templates", methods={"GET"})
      */
-    public function Index(TemplateRepository $templateRepository): Response
+    public function Index(TemplateRepository $templateRepository, Request $request, $currentPage = 1): Response
     {
+        $perPage = 2;
+
+        $toSearch = $request->query->get("toSearch");
+
+        $templates = $templateRepository->getAll($currentPage, $perPage, $toSearch);
+        $templatesResult = $templates['paginator'];
+        $templatesFullQuery = $templates['query'];
+
+        $maxPages = ceil($templates['paginator']->count() / $perPage);
+
         return $this->render('app/private/template/index.html.twig',[
-            'templates' => $templateRepository->findAll(),
+            'templates' => $templatesResult,
+            'maxPages'=> $maxPages,
+            'thisPage' => $currentPage,
+            'all_items' => $templatesFullQuery,
+            'searchParameter' => $toSearch
         ]);
     }
 
