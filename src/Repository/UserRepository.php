@@ -8,6 +8,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -64,6 +66,36 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         return $this->findBy(array(),array(
             'username' => 'ASC'));
+    }
+
+    public function paginate($dql, $page = 1, $limit = 3)
+    {
+        $paginator = new Paginator($dql);
+    
+        $paginator->getQuery()
+            ->setFirstResult($limit * ($page - 1)) // Offset
+            ->setMaxResults($limit); // Limite
+    
+        return $paginator;
+    }
+
+    public function getAll($currentPage = 1, $limit = 3, $searchParameter = null){
+        
+        $qb = $this->createQueryBuilder('u');
+
+        if ($searchParameter) {
+            $qb ->where('u.username LIKE ?1')
+            ->orWhere('u.firstName LIKE ?1')
+            ->orWhere('u.lastName LIKE ?1')
+            ->setParameter(1, '%'.$searchParameter.'%');
+        }
+        
+        $query = $qb ->addOrderBy('u.username', 'ASC')
+            ->getQuery();
+
+        $paginator = $this->paginate($query, $currentPage, $limit);
+
+        return array('paginator' => $paginator, 'query' => $query);
     }
 
     // /**

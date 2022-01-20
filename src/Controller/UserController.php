@@ -16,12 +16,26 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class UserController extends AbstractController
 {
     /**
-     * @Route("/", name="users", methods={"GET"})
+     * @Route("/index/{currentPage}", name="users", methods={"GET"})
      */
-    public function index(UserRepository $userRepository): Response
+    public function index(UserRepository $userRepository, Request $request, $currentPage = 1): Response
     {
+        $perPage = 20;
+
+        $toSearch = $request->query->get("toSearch");
+
+        $users = $userRepository->getAll($currentPage, $perPage, $toSearch);
+        $usersResult = $users['paginator'];
+        $usersFullQuery = $users['query'];
+
+        $maxPages = ceil($users['paginator']->count() / $perPage);
+
         return $this->render('app/private/user/index.html.twig',[
-            'users' => $userRepository->sortedUsers(),
+            'users' => $usersResult,
+            'maxPages'=> $maxPages,
+            'thisPage' => $currentPage,
+            'all_items' => $usersFullQuery,
+            'searchParameter' => $toSearch
         ]);
     }
 
