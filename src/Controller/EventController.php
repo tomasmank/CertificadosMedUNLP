@@ -20,15 +20,32 @@ use App\Form\EventType;
 class EventController extends AbstractController
 {
     /**
-     * @Route("/", name="events", methods={"GET"})
+     * @Route("/index/{currentPage}", name="events", methods={"GET"})
      */
-    public function Index(EventRepository $eventRepository): Response
+    public function Index(EventRepository $eventRepository, Request $request, $currentPage = 1): Response
     {
     //    $this->denyAccessUnlessGranted('ROLE_EVENT_LIST');
 
+        $perPage = 20;
+
+        $toSearch = $request->query->get("toSearch"); 
+
+        #$em = $this->getDoctrine()->getManager();
+        
+        #$qb = $em->createQueryBuilder('e');
+
+        $events = $eventRepository->getAll($currentPage, $perPage, $toSearch);
+        $eventsResult = $events['paginator'];
+        $eventsFullQuery = $events['query'];
+
+        $maxPages = ceil($events['paginator']->count() / $perPage);
+
         return $this->render('app/private/event/index.html.twig',[
-            'events' => $eventRepository->sortedEvents(),
-            'searchParameter' => null
+            'events' => $eventsResult,
+            'maxPages'=> $maxPages,
+            'thisPage' => $currentPage,
+            'all_items' => $eventsFullQuery,
+            'searchParameter' => $toSearch
         ]);
     }
     

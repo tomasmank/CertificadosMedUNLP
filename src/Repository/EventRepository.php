@@ -7,6 +7,7 @@ use App\Entity\City;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use \DateTime;
 
 /**
@@ -46,6 +47,38 @@ class EventRepository extends ServiceEntityRepository
         $criteria->andWhere($criteria->expr()->eq('endDate', $endDate));
         
         return $this->matching($criteria)->count();
+    }
+
+    public function paginate($dql, $page = 1, $limit = 3)
+    {
+        $paginator = new Paginator($dql);
+    
+        $paginator->getQuery()
+            ->setFirstResult($limit * ($page - 1)) // Offset
+            ->setMaxResults($limit); // Limite
+    
+        return $paginator;
+    }
+
+    public function getAll($currentPage = 1, $limit = 3, $searchParameter = null){
+        
+        $qb = $this->createQueryBuilder('e');
+
+        if ($searchParameter) {
+            $qb->where('e.name LIKE ?1')
+            ->orWhere('c.name LIKE ?1')
+            ->innerJoin(
+                City::class, 'c', 'WITH', 'e.city = c.id')
+            ->setParameter(1, '%'.$searchParameter.'%');
+        }
+
+        $qb ->addOrderBy('e.id', 'DESC');
+
+        $query = $qb->getQuery();
+
+        $paginator = $this->paginate($query, $currentPage, $limit);
+
+        return array('paginator' => $paginator, 'query' => $query);
     }
 
      /**
