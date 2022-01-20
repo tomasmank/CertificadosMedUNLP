@@ -29,7 +29,7 @@ class TemplateController extends AbstractController
      */
     public function Index(TemplateRepository $templateRepository, Request $request, $currentPage = 1): Response
     {
-        $perPage = 2;
+        $perPage = 20;
 
         $toSearch = $request->query->get("toSearch");
 

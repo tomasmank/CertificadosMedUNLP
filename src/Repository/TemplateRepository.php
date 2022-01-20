@@ -46,10 +46,17 @@ class TemplateRepository extends ServiceEntityRepository
         return $paginator;
     }
 
-    public function getAll($currentPage = 1, $limit = 3, $searchParameter = ''){
-        $query = $this->createQueryBuilder('p')
-            ->where('p.name LIKE ?1')
-            ->setParameter(1, '%'.$searchParameter.'%')
+    public function getAll($currentPage = 1, $limit = 3, $searchParameter = null){
+        
+        $qb = $this->createQueryBuilder('t');
+
+        if ($searchParameter) {
+            $qb ->where('t.name LIKE ?1')
+            ->orWhere('t.comments LIKE ?1')
+            ->setParameter(1, '%'.$searchParameter.'%');
+        }
+        
+        $query = $qb ->addOrderBy('t.id', 'DESC')
             ->getQuery();
 
         $paginator = $this->paginate($query, $currentPage, $limit);
