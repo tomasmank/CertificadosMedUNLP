@@ -350,10 +350,14 @@ class EventController extends AbstractController
     }
     
     /**
-     * @Route("/viewAttendees", name="viewAttendees")
+     * @Route("/viewAttendees/{currentPage}", name="viewAttendees", methods={"GET"})
      */
-    public function viewAttendees(Request $request)
+    public function viewAttendees(Request $request, $currentPage = 1)
     {
+        $perPage = 50;
+
+        $toSearch = $request->query->get("toSearch");
+
         $eventID = $request->query->get("eventID");
     
         $event = $this->getDoctrine()
@@ -362,11 +366,19 @@ class EventController extends AbstractController
     
         $eventAttendees = $this->getDoctrine()
             ->getRepository(EventAttendee::class)
-            ->sortedAttendees($event);
-    
+            ->getAttendees($event, $currentPage, $perPage, $toSearch);
+        
+        $eventAttendeesResult = $eventAttendees['paginator'];
+        $eventAttendeesFullQuery = $eventAttendees['query'];
+        $maxPages = ceil($eventAttendees['paginator']->count() / $perPage);
+
         return $this->render('app/private/attendee/index.html.twig',[
             'event' => $event,
-            'eventAttendees' => $eventAttendees,
+            'eventAttendees' => $eventAttendeesResult,
+            'maxPages'=> $maxPages,
+            'thisPage' => $currentPage,
+            'all_items' => $eventAttendeesFullQuery,
+            'searchParameter' => $toSearch
         ]);
     }
     
