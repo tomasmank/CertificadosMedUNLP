@@ -156,7 +156,12 @@ class EventController extends AbstractController
                 $cityName = $city->getName();
 
                 if ($duplicated == 0) {
-                        
+                    
+                    if ($template == null and $published == 1) {
+                        $published = 0;
+                        $this->addFlash("error", "ATENCION: El evento '$eventName - $cityName' no fue publicado por no tener un template asignado.");
+                    }
+
                     $event->setName($eventName)
                         ->setCity($city)
                         ->setStartDate($startDate)
@@ -178,9 +183,6 @@ class EventController extends AbstractController
                         }
                     }
                     
-                    if ($template == null and $published == 1) {
-                        $this->addFlash("error", "ATENCION: El evento '$eventName - $cityName' fue publicado sin tener un template asignado.");
-                    }
                     $this->addFlash("success", "El evento '$eventName - $cityName' ha sido $textToShow con éxito.");          
                     return $this->redirectToRoute('events');  
                 }
