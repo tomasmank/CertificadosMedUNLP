@@ -150,7 +150,7 @@
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-danger"
                                                                 data-bs-dismiss="modal">Cancelar</button>
-                                                            <a href="{{ path('sendEmail', {'attendeeID': attendee.id, 'eventID': attendance.event.id, 'destinationEmail': attendance.email}) }}"
+                                                            <a href="{{ path('sendEmail', {'attendeeID': attendee.id, 'eventID': attendance.event.id, 'attendanceID': attendance.id}) }}"
                                                                 class="btn btn-success">Confirmar
                                                                 envío</a>
                                                         </div>

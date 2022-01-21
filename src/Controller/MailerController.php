@@ -16,6 +16,8 @@ use App\Repository\AttendeeRepository;
 use App\Entity\Attendee;
 use App\Repository\EventRepository;
 use App\Entity\Event;
+use App\Repository\EventAttendeeRepository;
+use App\Entity\EventAttendee;
 
 class MailerController extends AbstractController
 {
@@ -38,7 +40,36 @@ class MailerController extends AbstractController
         ]);
     }
 
-    public function pdfAction(Attendee $attendee, Event $event)
+    private function replaceVariables(Attendee $attendee, Event $event, EventAttendee $attendance): String
+    {
+        $searchValues = [
+            '$asistente-nombre',
+            '$asistente-apellido',
+            '$asistente-dni',
+            '$asistente-condicion',
+            '$evento-nombre',
+            '$evento-inicio',
+            '$evento-fin',
+            '$evento-ciudad'
+        ];
+
+        $replaceValues = [
+            $attendee->getFirstName(),
+            $attendee->getLastName(),
+            $attendee->getDni(),
+            $attendance->getCond(),
+            $event->getName(),
+            $event->getStartDate()->format('d, M, y'),
+            $event->getEndDate()->format('d, M, y'),
+            $event->getCity()->getName()
+        ];
+
+        $text = $event->getTemplate()->getBody();
+
+        return str_replace($searchValues, $replaceValues, $text);
+    }
+
+    public function pdfAction(Attendee $attendee, Event $event, EventAttendee $attendance)
     {
         $knpSnappyPdf = new Pdf('/usr/bin/wkhtmltopdf');
         $knpSnappyPdf->setOption('lowquality', false);
@@ -51,17 +82,24 @@ class MailerController extends AbstractController
         $knpSnappyPdf->setOption('margin-left', 0);
         $knpSnappyPdf->setOption('margin-right', 0);
         $knpSnappyPdf->setOption('margin-top', 0);
-        
+
         $html = $this->renderView('app/private/certificate/certificate.html.twig', [
             'attendee'  => $attendee,
             'event' => $event,
+            'body' => $this->replaceVariables($attendee, $event, $attendance)
         ]);
 
+        # des-comentar para enviar mail
         # return $knpSnappyPdf->getOutputFromHtml($html);
+
+        # se convierte a ASCII porque PdfResponse no acepta $filename con caracteres especiales
+        # dice ser un bug de la clase PdfResponse / Response,
+        # por lo que posiblemente no sea necesario  usar esto en el envio de mail
+        $filename = mb_convert_encoding($attendee->getLastName() . $attendee->getFirstName() . '-' . $event->getName() . '.pdf', "ASCII");
 
         return new PdfResponse(
             $knpSnappyPdf->getOutputFromHtml($html),
-            'file.pdf',
+            $filename,
             array(
                 'images' =>true,            
             )
@@ -69,9 +107,9 @@ class MailerController extends AbstractController
     }
     
     /**
-     * @Route("/certificados/{attendeeID}/{eventID}/{destinationEmail}", name="sendEmail")
+     * @Route("/certificados/{attendeeID}/{eventID}/{attendanceID}", name="sendEmail")
      */
-    public function sendEmail(Request $request, MailerInterface $mailer, string $attendeeID, int $eventID, string $destinationEmail)
+    public function sendEmail(Request $request, MailerInterface $mailer, string $attendeeID, int $eventID, string $attendanceID)
     {
         $attendee = $this->getDoctrine()
             ->getRepository(Attendee::class)
@@ -81,18 +119,24 @@ class MailerController extends AbstractController
             ->getRepository(Event::class)
             ->find($eventID);
 
-        $pdfFile = $this->pdfAction($attendee, $event);
+        $attendance = $this->getDoctrine()
+            ->getRepository(EventAttendee::class)
+            ->find($attendanceID);
+
+        $pdfFile = $this->pdfAction($attendee, $event, $attendance);
         
         $filename = $attendee->getLastName() . $attendee->getFirstName() . '-' . $event->getName() . '.pdf';
 
-        $email = (new Email())
-            ->from('lauchaoleastro3@gmail.com')
-            ->to($destinationEmail)
-            ->subject('Certificado - ' . $event->getName())
-            ->text('Este mensaje ha sido generado automáticamente. Por favor, no responder.')
-            ->attach($pdfFile, $filename);
+        $destinationEmail = $attendance->getEmail();
 
-        
+        # sacar comentarios para enviar mail
+
+        #$email = (new Email())
+        #    ->from('lauchaoleastro3@gmail.com')
+        #    ->to($destinationEmail)
+        #    ->subject('Certificado - ' . $event->getName())
+        #    ->text('Este mensaje ha sido generado automáticamente. Por favor, no responder.')
+        #    ->attach($pdfFile, $filename);
 
         # $mailer->send($email);
         
