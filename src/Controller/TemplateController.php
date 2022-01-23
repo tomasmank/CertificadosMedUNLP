@@ -156,6 +156,51 @@ class TemplateController extends AbstractController
     }
 
     /**
+     * @Route("/update/{id}", name="updateTemplate")
+     */
+    public function updateTemplate(Request $request, int $id): Response
+    {
+        $template = $this->getDoctrine()
+            ->getRepository(Template::class)
+            ->find($id);
+        
+        $form = $this->createForm(TemplateType::class, $template);
+        $form->handleRequest($request);
+
+        if ($template) {
+
+            $eventsWithThisTemplate = $this->getDoctrine()
+                    ->getRepository(Event::class)
+                    ->findBy(array('template' => $template));
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                
+                $template->setName($form->get('name')->getData());
+                $template->setBody($form->get('body')->getData());
+                $template->setComments($form->get('comments')->getData());
+                $template->setBackgroundColor($form->get('backgroundColor')->getData());
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($template);
+                $em->flush();
+                
+                $this->addFlash("success", "Se actualizó el template: " . $template->getName());
+                return $this->redirectToRoute('detailTemplate', ['id' => $template->getId()] );
+            } else {
+                return $this->render('app/private/template/update.html.twig', [
+                    'form' => $form->createView(),
+                    'template' => $template,
+                    'uploads' => $this->getParameter('uploads_directory'),
+                    'eventsWithThisTemplate' => $eventsWithThisTemplate
+                ]);
+            }
+        } else {
+            $this->addFlash("error", "No existe template con id: $id.");
+            return $this->redirectToRoute('templates');
+        }
+    }
+
+    /**
      * @Route("/example/{id}", name="exampleTemplate")
      */
     public function exampleTemplate(Request $request, int $id)

@@ -86,9 +86,10 @@
     </div>
     <div class="container">
         <!-- Trigger delete modal -->
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-            <a href="{{ path('templates') }}" class="btn btn-secondary mb-4">Volver</a>
-            <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#deleteModal">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3 pb-4">
+            <a href="{{ path('templates') }}" class="btn btn-secondary">Volver</a>
+            <a href="{{ path('updateTemplate', {id: template.id}) }}" class="btn btn-warning">Editar datos</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                 Eliminar
             </button>
         </div>
