@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\TemplateRepository;
 use App\Entity\Template;
+use App\Entity\Event;
 use App\Form\TemplateType;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -139,9 +140,14 @@ class TemplateController extends AbstractController
             ->find($id);
 
         if ($template) {
+            $eventsWithThisTemplate = $this->getDoctrine()
+                ->getRepository(Event::class)
+                ->findBy(array('template' => $template));
+
             return $this->render('app/private/template/detail.html.twig', [
                 'template' => $template,
                 'uploads' => $this->getParameter('uploads_directory'),
+                'eventsWithThisTemplate' => $eventsWithThisTemplate
             ]);
         } else {
             $this->addFlash("error", "No existe template con id: $id.");
@@ -191,10 +197,10 @@ class TemplateController extends AbstractController
      /**
      * @Route("/delete/{id}", name="deleteTemplate")
      */
-    public function deleteTemplate(Request $request, int $id): Response
+    public function deleteTemplate(TemplateRepository $templateRepository, Request $request, int $id): Response
     {
-        $template = $this->getDoctrine()
-            ->getRepository(Template::class)
+
+        $template = $templateRepository
             ->find($id);
 
         if($template){
@@ -220,7 +226,18 @@ class TemplateController extends AbstractController
             } catch (IOExceptionInterface $exception) {
                 echo "Ocurrió un error intentando eliminar el archivo ".$exception->getPath();
             } catch (ForeignKeyConstraintViolationException $exception) {
-                $this->addFlash("error", "No se puede eliminar el template porque existen eventos que lo usan. Cambie el template en estos eventos o elimine los eventos y vuelva a intentarlo.");
+
+                $events = $this->getDoctrine()
+                    ->getManager()
+                    ->getRepository(Event::class)
+                    ->findBy(array('template' => $template));
+                $eventNames = array();
+                foreach ($events as $event) {
+                    array_push($eventNames, $event->getName());
+                }
+
+                $this->addFlash("error", "No se puede eliminar el template porque existen eventos que lo usan. Elimine estos eventos o modifique su template: " . join(", ",$eventNames) . ".");
+            
                 return $this->redirectToRoute('detailTemplate', [ 'id' => $id ]);
             }
 
