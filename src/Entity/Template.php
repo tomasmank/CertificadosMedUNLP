@@ -52,6 +52,11 @@ class Template
      */
     private $background_color;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Image::class, inversedBy="templates")
+     */
+    private $img;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -137,6 +142,18 @@ class Template
     public function setBackgroundColor(?string $background_color): self
     {
         $this->background_color = $background_color;
+
+        return $this;
+    }
+
+    public function getImg(): ?Image
+    {
+        return $this->img;
+    }
+
+    public function setImg(?Image $img): self
+    {
+        $this->img = $img;
 
         return $this;
     }
