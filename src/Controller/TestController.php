@@ -17,6 +17,7 @@ use App\Controller\ValidateController;
 use \DateTime;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Knp\Snappy\Pdf;
+use Symfony\Component\Filesystem\Filesystem;
 
 
 class TestController extends AbstractController
@@ -520,4 +521,22 @@ class TestController extends AbstractController
         return new Response();
     }
 
+    /**
+     * @Route("/deleteFile", name="deleteFile")
+     */
+    public function deleteFile()
+    {   
+        $filesystem = new Filesystem();
+        $path1 = $this->getParameter('attendees_directory');
+        if ($filesystem->exists($path1.'/libro3-61e42ed464887.csv')) {
+            $filesystem->remove($path1.'/libro3-61e42ed464887.csv');
+            echo("Existía");
+
+        }
+        else {
+            echo("No existe");
+        }
+
+        return new Response();
+    }
 }

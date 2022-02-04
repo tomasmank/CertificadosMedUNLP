@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Form\EventType;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @Route("/event")
@@ -93,17 +94,16 @@ class EventController extends AbstractController
             /** @var UploadedFile $attendeeFile */
             $attendeeFile = $form->get('attendeeFile')->getData();
             $newFileName = '';
+            $filesystem = new Filesystem();
                     
             if ($attendeeFile) {
                 $originalFileName = pathinfo($attendeeFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFileName = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFileName);
                 $newFileName = $safeFileName.'-'.uniqid().'.'.$attendeeFile->guessExtension();
-                
+                $pathToFile = $this->getParameter('attendees_directory');
+
                 try {
-                    $attendeeFile->move(
-                        $this->getParameter('attendees_directory'),
-                        $newFileName
-                    );
+                    $attendeeFile->move($pathToFile, $newFileName);
                     
                 } catch (FileException $e) {
                     // manejar excepcion
@@ -123,7 +123,11 @@ class EventController extends AbstractController
             ]);
             
             if ($response->getContent() > 0) { 
-                
+ 
+                if ($filesystem->exists($pathToFile.'/'.$newFileName)) {
+                    $filesystem->remove($pathToFile.'/'.$newFileName);        
+                }
+
                 return $this->redirectToRoute('viewEvent', [
                     'eventID' => $eventID,
                     'action' => $action,
@@ -178,15 +182,24 @@ class EventController extends AbstractController
                         $result = $response->getContent();
                                
                         if ($result != 0) {
+                            if ($filesystem->exists($pathToFile.'/'.$newFileName)) {
+                                $filesystem->remove($pathToFile.'/'.$newFileName);        
+                            }
                             $this->addFlash("error", "El evento '$eventName - $cityName' no pudo ser $textToShow correctamente.");          
                             return $this->redirectToRoute('events');          
                         }
                     }
                     
+                    if ($filesystem->exists($pathToFile.'/'.$newFileName)) {
+                        $filesystem->remove($pathToFile.'/'.$newFileName);        
+                    }
                     $this->addFlash("success", "El evento '$eventName - $cityName' ha sido $textToShow con éxito.");          
                     return $this->redirectToRoute('events');  
                 }
                 else {
+                    if ($filesystem->exists($pathToFile.'/'.$newFileName)) {
+                        $filesystem->remove($pathToFile.'/'.$newFileName);        
+                    }
                     $start = $startDate->format('d-m-Y');
                     $end = $endDate->format('d-m-Y');
                     $this->addFlash("error", "Ya existe otro evento con nombre '$eventName' realizado en $cityName desde el $start hasta el $end.");
