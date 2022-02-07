@@ -10,52 +10,63 @@
             <h3>Imágenes</h3>
         </div>
         <div class="col">
-            <a class=" btn btn-secondary" style="background-color: #00889B; float: right;">Cargar
-                imagen</a>
+            <button type="button" class=" btn btn-secondary" style="background-color: #00889B; float: right;"
+                data-bs-toggle="modal" data-bs-target="#loadImageModal">
+                Cargar imagen
+            </button>
         </div>
     </div>
 
-    <!--
-    <div class="row">
-        <div class="container">
-            
-            <div class="container border rounded">
-                <form action="{{path('templates')}}" method="get">
-                    <div class="row mb-3 mt-2">
-                        <div class="col-md-9 mt-2">
-                            <input type="text" class="form-control" id="toSearch" name="toSearch"
-                                placeholder="Escriba un término...">
-                        </div>
-                        <div class="col-md-3">
-                            <button href="" class="btn btn-secondary mt-2" style="width: 100%;">Aplicar
-                                filtro</button>
+    <div class="modal fade" id="loadImageModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Cargar nueva imagen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                {{ form_start(form) }}
+                <div class="modal-body px-4">
+                    <div class="mt-3 mb-3 row">
+                        <label for="headerFile" class="col-md-2 col-form-label">{{ form_label(form.name) }}</label>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                {{
+                                form_widget(form.name,
+                                {'attr': {
+                                'class': 'form-control'}
+                                })
+                                }}
+                            </div>
                         </div>
                     </div>
-                </form>
-                
-                {% if searchParameter %}
-                <div class="row mb-3">
-                    <div class="col-auto align-self-center">
-                        Mostrando resultados con:
-                    </div>
-                    <div class="col-auto">
-                        <a class="btn btn-light border border-dark mt-2" href={{ path('templates') }}>
-                            "{{ searchParameter }}"
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red"
-                                class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                                <path
-                                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-                            </svg>
-                        </a>
+                    <div class="mt-3 mb-3 row">
+                        <label for="headerFile" class="col-md-2 col-form-label">{{ form_label(form.filename) }}</label>
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                {{
+                                form_widget(form.filename,
+                                {'attr': {
+                                'class': 'form-control',
+                                'aria-describedby':'resetFile',
+                                'aria-label':'Upload'}
+                                })
+                                }}
+                                <button class="btn btn-outline-secondary" type="reset" id="resetFile">x</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                {% endif %}
-                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    {{ form_widget(form.submit,
+                    {'attr': {'class': 'btn btn-success mb-3'}
+                    }) }}
+                </div>
+                {{ form_end(form) }}
             </div>
-            
         </div>
     </div>
-    -->
+
     <div class="container border rounded mt-2 mb-2">
         {% if images|length > 0 %}
         <table class="table table-striped table-hover">
@@ -67,10 +78,12 @@
             <tbody>
                 {% for image in images %}
                 <tr>
-                    <td>{{images.name}}</td>
-                    <td>{{images.filename}}</td>
+                    <td>{{image.name}}</td>
+                    <td style="max-width: 200px;">
+                        <img src="/uploads/images/{{image.filename}}" class="img-fluid" alt="imagen {{image.name}}">
+                    </td>
                     <td>
-                        <a class="btn" href="{{ path('detailTemplate', {id: template.id}) }}">
+                        <a class="btn" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-three-dots" viewBox="0 0 16 16">
                                 <path
@@ -82,6 +95,15 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        <div class="container">
+            <div class="row mt-3 mb-2">
+                <div class="d-flex justify-content-center">
+                    <p class="fs-5">No se encontró ningúna imagen. Intente con otro término de búsqueda.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

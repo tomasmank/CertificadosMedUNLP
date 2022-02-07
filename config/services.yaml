@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     uploads_directory: '%kernel.project_dir%/public/uploads'
+    images_directory: '%kernel.project_dir%/public/uploads/images'
     headers_directory: '%kernel.project_dir%/public/uploads/headers'
     signatures_directory: '%kernel.project_dir%/public/uploads/signatures'
     footers_directory: '%kernel.project_dir%/public/uploads/footers'
