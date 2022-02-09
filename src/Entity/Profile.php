@@ -29,9 +29,11 @@ class Profile
      */
     private $roles;
 
+  
     public function __construct()
     {
         $this->roles = new ArrayCollection();
+        
     }
 
     public function getId(): ?int
@@ -44,9 +46,9 @@ class Profile
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $nombre): self
     {
-        $this->name = $name;
+        $this->name = $nombre;
 
         return $this;
     }
@@ -75,5 +77,7 @@ class Profile
 
         return $this;
     }
+
+  
 
 }

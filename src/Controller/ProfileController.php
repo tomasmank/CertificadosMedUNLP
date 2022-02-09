@@ -26,68 +26,140 @@ class ProfileController extends AbstractController
             'perfiles' => $profileRepository->findAll(),
         ]);
     }
-    /**
-     * @Route("/new", name="createProfile")
+    
+     /**
+     * @Route("/new", name="newProfile")
      */
-    
-
-    public function create(Request $request)
+    public function newProfile(Request $request): Response
     {
-        $roles = $this->getDoctrine()->getRepository(Role::Class)->findAll();
-        $this->render('app/private/profile/new.html.twig',['roles' => $roles ]);
+        $profile = new Profile();   
+        $roles = $this->getDoctrine()
+        ->getRepository(Role::Class)
+        ->findAll();
+       
+        $permisos = array();
 
-        $profileName = $request->query->get("profileName");  
-        $cityID = $request->query->get("cityID");  
-          
-
-        if (is_null($profileName){
-                /*    PONER MENSAJE DE ERROR
-        
-                $this->addFlash('notice', 'El evento '.$eventName.' ya existe.');  */
-        
-            echo('Debe ingresar un nombre');
-                        
-            return $this->render('app/private/profile/new.html.twig',[]);
+        foreach ($roles as $role) {
+           $permisos[] = array( 'role' => $role, 'checked' => false );
         }
-
-        $em = $this->getDoctrine()->getManager();
-
-        $city = $this->getDoctrine()
-        ->getRepository(City::class)
-        ->find($cityID);
-
-        if ($profileName != null) {
-                
-            $profile = new Profile();
-            $profile->setName($profileName)
-                ->setCity($city)
-                
-            $em->persist($profile);
-            $em->flush();
-
-            $profile = $this->getDoctrine()
-                ->getRepository(Profile::class)
-                ->findAll(); 
-                
-            return $this->render('app/private/profile/index.html.twig',[
-                'perfiles' => $perfiles,
-            ]);  
-
-            /*    $this->addFlash('success', 'Evento creado con éxito!');
-        
-                ACA HABRIA QUE PONER UN POPUP DE CONFIRMACION */
-        }
-        else {
-                /*    MENSAJE DE ERROR
+        //return $this->redirectToRoute('createProfile',['permisos' => $permisos,'profile' => $profile]);
+        return  $this->render('app/private/profile/new.html.twig',['permisos' => $permisos,'profile' => $profile ]);
+    }
     
-                $this->addFlash('notice', 'El evento '.$eventName.' ya existe.');  */
+    /**
+     * @Route("/create", name="createProfile")
+     */
+    public function create(Request $request, ProfileRepository $profileRepository): Response
+    {
+        $profileName = $request->request->get("profileName"); 
+        $permisos = $request->request->get('permisos');
         
-            echo('Ya existe un profile con los mismos datos que los ingresados.');
-                            
-            return $this->render('app/private/profile/new.html.twig',[]);
+        $roles = $this->getDoctrine()->getRepository(Role::Class)->findAll();
+        $profile = $this->getDoctrine()
+                ->getRepository(Profile::class)
+                ->findOneBy([
+                    'name' => $profileName
+                ]);
+        
+        if ($profile!= null) {   
+            $this->addFlash("error", "El nombre de rol ya existe.");     
+            return $this->redirectToRoute('newProfile',['permisos'=>$permisos,'profile'=>$profile]); 
+            //return $this->redirectToRoute('editProfile',['id'=>$profile->getId()]);
         }
-    }  
+        $em = $this->getDoctrine()->getManager();
+        $profile = new Profile();
+        $profile->setName($profileName);
+        foreach ($permisos as $id) {
+            $role = $this->getDoctrine()
+                ->getRepository(Role::class)
+                ->findOneBy([
+                    'id' => $id
+                ]);
+            $profile->addRole($role);
+        }
+        $em->persist($profile);
+        echo
+        $em->flush();
+       
+        $this->addFlash("success", "El nuevo rol ha sido creado con éxito.");
 
+        return $this->redirectToRoute('profile');
+    }
+    
+     /**
+     * @Route("/edit", methods={"GET"}, name="editProfile")
+     */
+    public function editProfile(Request $request): Response
+    {
+        $profileID = $request->query->get("id");         
+        $em = $this->getDoctrine()->getManager();
+        $profile = $em->getRepository('App:Profile')->find($profileID);
+               
+        $roles = $this->getDoctrine()->getRepository(Role::Class)->findAll();
+
+        $permisos = array();
+
+        foreach ($roles as $role) {
+           $permiso = array( 'role' => $role, 'checked' => false );
+            foreach ($profile->getRoles() as $profileRole) {
+                if ($profileRole==$role) {
+                    $permiso['checked'] =true;
+                }
+               
+            }
+            $permisos[] = $permiso;
+        }
+
+        return $this->render(
+            'app/private/profile/new.html.twig',
+            [
+                'permisos' => $permisos,
+                'profile' => $profile 
+            ]
+         );
+    
+    }
+
+    /**
+     * @Route(path="/edit", methods={"POST"}, name="saveProfile")
+     */
+    public function saveProfile(Request $request): Response
+    {
+        $profileID = $request->query->get('id');
+        $em = $this->getDoctrine()->getManager();
+        // phpstorm
+        $profile = $this->getDoctrine()->getRepository(Profile::class)->find($profileID);
+        $newProfileName = $request->request->get('profileName') ?? $profile->getName();
+        $newPermisos = $request->request->get('permisos');
+
+        $profile->setName($newProfileName);
+
+        $selectedRoles = $this->getDoctrine()->getRepository(Role::class)->findBy(array(
+            'id' => $newPermisos,
+        ));
+
+        foreach ($selectedRoles as $selectedRole) {
+            $profile->addRole($selectedRole);
+        }
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
+
+        $roles = $this->getDoctrine()->getRepository(Role::Class)->findAll();
+
+        $permisos = array();
+
+        foreach ($roles as $role) {
+            $permiso = array( 'role' => $role, 'checked' => false );
+            foreach ($profile->getRoles() as $profileRole) {
+                if ($profileRole==$role) {
+                    $permiso['checked'] =true;
+                }
+            }
+            $permisos[] = $permiso;
+        }
+
+        return $this->redirectToRoute('profile');
+    }
     
 
      /**

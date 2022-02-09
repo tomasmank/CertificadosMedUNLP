@@ -72,7 +72,7 @@
                     <h3>Administración de Roles</h3>
                 </div>
                  <div class="col">
-                    <a href={{path("createProfile")}} class="btn btn-secondary" style="background-color: #00889B; float: right;">Nuevo
+                    <a href={{path("newProfile")}} class="btn btn-secondary" style="background-color: #00889B; float: right;">Nuevo
                         Rol</a>
                 </div>
 
@@ -93,7 +93,7 @@
                             
                             <td>
                                 <a href="{{ path('deleteProfile', {'id': perfil.id}) }}"  class="btn btn-outline-secondary" >Eliminar</a>
-                                <a href="#" class="btn btn-outline-secondary" >Editar</a>
+                                <a href="{{ path('editProfile', {'id': perfil.id}) }}" class="btn btn-outline-secondary" >Editar</a>
                             </td>
                                                       
                         </tr>
