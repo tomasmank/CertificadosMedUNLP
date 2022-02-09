@@ -121,8 +121,10 @@ class ProfileController extends AbstractController
     }
 
     /**
+     * @Route("/new", name="createProfile")
      * @Route(path="/edit", methods={"POST"}, name="saveProfile")
      */
+    public function Create(): Response
     public function saveProfile(Request $request): Response
     {
         $profileID = $request->query->get('id');
