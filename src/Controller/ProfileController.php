@@ -42,7 +42,7 @@ class ProfileController extends AbstractController
         foreach ($roles as $role) {
            $permisos[] = array( 'role' => $role, 'checked' => false );
         }
-        //return $this->redirectToRoute('createProfile',['permisos' => $permisos,'profile' => $profile]);
+        
         return  $this->render('app/private/profile/new.html.twig',['permisos' => $permisos,'profile' => $profile ]);
     }
     
@@ -64,7 +64,7 @@ class ProfileController extends AbstractController
         if ($profile!= null) {   
             $this->addFlash("error", "El nombre de rol ya existe.");     
             return $this->redirectToRoute('newProfile',['permisos'=>$permisos,'profile'=>$profile]); 
-            //return $this->redirectToRoute('editProfile',['id'=>$profile->getId()]);
+            
         }
         $em = $this->getDoctrine()->getManager();
         $profile = new Profile();
@@ -78,7 +78,7 @@ class ProfileController extends AbstractController
             $profile->addRole($role);
         }
         $em->persist($profile);
-        echo
+        
         $em->flush();
        
         $this->addFlash("success", "El nuevo rol ha sido creado con éxito.");
@@ -121,15 +121,15 @@ class ProfileController extends AbstractController
     }
 
     /**
-     * @Route("/new", name="createProfile")
+     
      * @Route(path="/edit", methods={"POST"}, name="saveProfile")
      */
-    public function Create(): Response
+    
     public function saveProfile(Request $request): Response
     {
         $profileID = $request->query->get('id');
         $em = $this->getDoctrine()->getManager();
-        // phpstorm
+       
         $profile = $this->getDoctrine()->getRepository(Profile::class)->find($profileID);
         $newProfileName = $request->request->get('profileName') ?? $profile->getName();
         $newPermisos = $request->request->get('permisos');

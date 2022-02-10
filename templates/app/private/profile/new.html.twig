@@ -77,7 +77,11 @@
                     {% endif %}
                 </div>
             </div>
-            <form method="post">
+            <form method="post" 
+            {% if (profile.id is null) %}
+                action="{{ path('createProfile') }}"
+            {% endif %}
+            >
                 <div class="container border rounded">
                     
                     <div class="container">
