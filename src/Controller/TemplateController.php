@@ -180,6 +180,61 @@ class TemplateController extends AbstractController
                 $template->setComments($form->get('comments')->getData());
                 $template->setBackgroundColor($form->get('backgroundColor')->getData());
 
+                /** @var UploadedFile $headerFile */
+                $headerFile = $form->get('header')->getData();
+                if ($headerFile) {
+                    $originalFilename = pathinfo($headerFile->getClientOriginalName(), PATHINFO_FILENAME);
+                    $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$headerFile->guessExtension();
+                    
+                    try {
+                        $headerFile->move(
+                            $this->getParameter('headers_directory'),
+                            $newFilename
+                        );
+                    } catch (FileException $e) {
+                        // manejar excepcion
+                    }
+                    $template->setHeader($newFilename);
+                }
+    
+                /** @var UploadedFile $signaturesFile */
+                $signaturesFile = $form->get('signatures')->getData();
+                if ($signaturesFile) {
+                    $originalFilename = pathinfo($signaturesFile->getClientOriginalName(), PATHINFO_FILENAME);
+                    $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$signaturesFile->guessExtension();
+                    
+                    try {
+                        $signaturesFile->move(
+                            $this->getParameter('signatures_directory'),
+                            $newFilename
+                        );
+                    } catch (FileException $e) {
+                        // manejar excepcion
+                    }
+                    $template->setSigns($newFilename);
+                }
+    
+                /** @var UploadedFile $footerFile */
+                $footerFile = $form->get('footer')->getData();
+                if ($footerFile) {
+                    $originalFilename = pathinfo($footerFile->getClientOriginalName(), PATHINFO_FILENAME);
+                    $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$footerFile->guessExtension();
+                    
+                    try {
+                        $footerFile->move(
+                            $this->getParameter('footers_directory'),
+                            $newFilename
+                        );
+                    } catch (FileException $e) {
+                        // manejar excepcion
+                    }
+                    $template->setFooter($newFilename);
+                }
+
+
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($template);
                 $em->flush();
@@ -335,6 +390,6 @@ class TemplateController extends AbstractController
             $this->addFlash("error", "No se puede eliminar el template porque no existe.");
         }
 
-        return $this->redirectToRoute('detailTemplate', [ 'id' => $id ]);
+        return $this->redirectToRoute('updateTemplate', [ 'id' => $id ]);
     }
 }
