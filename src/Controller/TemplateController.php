@@ -292,4 +292,49 @@ class TemplateController extends AbstractController
 
         return $this->redirectToRoute('templates');
     }
+
+    /**
+     * @Route("/deleteImage/{id}/{type}", name="deleteImage")
+     */
+    public function deleteImage(TemplateRepository $templateRepository, Request $request, int $id, String $type): Response
+    {
+        $template = $templateRepository
+            ->find($id);
+
+        if($template){
+            try {
+                $filesystem = new Filesystem();
+
+                if ($type == 'header'){
+                    if($template->getHeader() !== NULL){
+                        $filesystem->remove($this->getParameter('headers_directory') . DIRECTORY_SEPARATOR . $template->getHeader());
+                        $template->setHeader(NULL);
+                    }
+                } elseif ($type == 'signatures') {
+                    if($template->getSigns() !== NULL){
+                        $filesystem->remove($this->getParameter('signatures_directory') . DIRECTORY_SEPARATOR . $template->getSigns());
+                        $template->setSigns(NULL);
+                    }
+                } elseif ($type == 'footer') {
+                    if($template->getFooter() !== NULL){
+                        $filesystem->remove($this->getParameter('footers_directory') . DIRECTORY_SEPARATOR . $template->getFooter());
+                        $template->setFooter(NULL);
+                    }
+                }
+
+                $template_name = $template->getName();
+                $em = $this->getDoctrine()->getManager();
+                $em->flush();
+                $this->addFlash("success", "Se elimino correctamente la imagen seleccionada.");
+
+            } catch (IOExceptionInterface $exception) {
+                echo "Ocurrió un error intentando eliminar el archivo ".$exception->getPath();
+            } 
+
+        } else {
+            $this->addFlash("error", "No se puede eliminar el template porque no existe.");
+        }
+
+        return $this->redirectToRoute('detailTemplate', [ 'id' => $id ]);
+    }
 }

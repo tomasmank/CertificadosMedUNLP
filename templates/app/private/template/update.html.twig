@@ -142,26 +142,243 @@
         </div>
     </div>
 
-    {{
-    form_widget(form.header,
-    {'attr': {
-    'class': 'invisible '}
-    })
-    }}
-    {{
-    form_widget(form.signatures,
-    {'attr': {
-    'class': 'invisible '}
-    })
-    }}
-    {{
-    form_widget(form.footer,
-    {'attr': {
-    'class': 'invisible '}
-    })
-    }}
+    <div class="container border rounded mt-3">
+        <div class="container">
+            <h4 class="mt-3 mb-3 ">Archivos de imagen</h4>
+            <div class="col">
+                <div class="mt-3 mb-3 row">
+                    <label for="headerFile" class="col-md-2 col-form-label">{{ form_label(form.header) }}</label>
 
-    <div class="container">
+                    {% if template.header %}
+                    <div class="col pt-2">
+                        <img src="/uploads/headers/{{ template.header }}" class="img-fluid"
+                            alt="Imagen de encabezamiento">
+                    </div>
+
+                    <!--
+                        START Delete Header Button + Modal
+                    -->
+                    <div class="col-auto d-flex align-items-center">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            data-bs-target="#deleteHeaderModal">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
+                                class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal fade" id="deleteHeaderModal" tabindex="-1" aria-labelledby="deleteHeaderLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteHeaderLabel">¿Eliminar header?</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Usted está a punto de eliminar la foto del header (esta acción no se puede
+                                        deshacer).</p>
+                                    <div class="my-2">
+                                        <img src="/uploads/headers/{{ template.header }}" class="img-fluid border"
+                                            alt="Imagen de encabezamiento">
+                                    </div>
+                                    <p>¿Desea contiunuar con la eliminación?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cerrar</button>
+                                    <a href="{{ path('deleteImage', {id: template.id, type: 'header'}) }}"
+                                        class="btn btn-danger">Eliminar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--
+                        END Delete Header Button + Modal
+                    -->
+                    {{
+                    form_widget(form.header,
+                    {'attr': {
+                    'class': 'invisible'}
+                    })
+                    }}
+
+                    {% else %}
+                    <div class="col">
+                        <div class="input-group">
+                            {{
+                            form_widget(form.header,
+                            {'attr': {
+                            'class': 'form-control',
+                            'aria-describedby':'resetHeaderFile',
+                            'aria-label':'Upload'}
+                            })
+                            }}
+                            <button class="btn btn-outline-secondary" type="button"
+                                onclick="resetInput('template_header')" id="resetHeaderFile">x</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mt-3 mb-3 row">
+                    <label for="signsFile" class="col-md-2 col-form-label">{{ form_label(form.signatures) }}</label>
+
+                    {% if template.signs %}
+                    <div class="col pt-2">
+                        <img src="/uploads/signatures/{{ template.signs }}" class="img-fluid" alt="Imagen de firmas">
+                    </div>
+
+                    <!--
+                        START Delete Signatures Button + Modal
+                    -->
+                    <div class="col-auto d-flex align-items-center">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            data-bs-target="#deleteSignaturesModal">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
+                                class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal fade" id="deleteSignaturesModal" tabindex="-1"
+                        aria-labelledby="deleteSignaturesLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteSignaturesLabel">¿Eliminar imagen de firmas?</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Usted está a punto de eliminar la foto de la/s firma/s (esta acción no se puede
+                                        deshacer).</p>
+                                    <div class="my-2">
+                                        <img src="/uploads/signatures/{{ template.signs }}" class="img-fluid border"
+                                            alt="Imagen de encabezamiento">
+                                    </div>
+                                    <p>¿Desea continuar con la eliminación?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cerrar</button>
+                                    <a href="{{ path('deleteImage', {id: template.id, type: 'signatures'}) }}"
+                                        class="btn btn-danger">Eliminar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--
+                        END Delete Signatures Button + Modal
+                    -->
+                    {{
+                    form_widget(form.signatures,
+                    {'attr': {
+                    'class': 'invisible'}
+                    })
+                    }}
+
+                    {% else %}
+                    <div class="col">
+                        <div class="input-group">
+                            {{
+                            form_widget(form.signatures,
+                            {'attr': {
+                            'class': 'form-control',
+                            'aria-describedby':'resetSignsFile',
+                            'aria-label':'Upload'}
+                            })
+                            }}
+                            <button class="btn btn-outline-secondary" type="button"
+                                onclick="resetInput('template_signatures')" id="resetSignsFile">x</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mt-3 mb-3 row">
+                    <label for="footerFile" class="col-md-2 col-form-label">{{ form_label(form.footer) }}</label>
+
+                    {% if template.footer %}
+                    <div class="col pt-2">
+                        <img src="/uploads/footers/{{ template.footer }}" class="img-fluid" alt="Imagen de pie">
+                    </div>
+
+                    <!--
+                        START Delete Footer Button + Modal
+                    -->
+                    <div class="col-auto d-flex align-items-center">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            data-bs-target="#deleteFooterModal">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
+                                class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal fade" id="deleteFooterModal" tabindex="-1" aria-labelledby="deleteFooterLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteFooterLabel">¿Eliminar imagen del pie?</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Usted está a punto de eliminar la foto del pie (esta acción no se puede
+                                        deshacer).</p>
+                                    <div class="my-2">
+                                        <img src="/uploads/footers/{{ template.footer }}" class="img-fluid border"
+                                            alt="Imagen de encabezamiento">
+                                    </div>
+                                    <p>¿Desea continuar con la eliminación?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cerrar</button>
+                                    <a href="{{ path('deleteImage', {id: template.id, type: 'footer'}) }}"
+                                        class="btn btn-danger">Eliminar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--
+                        END Delete Signatures Button + Modal
+                    -->
+                    {{
+                    form_widget(form.footer,
+                    {'attr': {
+                    'class': 'invisible'}
+                    })
+                    }}
+
+                    {% else %}
+                    <div class="col">
+                        <div class="input-group">
+                            {{
+                            form_widget(form.footer,
+                            {'attr': {
+                            'class': 'form-control',
+                            'aria-describedby':'resetFooterFile',
+                            'aria-label':'Upload'}
+                            })
+                            }}
+                            <button class="btn btn-outline-secondary" type="button"
+                                onclick="resetInput('template_footer')" id="resetFooterFile">x</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end pb-4">
             <a class="btn btn-secondary" href="{{ path('detailTemplate', {id: template.id}) }}">Cancelar y
                 volver</a>
@@ -175,5 +392,11 @@
 
     {{ form_end(form) }}
 </div>
+
+<script>
+    function resetInput(id) {
+        document.getElementById(id).value = "";
+    }
+</script>
 
 {% endblock %}
