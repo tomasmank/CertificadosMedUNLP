@@ -157,7 +157,8 @@
                             'aria-label':'Upload'}
                             })
                             }}
-                            <button class="btn btn-outline-secondary" type="reset" id="resetHeaderFile">x</button>
+                            <button class="btn btn-outline-secondary" type="button"
+                                onclick="resetInput('template_header')" id="resetHeaderFile">x</button>
                         </div>
                     </div>
                 </div>
@@ -175,7 +176,8 @@
                             'aria-label':'Upload'}
                             })
                             }}
-                            <button class="btn btn-outline-secondary" type="reset" id="resetSignaturesFile">x</button>
+                            <button class="btn btn-outline-secondary" type="button"
+                                onclick="resetInput('template_signatures')" id="resetSignaturesFile">x</button>
                         </div>
                     </div>
                 </div>
@@ -192,7 +194,8 @@
                             'aria-label':'Upload'}
                             })
                             }}
-                            <button class="btn btn-outline-secondary" type="reset" id="resetFooterFile">x</button>
+                            <button class="btn btn-outline-secondary" type="button"
+                                onclick="resetInput('template_footer')" id="resetFooterFile">x</button>
                         </div>
                     </div>
                 </div>
@@ -209,5 +212,11 @@
     </div>
     {{ form_end(form) }}
 </div>
+
+<script>
+    function resetInput(id) {
+        document.getElementById(id).value = "";
+    }
+</script>
 
 {% endblock %}
