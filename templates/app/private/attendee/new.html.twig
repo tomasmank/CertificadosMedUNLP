@@ -1,0 +1,60 @@
+{% extends '@layout/base.html.twig' %}
+
+{% block title %} Nuevo Asistente {% endblock %}
+
+{% block content %}
+
+<div id="component" class="container">
+    <div class="row mt-1">
+        <div class="col">
+            <h3>Nuevo asistente</h3>
+        </div>
+    </div>
+    <form action="{{path("createAttendee")}}"> 
+        <div class="container border rounded">
+            <div class="container mt-3">
+                <h4>Datos del asistente</h4>
+                <input type="hidden" id="eventID" name="eventID" value="{{event.id}}">
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <label for="inputFirstName" class="col col-form-label">Nombre/s</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" autofocus="autofocus">
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="inputLastName" class="col col-form-label">Apellido/s</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName">
+                    </div>
+                </div>
+                <div class="mt-3 mb-3 row">
+                    <div class="col">
+                        <label for="inputEmail" class="col col-form-label">Email</label>
+                        <input type="text" class="form-control" id="email" name="email">
+                    </div>
+                </div>
+                <div class="row mt-3 mb-3">
+                    <div class="col">
+                        <label for="inputDNI" class="col col-form-label">Número de documento <span style="font-style:italic;font-size:80%;"> &nbsp&nbsp(solo números y/o letras) </span></label>
+                        <input type="text" class="form-control" id="dni" name="dni">
+                    </div>                  
+                </div>
+                <div class="row mt-3 mb-3">
+                    <div class="col">
+                        <label for="inputCondition" class="col col-form-label">Condición</label>
+                        <input type="text" class="form-control" id="cond" name="cond">
+                    </div>                  
+                </div>
+            </div>
+
+        </div>
+        
+
+        <div class="container">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                <a class="btn btn-secondary mb-3" href={{ path('viewAttendees', {eventID: event.id}) }}>Cancelar y volver</a>
+                <button class="btn btn-success mb-3" type="submit">Agregar asistente</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

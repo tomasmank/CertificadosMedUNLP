@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\EventRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\EventRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=EventRepository::class)
@@ -21,6 +22,7 @@ class Event
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="El nombre del evento no puede estar vacío")
      */
     private $name;
 
@@ -41,6 +43,8 @@ class Event
 
     /**
      * @ORM\ManyToOne(targetEntity=City::class,inversedBy="events")
+     * @Assert\NotNull(message="Se debe seleccionar una ubicación")
+     * @Assert\NotBlank(message="Se debe seleccionar una ubicación")
      */
     private $city;
 
@@ -50,13 +54,13 @@ class Event
     private $template;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Attendee::class)
+     * @ORM\OneToMany(targetEntity=EventAttendee::class, mappedBy="event", orphanRemoval=true)
      */
-    private $attendees;
+    private $eventAttendees;
 
     public function __construct()
     {
-        $this->attendees = new ArrayCollection();
+        $this->eventAttendees = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -137,26 +141,33 @@ class Event
     }
 
     /**
-     * @return Collection|Attendee[]
+     * @return Collection|EventAttendee[]
      */
-    public function getAttendees(): Collection
+    public function getEventAttendees(): Collection
     {
-        return $this->attendees;
+        return $this->eventAttendees;
     }
 
-    public function addAttendee(Attendee $attendee): self
+    public function addEventAttendee(EventAttendee $eventAttendee): self
     {
-        if (!$this->attendees->contains($attendee)) {
-            $this->attendees[] = $attendee;
+        if (!$this->eventAttendees->contains($eventAttendee)) {
+            $this->eventAttendees[] = $eventAttendee;
+            $eventAttendee->setEvent($this);
         }
 
         return $this;
     }
 
-    public function removeAttendee(Attendee $attendee): self
+    public function removeEventAttendee(EventAttendee $eventAttendee): self
     {
-        $this->attendees->removeElement($attendee);
+        if ($this->eventAttendees->removeElement($eventAttendee)) {
+            // set the owning side to null (unless already changed)
+            if ($eventAttendee->getEvent() === $this) {
+                $eventAttendee->setEvent(null);
+            }
+        }
 
         return $this;
     }
+
 }

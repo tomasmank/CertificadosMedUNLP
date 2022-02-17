@@ -19,21 +19,6 @@ class AttendeeRepository extends ServiceEntityRepository
         parent::__construct($registry, Attendee::class);
     }
 
-    public function findAttendeeByDni(string $value): ?Attendee
-    {
-        $attendee = new Attendee();
-        
-        $qb = $this->createQueryBuilder('a')
-            ->where('a.dni = :value')
-            ->setParameter('value', $value);
-
-        $query = $qb->getQuery();
-
-        $attendee = $query->setMaxResults(1)->getOneOrNullResult();
-
-        return $attendee;
-    }
-
     // /**
     //  * @return Attendee[] Returns an array of Attendee objects
     //  */

@@ -1,160 +1,187 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends '@layout/base.html.twig' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <title>Inicio</title>
-</head>
+{% block title %} Datos del evento {% endblock %}
 
-<body>
-    <div style="min-height: 100vh; background-color: whitesmoke;">
-        <div id="navbar" class="border-bottom" style="background-color: #00889B;">
-            <nav class="navbar justify-content-center navbar-expand-lg navbar-dark">
-                <div class="container">
-                    <a class="navbar-brand d-none d-sm-block" href="http://www.med.unlp.edu.ar">
-                        <img class="img-fluid" src="/static/assets/logos/fmed-unlp-logo.png" alt="Facultad de Medicina UNLP">
-                    </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link" aria-current="page" href={{path("home")}}>Inicio</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link active" href={{path("events")}}>Eventos</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Templates</a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    Administrar
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href={{path("users")}}>Usuarios</a></li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li><a class="dropdown-item" href="#">Roles de usuario</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    admin@mail.com
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="#">Mi perfil</a></li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li><a class="dropdown-item" href="#">Cerrar sesion</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </div>
+{% block content %}
 
-        <div id="component" class="container">
-            <div class="row mt-1">
-                <div class="col">
-                    <h3>Nuevo evento</h3>
-                </div>
-            </div>
-            <form action="">
-                <div class="container border rounded">
-                    <div class="container">
-                        <h4 class="mt-3 mb-3">Datos del evento</h4>
-                        <div class="mt-3 mb-3 row">
-                            <label for="inputName" class="col-sm-2 col-form-label">Nombre</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="inputName">
-                            </div>
-                        </div>
-                        <div class="mt-3 mb-3 row">
-                            <label for="inputUbicationName" class="col-sm-2 col-form-label">Ubicacion</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="inputUbicationName">
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <div class="col">
-                                <label for="inputName" class="form-label">Fecha inicio</label>
-                                <input type="date" class="form-control" id="inputName">
-                            </div>
-                            <div class="col">
-                                <label for="inputName" class="form-label">Fecha fin</label>
-                                <input type="date" class="form-control" id="inputName">
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="container border rounded mt-3">
-                    <div class="container">
-                        <h4 class="mt-3 mb-3 ">Asistentes</h4>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <input type="file" class="form-control" id="inputAsistentesFile"
-                                        aria-describedby="inputAsistentesAddon" aria-label="Upload">
-                                    <button class="btn btn-outline-secondary" type="reset"
-                                        id="inputAsistentesAddon">x</button>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="text-muted">
-                                    Cantidad de asistentes: XX. <a href="#">(Ver detalle)</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="container border rounded mt-3">
-                    <div class="container">
-                        <h4 class="mt-3 mb-3 ">Template</h4>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <select class="form-select form-select-sm" aria-label=".form-select-sm example">
-                                        <option selected>Seleccionar...</option>
-                                        <option value="1">Template 1</option>
-                                        <option value="2">Template 2</option>
-                                        <option value="3">Template 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="container">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                        <button class="btn btn-secondary mb-3">Cancelar y volver</button>
-                        <button class="btn btn-success mb-3">Crear evento</button>
-                    </div>
-                </div>
-            </form>
+<div id="component" class="container">
+    <div class="row mt-1">
+        <div class="col">
+            {% if (form.vars.value.id is null) %}
+            <h3>Nuevo evento</h3>
+            {% else %}
+            <h3>Ver o modificar evento</h3>
+            {% endif %}
         </div>
     </div>
-    <footer class="py-4 bg-dark">
-        <p class="text-center text-light">© 2021 Grupo 6, TTPS.</p>
-    </footer>
-</body>
+    {{ form_start(form) }}
+    <div class="container border rounded">
+        <div class="container">
+            <h4 class="mt-3 mb-3">Datos del evento</h4>
+            <div style="color:red;">{{ form_errors(form.name) }}</div>
+            <div class="mt-3 mb-3 row">
+                <label for="eventName" class="col-sm-2 col-form-label">{{ form_label(form.name) }}</label>
+                <div class="col-sm-10">
 
-</html>
+                    {{ form_widget(form.name,
+                    {'attr': {'class': 'form-control', 'placeholder': 'Nombre del evento...', 'autofocus':
+                    'autofocus'}}) }}
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-    crossorigin="anonymous"></script>
+
+                </div>
+            </div>
+            <div class="mt-3 mb-3 row">
+                <label for="cityID" class="col-sm-2 col-form-label">{{ form_label(form.city) }}</label>
+                <div class="col">
+                    {{ form_widget(form.city,
+                    {'attr': {'class': 'form-control', 'placeholder': 'Ubicación donde se lleva a cabo el evento...'}})
+                    }}
+                </div>
+                <div class="col-auto">
+                    <a href="{{path('newCity', {eventID: form.vars.value.id})}}" class="btn btn-secondary"
+                        style="background-color: #00889B; float: right;">
+                        Nueva ubicación
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-3 mb-3 row">
+
+                <label for="" class="col-sm-2 col-form-label">{{ form_label(form.startDate) }}</label>
+                <div class="col">
+                    {{
+                    form_widget(form.startDate)
+                    }}
+                </div>
+                <label for="" class="col-sm-2 col-form-label">{{ form_label(form.endDate) }}</label>
+                <div class="col">
+                    {{
+                    form_widget(form.endDate)
+                    }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="container border rounded mt-3">
+        <div class="container">
+            <h4 class="mt-3 mb-3 ">Asistentes</h4>
+            <div style="color:red;">{{ form_errors(form.attendeeFile) }}</div>
+            <div class="row mb-3">
+                <div class="col-md mb-2">
+                    <div class="input-group">
+                        {{ form_widget(form.attendeeFile,
+                        {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+
+                {% if (form.vars.value.id is not null) %}
+                <div class="col col-md-auto">
+                    <div class="text-muted pt-2">
+                        Cantidad de asistentes: {{ form.vars.value.eventAttendees.count }}
+                    </div>
+                </div>
+                <div class="col col-md-auto">
+                    {% if (form.vars.value.eventAttendees.count != 0) %}
+                    <a href="{{path('viewAttendees', {eventID: form.vars.value.id})}}" class="btn btn-secondary"
+                        style="background-color: #00889B;">Ver asistentes</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+    <div class="container border rounded mt-3">
+        <div class="container">
+            <h4 class="mt-3 mb-3 ">Aspecto del certificado</h4>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">
+                    {{ form_label(form.template) }}
+                </label>
+                <div class="col-auto">
+                    <div class="input-group">
+                        {{ form_widget(form.template,
+                        {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container border rounded mt-3">
+        <div class="container">
+            <h4 class="mt-3 mb-3 ">Estado</h4>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">
+                    {{ form_label(form.published) }}
+                </label>
+                <div class="col-auto">
+                    {{ form_widget(form.published,
+                    {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <div class="col">
+                    <div class="text-muted pt-2">
+                        Si se encuentra "Publicado", cualquier asistente puede descargar su certificado.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3 pb-3">
+            {% if (form.vars.value.id is not null) %}
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
+                Eliminar
+            </button>
+            {% endif %}
+            <a class="btn btn-secondary" href={{ path('events') }}>Volver</a>
+            {{ form_widget(form.createEvent,
+            {'attr': {'class': 'btn btn-success'}
+            }) }}
+        </div>
+        {% if (form.vars.value.id is not null) %}
+        <!-- Delete modal -->
+        <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">¿Eliminar evento definitivamente?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><b>Nombre:</b> {{ form.vars.value.name }}</p>
+                        <p><b>Ciudad:</b> {{ form.vars.value.city.name }}</p>
+                        <p><b>Desde :</b> {{ form.vars.value.startDate|date('d-m-Y') }}</p>
+                        <p><b>Hasta :</b> {{ form.vars.value.endDate|date('d-m-Y') }}</p>
+                        <p>(Esta acción no puede deshacerse)</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <a href="{{ path('deleteEvent', {eventID: form.vars.value.id}) }}" class="btn btn-danger">Sí,
+                            eliminar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {{ form_end(form) }}
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+    rel="stylesheet" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.js-datepicker').datepicker({
+            format: 'dd-mm-yyyy',
+            monthNames: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+        });
+    });
+</script>
+
+{% endblock %}

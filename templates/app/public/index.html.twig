@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <title>Inicio</title>
+    <title>FMED UNLP - Certificados</title>
 </head>
 
 <body>
@@ -16,37 +16,183 @@
             <nav class="navbar">
                 <div class="container">
                     <a class="navbar-brand" href="http://www.med.unlp.edu.ar">
-                        <img class="img-fluid" src="/static/assets/logos/fmed-unlp-logo.png" alt="Facultad de Medicina UNLP">
+                        <img class="img-fluid" src="/static/assets/logos/fmed-unlp-logo.png"
+                            alt="Facultad de Medicina UNLP">
                     </a>
                 </div>
             </nav>
         </div>
-        <div id="component" class="container-sm mt-5">
+
+        <div id="component" class="container-sm mt-4">
             <div class="row justify-content-md-center">
                 <div class="col col-lg-9 align-self-center">
+
+                    <div class="row">
+                        {% include '@layout/display_messages.html.twig' %}
+                    </div>
+
                     <div class="card">
                         <div class="card-body">
-                            <h3 class="card-title">Buscar certificados</h3>
-                            <form>
+                            <h2 class="card-title">Buscar certificados</h2>
+                            <form method="get" action="{{ path('public') }}">
                                 <div class="row">
                                     <div class="col-sm-9 mb-3">
-                                        <input type="email" class="form-control" id="DNI" aria-describedby="emailHelp"
-                                            placeholder="Ingrese su numero de documento">
-                                        <div id="emailHelp" class="form-text">Sin puntos.</div>
+                                        <input type="number" min="0" step="any" class="form-control" id="_dni"
+                                            name="dni" aria-describedby="dniHelp"
+                                            placeholder="Ingrese su número de documento">
+                                        <div id="dniHelp" class="form-text">Sin puntos.</div>
                                     </div>
                                     <div class="col col-sm-3">
-                                        <a type="button" href="#" class="btn btn-secondary d-grid gap-2 mx-auto"
-                                            style="background-color: #00889B;">Buscar</a>
+                                        <button type="submit" class="btn btn-secondary d-grid gap-2 mx-auto"
+                                            style="background-color: #00889B;">Buscar</button>
                                     </div>
                                 </div>
                             </form>
                         </div>
                     </div>
+
+
+                    {% if dni %}
+                    <!-- Si se ingreso DNI -->
+
+                    {% if attendee %}
+                    <!-- Si se encontro Asistente para ese DNI -->
+                    <div class="card mt-4 mb-4 pt-4 pb-4">
+                        <div class="container">
+                            <div class="row">
+                                <h3>Datos personales</h3>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="attendeeName">Nombre</label>
+                                    <h5 id="attendeeName">{{ attendee.lastname }}, {{ attendee.firstname }}</h5>
+                                </div>
+                                <div class="col">
+                                    <label for="attendeeName">Documento</label>
+                                    <h5 id="attendeeName">{{ attendee.dni }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-4 mb-4 pt-4 pb-4">
+                        <div class="container">
+                            <div class="row">
+                                <h3>Certificados</h3>
+                                {% if attendances|length > 0 %}
+                                <!-- Si se encontraron Eventos para ese Asistente -->
+                                <div class="container">
+                                    <ul class="list-group">
+                                        {% for attendance in attendances %}
+                                        <li class="list-group-item">
+                                            {{ attendance.event.startdate|date('d/m/Y') }} - {{ attendance.event.name }}
+
+                                            <!-- Boton para abrir Modal de confirmacion -->
+                                            <button type="button" class="btn btn-light ms-2" title="Recibir al mail"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#confirmSendModal{{ loop.index }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                </svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
+                                                </svg>
+                                            </button>
+
+                                            <!-- Modal confirmar envio de mail -->
+                                            <div class="modal fade" id="confirmSendModal{{ loop.index }}" tabindex="-1"
+                                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">
+                                                                Confirmar envío de mail
+                                                            </h5>
+                                                            <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Verifique que los datos sean correctos antes de
+                                                                confirmar.</p>
+                                                            <div class="row mt-2">
+                                                                <div class="col">
+                                                                    <label for="eventName">Nombre</label>
+                                                                    <h6>{{ attendance.event.name }}</h6>
+                                                                </div>
+                                                                <div class="col">
+                                                                    <label for="eventName">Ubicación</label>
+                                                                    <h6>{{ attendance.event.city.name }}</h6>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mt-2">
+                                                                <div class="col">
+                                                                    <label for="eventName">Inicio</label>
+                                                                    <h6>{{ attendance.event.startdate|date('d/m/Y') }}
+                                                                    </h6>
+                                                                </div>
+                                                                <div class="col">
+                                                                    <label for="eventName">Fin</label>
+                                                                    <h6>{{ attendance.event.enddate|date('d/m/Y') }}
+                                                                    </h6>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mt-2">
+                                                                <div class="col">
+                                                                    <label for="eventName">Se enviará al E-Mail</label>
+                                                                    <h6>{{ attendance.email }}</h6>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-danger"
+                                                                data-bs-dismiss="modal">Cancelar</button>
+                                                            <a href="{{ path('sendEmail', {'attendeeID': attendee.id, 'eventID': attendance.event.id, 'attendanceID': attendance.id}) }}"
+                                                                class="btn btn-success">Confirmar
+                                                                envío</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% else %}
+                                <!-- Si NO se encontraron Eventos para ese Asistente -->
+                                <p>No se encontraron certificados activos asociados a esta persona.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% else %}
+                    <!-- Si NO se encontro Asistente para ese DNI -->
+                    <div class="alert alert-warning border d-flex align-items-center mt-4 mb-4 ps-4" role="alert">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                            class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img"
+                            aria-label="Warning:">
+                            <path
+                                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                        </svg>
+                        <div class="ms-2">
+                            Documento <b>{{ dni }}</b> no encontrado.
+                        </div>
+                    </div>
                 </div>
+                {% endif %}
+
+                {% endif %}
+                <!-- Si NO se ingreso DNI, no muestra nada de lo anterior -->
+
             </div>
         </div>
     </div>
-
+    </div>
     <footer class="py-4 bg-dark">
         <p class="text-center text-light">© 2021 Grupo 6, TTPS.</p>
     </footer>

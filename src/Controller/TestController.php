@@ -12,10 +12,12 @@ use App\Entity\Profile;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Attendee;
+use App\Entity\Template;
 use App\Controller\ValidateController;
 use \DateTime;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Knp\Snappy\Pdf;
+use Symfony\Component\Filesystem\Filesystem;
 
 
 class TestController extends AbstractController
@@ -107,13 +109,13 @@ class TestController extends AbstractController
      */
     public function newPerson(string $fn, $ln)
     {
-        $response = $this->forward('App\Controller\ValidateController::validateNames', [
+        $response = $this->forward('App\Controller\ValidateController::validateName', [
             'name'  => $fn,
         ]);
         
         if (($response->getContent()) == 0) {
             
-            $response = $this->forward('App\Controller\ValidateController::validateNames', [
+            $response = $this->forward('App\Controller\ValidateController::validateName', [
                 'name'  => $ln,
             ]);
             
@@ -167,7 +169,7 @@ class TestController extends AbstractController
     /**
      * @Route("/new_city/{cityName}", name="new_city")
      */
-    public function newCity(string $cityName)
+    public function new_City(string $cityName)
     {
         $em = $this->getDoctrine()->getManager();
         
@@ -245,20 +247,20 @@ class TestController extends AbstractController
 
 
     /**
-     * @Route("/new_user/{un}/{pass}/{idPerson}/{idProfile}", name="new_user")
+     * @Route("/new_user/{un}/{pass}/{firstName}/{lastName}/{idProfile}", name="new_user")
      */
-    public function newUser(UserPasswordEncoderInterface $passwordEncoder, string $un, $pass, int $idPerson, $idProfile)
+    public function newUser(UserPasswordEncoderInterface $passwordEncoder, string $un, $pass, $firstName, $lastName, $idProfile)
     {
         $em = $this->getDoctrine()->getManager();
        
-        $person = $em->find('App\Entity\Person', $idPerson);
         $profile = $em->find('App\Entity\Profile', $idProfile);
 
         $user = new User();
         $user
             ->setUsername($un)
             ->setPassword($passwordEncoder->encodePassword($user, $pass))
-            ->setPerson($person)
+            ->setFirstName($firstName)
+            ->setLastName($lastName)
             ->setProfile($profile);
         
         $em->persist($user);
@@ -439,5 +441,102 @@ class TestController extends AbstractController
 
     //return $this->render('test/prueba.html.twig', ['nombreColeccion' => 'Eventos encontrados', 'coleccion' => $events]);
     return $this->render('test/prueba2.html.twig', ['nombreColeccion' => 'Eventos encontrados', 'coleccion' => $events]);
- }
+    }
+
+    /**
+     * @Route("/new_template/{templateName}", name="new_template")
+     */
+    public function newTemplate(string $templateName)
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        $template = new Template();
+        $template->setName($templateName);
+                
+        $em->persist($template);
+        $em->flush();
+
+        return new Response('Se registró el template '.$template->getName().' con ID '.$template->getID());
+    }
+
+    /**
+     * @Route("/importcsv", name="importcsv")
+     */
+    public function importCSV2()
+    {   
+        if (($file = fopen("../Libro1.csv", "r")) !== FALSE) {
+            $em = $this->getDoctrine()->getManager();
+            $row = 0;
+            while (($data = fgetcsv($file, 0, ",")) !== FALSE) {
+                $number = count($data);
+                $row++;
+                echo "<p> Campos leidos en fila $row: $number <br/></p>\n";
+                
+                echo "<p>$data[1]<br/></p>\n";
+                echo "<p>$data[2]<br/></p>\n";
+                if ($data[3] == '') {
+                    echo "<p>Campo vacío<br/></p>\n";
+                }
+                else {
+                    echo "<p>$data[3]<br/></p>\n";
+                }
+                echo "<p>$data[4]<br/></p>\n";
+                echo "<p>$data[5]<br/></p>\n";        
+                
+            }
+            fclose($file);
+        }
+        return new Response();
+    }
+
+    /**
+     * @Route("/strpos", name="strpos")
+     */
+    public function strpos()
+    {   $data = [];
+        $data[0] = "apellido";
+        if (strpos("Apellidosapellido", $data[0]) !== false) {
+            echo ($data[0].' se encuentra en la cadena.');
+        }
+        else {
+            echo ($data[0].' no se encuentra en la cadena.');
+        }
+        return new Response();
+    }
+
+    /**
+     * @Route("/strrchr", name="strrchr")
+     */
+    public function strrchr()
+    {   $caracter = '.';
+        
+        $x = strrchr("Ap.ellid.osape.ido", $caracter);
+
+        if ($x !== false) {
+            echo ("Posición del último caracter '$caracter': ".$x);
+        }
+        else {
+            echo ('El caracter elegido no se encuentra en la cadena.');
+        }
+        return new Response();
+    }
+
+    /**
+     * @Route("/deleteFile", name="deleteFile")
+     */
+    public function deleteFile()
+    {   
+        $filesystem = new Filesystem();
+        $path1 = $this->getParameter('attendees_directory');
+        if ($filesystem->exists($path1.'/libro3-61e42ed464887.csv')) {
+            $filesystem->remove($path1.'/libro3-61e42ed464887.csv');
+            echo("Existía");
+
+        }
+        else {
+            echo("No existe");
+        }
+
+        return new Response();
+    }
 }

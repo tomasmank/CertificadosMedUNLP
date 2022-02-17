@@ -45,7 +45,12 @@ class Template
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private $commnets;
+    private $comments;
+
+    /**
+     * @ORM\Column(type="string", length=16, nullable=true)
+     */
+    private $background_color;
 
     public function getId(): ?int
     {
@@ -112,14 +117,26 @@ class Template
         return $this;
     }
 
-    public function getCommnets(): ?string
+    public function getComments(): ?string
     {
-        return $this->commnets;
+        return $this->comments;
     }
 
-    public function setCommnets(?string $commnets): self
+    public function setComments(?string $comments): self
     {
-        $this->commnets = $commnets;
+        $this->comments = $comments;
+
+        return $this;
+    }
+    
+    public function getBackgroundColor(): ?string
+    {
+        return $this->background_color;
+    }
+
+    public function setBackgroundColor(?string $background_color): self
+    {
+        $this->background_color = $background_color;
 
         return $this;
     }

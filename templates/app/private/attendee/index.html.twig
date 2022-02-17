@@ -1,0 +1,143 @@
+{% extends "@layout/base.html.twig" %}
+
+{% block title %}Asistentes{% endblock %}
+
+{% block content %}
+
+<div id="component" class="container">
+
+    <div class="row m-2">
+        <div class="col-md">
+            <h4>Asistentes al evento</h4>
+            <h5>{{event.name}}, {{event.city.name}},
+                {% if (event.startDate != '' and event.endDate != '') %}
+                {% if (event.startDate == event.endDate) %}
+                {{event.startDate|date('d-m-Y')}}</h5>
+            {% else %}
+            {{event.startDate|date('d-m-Y')}} al {{event.endDate|date('d-m-Y')}}</h5>
+            {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-secondary mb-3"
+                href="{{ path('viewEvent', {eventID: event.id, action: 'view'}) }}">Volver</a>
+        </div>
+        <div class="col-auto">
+            <a href="{{path('newAttendee',{eventID: event.id})}}" class="btn btn-secondary"
+                style="background-color: #00889B; float: right;">Nuevo asistente</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="container">
+            <div class="container border rounded">
+                <form action="{{path('viewAttendees')}}">
+                    <input type="hidden" id="eventID" name="eventID" value="{{event.id}}">
+                    <div class="row mb-3 mt-2">
+                        <div class="col mt-2">
+                            <input type="text" class="form-control" id="toSearch" name="toSearch"
+                                placeholder="Ingrese un término de búsqueda..." autofocus>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-secondary mt-2">Aplicar
+                                filtro</button>
+                        </div>
+                    </div>
+                </form>
+
+                {% if searchParameter %}
+                <div class="row mb-3">
+                    <div class="col-auto align-self-center">
+                        Mostrando resultados con:
+                    </div>
+                    <div class="col-auto">
+                        <a class="btn btn-light border border-dark mt-2" href={{ path('viewAttendees', {eventID:
+                            event.id}) }}>
+                            "{{ searchParameter }}"
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red"
+                                class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="container border rounded mt-2 mb-2">
+        {% if eventAttendees|length > 0 %}
+        <table class="table table-striped table-hover">
+            <thead>
+                <th scope="col" class="d-none d-md-table-cell">Nombre</th>
+                <th scope="col" class="d-none d-md-table-cell">Apellido</th>
+                <th scope="col">Email</th>
+                <th scope="col">DNI</th>
+                <th scope="col" class="d-none d-md-table-cell">Condición</th>
+            </thead>
+            <tbody>
+                {% for eventAttendee in eventAttendees %}
+                <tr>
+                    <td class="d-none d-md-table-cell">{{eventAttendee.attendee.firstName}}</td>
+                    <td class="d-none d-md-table-cell">{{eventAttendee.attendee.lastName}}</td>
+                    <td>{{eventAttendee.email}}</td>
+                    <td>{{eventAttendee.attendee.dni}}</td>
+                    <td class="d-none d-md-table-cell">{{eventAttendee.cond}}</td>
+                    <td>
+                        <a class="btn" href="{{ path('viewEventAttendee', {eventAttendeeID: eventAttendee.id}) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-three-dots" viewBox="0 0 16 16">
+                                <path
+                                    d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+                            </svg>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if maxPages > 1 %}
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                {%if thisPage > 1 %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="{{ path('viewAttendees', {currentPage: thisPage-1 < 1 ? 1 : thisPage-1, eventID: event.id, toSearch: searchParameter}) }}">«</a>
+                </li>
+                {% endif %}
+
+                {# Render each page number #}
+                {% for i in 1..maxPages %}
+                <li class="page-item {% if thisPage == i %}active{% endif %}">
+                    <a class="page-link"
+                        href="{{ path('viewAttendees', {currentPage: i, eventID: event.id, toSearch: searchParameter}) }}">{{
+                        i }}</a>
+                </li>
+                {% endfor %}
+
+                {# `»` arrow #}
+                {%if thisPage < maxPages %} <li class="page-item">
+                    <a class="page-link"
+                        href="{{ path('viewAttendees', {currentPage: thisPage+1 <= maxPages ? thisPage+1 : thisPage, eventID: event.id, toSearch: searchParameter}) }}">»</a>
+                    </li>
+                    {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <div class="container">
+            <div class="row mt-3 mb-2">
+                <div class="d-flex justify-content-center">
+                    <p class="fs-5">No se encontró ningún asistente. Intente con otro término de búsqueda.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}

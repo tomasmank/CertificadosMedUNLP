@@ -1,0 +1,155 @@
+{% extends '@layout/base.html.twig' %}
+
+{% block title %} Datos del usuario {% endblock %}
+
+{% block content %}
+
+<div id="component" class="container">
+    <div class="row mt-1">
+        <div class="col">
+            {% if (user == inSession) %}
+                <h3>Mi perfil</h3>
+            {% else %}
+                <h3>Datos del usuario</h3>
+            {% endif %}
+        </div>
+    </div>
+    <form action="{{path("modifyUser")}}">
+        <div class="container border rounded">
+            <div class="container mt-3">
+                <h4>Datos personales</h4>
+                <input type="hidden" id="userID" name="userID" value={{user.id}}>
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <label for="firstName" class="col col-form-label">Nombre/s</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" tabindex="1" autofocus="autofocus" value={{user.firstName}}
+                        {% if not is_granted('ROLE_ADMIN') %}
+                            readonly
+                        {% endif %} 
+                        >
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="lastName" class="col col-form-label">Apellido/s</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" tabindex="2" value={{user.lastName}}
+                        {% if not is_granted('ROLE_ADMIN') %}
+                            readonly
+                        {% endif %} 
+                        >
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <div class="col-sm-6">
+                        <label for="username" class="col col-form-label">Nombre de usuario</label>
+                        <input type="text" class="form-control" id="userName" name="userName" value={{user.username}} readonly>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="profile" class="col col-form-label">Tipo de perfil</label>    
+                            <select class="form-select" tabindex="3" id="profileID" name="profileID" tabindex="3" value={{user.profile.id}}>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <option selected value={{user.profile.id}}>{{user.profile.name}}</option>
+                                    {% for profile in profiles %}
+                                        <option value={{profile.id}}>{{profile.name}}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    <option selected value={{user.profile.id}}>{{user.profile.name}}</option>
+                                {% endif %}
+                            </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        {% if (is_granted('ROLE_ADMIN') or user == inSession) %}
+        <div class="container border rounded">
+            <div class="container mt-3">
+                <h4>Modificar contraseña</h4>
+                {% if (is_granted('ROLE_ADMIN') or user == inSession) %}
+                    <div class="col-sm-6">
+                        <label for="password" class="col-form-label">Nueva contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password" name="password" tabindex="5"
+                                aria-label="Disabled input example">
+                            <button type="button" onclick="toggle('password')" class="btn btn-outline-secondary"
+                                id="toggleVisibility">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-eye" viewBox="0 0 16 16">
+                                    <path
+                                        d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                                    <path
+                                        d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="confirmPassword" class="col-form-label">Repetir contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" tabindex="6"
+                                aria-label="Disabled input example">
+                            <button type="button" onclick="toggle('confirmPassword')" class="btn btn-outline-secondary"
+                                id="toggleVisibility">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-eye" viewBox="0 0 16 16">
+                                    <path
+                                        d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+                                    <path
+                                        d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+
+        <div class="container">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                {% if (is_granted('ROLE_ADMIN') and (user != inSession)) %}
+                    <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#deleteModal" tabindex="7">Eliminar</button>
+                {% endif %}
+                <a class="btn btn-secondary mb-3" href={{ path('users') }} tabindex="8">Volver</a>
+                {% if (is_granted('ROLE_ADMIN') or (user == inSession))%}
+                    <button class="btn btn-success mb-3" tabindex="9">Modificar</button>
+                {% endif %}
+            </div>
+
+            <!-- Delete modal -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">¿Eliminar usuario?</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><b>Nombre:</b> {{ user.firstName }}</p>
+                            <p><b>Apellido:</b> {{ user.lastName }}</p>
+                            <p><b>Nombre de usuario:</b> {{ user.username }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <a href="{{ path('deleteUser', {userID: user.id}) }}" class="btn btn-danger">Sí, eliminar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+    // mostrar/ocultar campos de tipo "contraseña"
+    function toggle(elementID) {
+        var field = document.getElementById(elementID);
+        if (field.type === "password") {
+            field.type = "text";
+        } else {
+            field.type = "password";
+        }
+    }   
+</script>
+
+{% endblock %}

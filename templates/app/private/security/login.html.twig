@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Iniciar Sesión</title>
+    {% include "@layout/head.html" %}
+</head>
+
+<body>
+    <div style="min-height: 100vh; background-color: whitesmoke;">
+        <div id="navbar" class="border-bottom" style="background-color: #00889B;">
+            <nav class="navbar">
+                <div class="container">
+                    <a class="navbar-brand" href="http://www.med.unlp.edu.ar">
+                        <img class="img-fluid" src="/static/assets/logos/fmed-unlp-logo.png"
+                            alt="Facultad de Medicina UNLP">
+                    </a>
+                </div>
+            </nav>
+        </div>
+        <div id="component" class="container-sm mt-5">
+            <div class="row justify-content-md-center">
+                <div class="col col-lg-6 align-self-center">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">Iniciar sesión</h3>
+                            <form method="post">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Nombre de usuario</label>
+                                    <input type="text" value="{{ last_username }}" name="username" id="inputUsername"
+                                        class="form-control" autocomplete="username" required autofocus>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="exampleInputPassword1" class="form-label">Contraseña</label>
+                                    <input type="password" name="password" id="inputPassword" class="form-control"
+                                        autocomplete="current-password" required>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="rememberMeCheckbox"
+                                        name="_remember_me">
+                                    <label class="form-check-label" for="rememberMeCheckbox">Recordarme</label>
+                                </div>
+                                {% if error %}
+                                <div class="alert alert-danger">
+                                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                                </div>
+                                {% endif %}
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-secondary align-self-end"
+                                        style="background-color: #00889B;">Ingresar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include "@layout/footer.html" %}
+</body>
+
+</html>
