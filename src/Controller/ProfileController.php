@@ -61,11 +61,21 @@ class ProfileController extends AbstractController
                     'name' => $profileName
                 ]);
         
-        if ($profile!= null) {   
+        if ($profile != null) {   
             $this->addFlash("error", "El nombre de rol ya existe.");     
-            return $this->redirectToRoute('newProfile',['permisos'=>$permisos,'profile'=>$profile]); 
-            
+            return $this->redirectToRoute('newProfile',['permisos'=>$permisos,'profile'=>$profile]);     
         }
+
+        if ($profileName == '') {
+            $this->addFlash("error", "El nombre del rol no puede estar vacío.");
+            return $this->redirectToRoute('newProfile',['permisos'=>$permisos,'profile'=>$profile]);     
+        }
+
+        if (empty($permisos)) {
+            $this->addFlash("error", "Debe asignarse al menos un permiso.");
+            return $this->redirectToRoute('newProfile',['permisos'=>$permisos,'profile'=>$profile]);     
+        }
+
         $em = $this->getDoctrine()->getManager();
         $profile = new Profile();
         $profile->setName($profileName);
@@ -91,6 +101,8 @@ class ProfileController extends AbstractController
      */
     public function editProfile(Request $request): Response
     {
+        $this->addFlash("success","Entró a editProfile GET");
+
         $profileID = $request->query->get("id");         
         $em = $this->getDoctrine()->getManager();
         $profile = $em->getRepository('App:Profile')->find($profileID);
@@ -104,15 +116,12 @@ class ProfileController extends AbstractController
             foreach ($profile->getRoles() as $profileRole) {
                 if ($profileRole==$role) {
                     $permiso['checked'] =true;
-                }
-               
+                }   
             }
             $permisos[] = $permiso;
         }
 
-        return $this->render(
-            'app/private/profile/new.html.twig',
-            [
+        return $this->render('app/private/profile/new.html.twig',[
                 'permisos' => $permisos,
                 'profile' => $profile 
             ]
@@ -127,14 +136,47 @@ class ProfileController extends AbstractController
     
     public function saveProfile(Request $request): Response
     {
+        $this->addFlash("success","Entró a saveProfile POST");
+
         $profileID = $request->query->get('id');
         $em = $this->getDoctrine()->getManager();
        
+        $this->addFlash("success","Profile ID = $profileID");
+
         $profile = $this->getDoctrine()->getRepository(Profile::class)->find($profileID);
         $newProfileName = $request->request->get('profileName') ?? $profile->getName();
         $newPermisos = $request->request->get('permisos');
 
+        $duplicated = 0;
+
+        $duplicated = $this->getDoctrine()            
+                        ->getRepository(Profile::class)
+                        ->findDuplicated($profileID, $newProfileName);
+
+        if ($duplicated != 0) {
+            $this->addFlash("error","El nombre de rol '$newProfileName' ya existe");
+            $roles = $this->getDoctrine()->getRepository(Role::Class)->findAll();
+            foreach ($roles as $role) {
+                $permiso = array( 'role' => $role, 'checked' => false );
+                 foreach ($profile->getRoles() as $profileRole) {
+                     if ($profileRole==$role) {
+                         $permiso['checked'] =true;
+                     }   
+                 }
+                 $permisos[] = $permiso;
+             }
+            return $this->render('app/private/profile/new.html.twig',[
+                    'permisos' => $permisos,
+                    'profile' => $profile 
+                ]
+             );
+        }
+
         $profile->setName($newProfileName);
+
+        foreach ($profile->getRoles() as $profileRole) {
+            $profile->removeRole($profileRole);
+        }
 
         $selectedRoles = $this->getDoctrine()->getRepository(Role::class)->findBy(array(
             'id' => $newPermisos,
