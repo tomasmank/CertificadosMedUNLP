@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Profile;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * @method Profile|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,6 +18,15 @@ class ProfileRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Profile::class);
+    }
+
+    public function findDuplicated(int $profileID, string $newProfileName)
+    {
+        $criteria = new Criteria();
+        $criteria->andWhere($criteria->expr()->neq('id', $profileID));
+        $criteria->andWhere($criteria->expr()->eq('name', $newProfileName));
+        
+        return $this->matching($criteria)->count();
     }
 
     // /**

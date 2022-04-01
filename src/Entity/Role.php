@@ -22,6 +22,8 @@ class Role
      */
     private $name;
 
+   
+
     public function getId(): ?int
     {
         return $this->id;
@@ -38,4 +40,6 @@ class Role
 
         return $this;
     }
+
+    
 }
