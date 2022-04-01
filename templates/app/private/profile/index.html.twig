@@ -27,8 +27,10 @@
                 <tr>
                     <td>{{perfil.name}}</td>
                     <td>
-                        <a href="{{ path('deleteProfile', {'id': perfil.id}) }}"  class="btn btn-outline-secondary" >Eliminar</a>
-                        <a href="{{ path('editProfile', {'id': perfil.id}) }}" class="btn btn-outline-secondary" >Editar</a>
+                        {% if perfil.name != 'Administrador' %}
+                            <a href="{{ path('editProfile', {'id': perfil.id}) }}" class="btn btn-outline-secondary" >Editar</a>
+                            <a href="{{ path('deleteProfile', {'id': perfil.id}) }}"  class="btn btn-outline-secondary" >Eliminar</a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

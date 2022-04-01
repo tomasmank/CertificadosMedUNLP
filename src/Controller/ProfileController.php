@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Controller;
-use App\Repository\RoleRepository;
-use App\Entity\Role;
 use App\Repository\ProfileRepository;
+use App\Repository\RoleRepository;
+use App\Repository\UserRepository;
 use App\Entity\Profile;
+use App\Entity\Role;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -101,8 +103,6 @@ class ProfileController extends AbstractController
      */
     public function editProfile(Request $request): Response
     {
-        $this->addFlash("success","Entró a editProfile GET");
-
         $profileID = $request->query->get("id");         
         $em = $this->getDoctrine()->getManager();
         $profile = $em->getRepository('App:Profile')->find($profileID);
@@ -136,14 +136,16 @@ class ProfileController extends AbstractController
     
     public function saveProfile(Request $request): Response
     {
-        $this->addFlash("success","Entró a saveProfile POST");
-
         $profileID = $request->query->get('id');
         $em = $this->getDoctrine()->getManager();
-       
-        $this->addFlash("success","Profile ID = $profileID");
-
+     
         $profile = $this->getDoctrine()->getRepository(Profile::class)->find($profileID);
+
+        if ($profile->getName() == 'Administrador') {
+            $this->addFlash("error","El rol 'Administrador' no puede ser editado");
+            return $this->redirectToRoute('profile');
+        }
+
         $newProfileName = $request->request->get('profileName') ?? $profile->getName();
         $newPermisos = $request->request->get('permisos');
 
@@ -216,6 +218,22 @@ class ProfileController extends AbstractController
         $profile = $this->getDoctrine()
             ->getRepository(Profile::class)
             ->find($profileID);
+        
+        if ($profile->getname() == 'Administrador') {
+            $this->addFlash("error","El perfil 'Administrador' no puede ser eliminado");
+            return $this->redirectToRoute('profile');
+        }
+
+        $profileOwner = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->findByProfile($profile);
+
+        if ($profileOwner != null) {
+            $ownerName = $profileOwner->getUsername();
+            $profileName = $profile->getName();
+            $this->addFlash("error","El perfil '$profileName' está asignado al usuario '$ownerName'");
+            return $this->redirectToRoute('profile');
+        }
 
         $em = $this->getDoctrine()->getManager();
         $em->remove($profile);

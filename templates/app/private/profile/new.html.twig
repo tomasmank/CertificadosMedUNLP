@@ -52,7 +52,7 @@
                                     checked="checked"
                                     {% endif %}
                                 />
-                                <td>{{ permiso.role.name }} </td>
+                                <td>{{ permiso.role.name | slice(5)}} </td>
                             </li>
                             {% endfor %}
                         </ul>   

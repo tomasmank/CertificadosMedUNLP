@@ -280,34 +280,35 @@ class UserController extends AbstractController
         }
         else {
 
-            $remainingAdmin = $this->getDoctrine()
-            ->getRepository(User::class)
-            ->findAdmins($userID);
-
-            if (count($remainingAdmin) > 0) {
-        
-                $profile = $this->getDoctrine()
+            $profile = $this->getDoctrine()
                     ->getRepository(Profile::class)
                     ->find($profileID);
 
-                $em = $this->getDoctrine()->getManager();
+            if (($user->getProfile()->getname() == 'Administrador') and ($profile->getName() != 'Administrador')) {
                 
-                $user->setFirstName($firstName);
-                $user->setLastName($lastName);
-                if (strlen($password) >= 3) {
-                    $user->setPassword($passwordEncoder->encodePassword($user, $password));
+                $remainingAdmin = $this->getDoctrine()
+                    ->getRepository(User::class)
+                    ->findAdmins($userID);
+
+                if (count($remainingAdmin) == 0) {            
+
+                    $this->addFlash("error", "El usuario que se intenta modificar es el único con perfil de Administrador.");
+                    return $this->redirectToRoute('users');
                 }
-                $user->setProfile($profile);
-                $em->flush();
+            }
             
-                $this->addFlash("success", "El usuario '$userName' ha sido modificado con éxito.");
-                return $this->redirectToRoute('users');
+            $em = $this->getDoctrine()->getManager();
+            
+            $user->setFirstName($firstName);
+            $user->setLastName($lastName);
+            if (strlen($password) >= 3) {
+                $user->setPassword($passwordEncoder->encodePassword($user, $password));
             }
-            else {
-                $this->addFlash("error", "El usuario que se intenta modificar es el último con perfil de Administrador.");
-                return $this->redirectToRoute('users');
-            }
+            $user->setProfile($profile);
+            $em->flush();
         
+            $this->addFlash("success", "El usuario '$userName' ha sido modificado con éxito.");
+            return $this->redirectToRoute('users');
         }
     }
 }
