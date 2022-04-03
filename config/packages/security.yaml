@@ -38,6 +38,46 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        # Asistentes (attendee):
+        - { path: ^/attendee/(new|create), roles: [ROLE_ASISTENTES_CREAR] }
+        - { path: ^/attendee/view, roles: [ROLE_ASISTENTES_VER] }
+        - { path: ^/attendee/delete, roles: [ROLE_ASISTENTES_ELIMINAR] }
+        - { path: ^/attendee/modify, roles: [ROLE_ASISTENTES_MODIFICAR] }
+        - { path: ^/attendee/fullSearchAttendees, roles: [ROLE_ASISTENTES_LISTAR] }
+
+        # Ubicación (city)
+
+        - { path: ^/city/(new|create), roles: [ROLE_EVENTOS_CREAR, ROLE_EVENTOS_MODIFICAR] }
+        
+        # Eventos (event)
+
+        - { path: ^/event/(index|view|fullSearch), roles: [ROLE_EVENTOS_VER, ROLE_EVENTOS_LISTAR, ROLE_EVENTOS_CREAR, ROLE_EVENTOS_MODIFICAR, ROLE_EVENTOS_ELIMINAR] }
+        - { path: ^/event/updateAttendees, roles: [ROLE_EVENTOS_CREAR, ROLE_EVENTOS_MODIFICAR] }
+        - { path: ^/event/viewAttendees, roles: [ROLE_EVENTOS_VER, ROLE_EVENTOS_CREAR, ROLE_EVENTOS_MODIFICAR, ROLE_EVENTOS_ELIMINAR] }
+        - { path: ^/event/delete, roles: [ROLE_EVENTOS_ELIMINAR] }
+
+        # Perfiles (profile)
+
+        - { path: ^/profile/(new|create), roles: [ROLE_USUARIOS_CREAR] }
+        - { path: ^/profile/edit, methods: [GET], roles: [ROLE_USUARIOS_VER, ROLE_USUARIOS_LISTAR, ROLE_USUARIOS_CREAR, ROLE_USUARIOS_MODIFICAR, ROLE_USUARIOS_ELIMINAR] }
+        - { path: ^/profile/edit, methods: [POST], roles: [ROLE_USUARIOS_MODIFICAR] }
+        - { path: ^/profile/delete, roles: [ROLE_USUARIOS_ELIMINAR] }
+
+        # Templates (template)
+
+        - { path: ^/template/index, roles: [ROLE_TEMPLATES_VER, ROLE_TEMPLATES_LISTAR, ROLE_TEMPLATES_CREAR, ROLE_TEMPLATES_MODIFICAR, ROLE_TEMPLATES_ELIMINAR] }
+        - { path: ^/template/new, roles: [ROLE_TEMPLATES_CREAR] }
+        - { path: ^/template/(detail|example), roles: [ROLE_TEMPLATES_VER, ROLE_TEMPLATES_CREAR, ROLE_TEMPLATES_MODIFICAR, ROLE_TEMPLATES_ELIMINAR] }
+        - { path: ^/template/(delete|deleteImage), roles: [ROLE_TEMPLATES_ELIMINAR] }
+        
+        # Usuarios (user)
+
+        - { path: ^/user/(index|fullSearchUsers), roles: [ROLE_USUARIOS_VER, ROLE_USUARIOS_LISTAR, ROLE_USUARIOS_CREAR, ROLE_USUARIOS_MODIFICAR, ROLE_USUARIOS_ELIMINAR] }
+        - { path: ^/user/(new|create), roles: [ROLE_USUARIOS_CREAR] }
+        - { path: ^/user/view, roles: [ROLE_USUARIOS_VER, ROLE_USUARIOS_CREAR, ROLE_USUARIOS_MODIFICAR, ROLE_USUARIOS_ELIMINAR] }
+        - { path: ^/user/delete, roles: [ROLE_USUARIOS_ELIMINAR] }
+        - { path: ^/user/modify, roles: [ROLE_USUARIOS_MODIFICAR] }
+
         # matches /certificados/*
         - { path: ^/certificados, roles: [] }
 
@@ -57,7 +97,7 @@ security:
 
     role_hierarchy:
         ROLE_ADMIN: [ROLE_EVENTOS, ROLE_ASISTENTES, ROLE_TEMPLATES, ROLE_USUARIOS]
-        ROLE_EVENTOS: [ROLE_EVENTOS_LISTAR, ROLE_EVENTOS_VER, ROLE_EVENTOS_CREAR, ROLE_EVENTOS_ACTUALIZAR, ROLE_EVENTOS_ELIMINAR]
-        ROLE_ASISTENTES: [ROLE_ASISTENTES_LISTAR, ROLE_ASISTENTES_VER, ROLE_ASISTENTES_CREAR, ROLE_ASISTENTES_ACTUALIZAR, ROLE_ASISTENTES_ELIMINAR]
-        ROLE_TEMPLATES: [ROLE_TEMPLATES_LISTAR, ROLE_TEMPLATES_VER, ROLE_TEMPLATES_CREAR, ROLE_TEMPLATES_ACTUALIZAR, ROLE_TEMPLATES_ELIMINAR]
-        ROLE_USUARIOS: [ROLE_USUARIOS_LISTAR, ROLE_USUARIOS_VER, ROLE_USUARIOS_CREAR, ROLE_USUARIOS_ACTUALIZAR, ROLE_USUARIOS_ELIMINAR]
+        ROLE_EVENTOS: [ROLE_EVENTOS_LISTAR, ROLE_EVENTOS_VER, ROLE_EVENTOS_CREAR, ROLE_EVENTOS_MODIFICAR, ROLE_EVENTOS_ELIMINAR]
+        ROLE_ASISTENTES: [ROLE_ASISTENTES_LISTAR, ROLE_ASISTENTES_VER, ROLE_ASISTENTES_CREAR, ROLE_ASISTENTES_MODIFICAR, ROLE_ASISTENTES_ELIMINAR]
+        ROLE_TEMPLATES: [ROLE_TEMPLATES_LISTAR, ROLE_TEMPLATES_VER, ROLE_TEMPLATES_CREAR, ROLE_TEMPLATES_MODIFICAR, ROLE_TEMPLATES_ELIMINAR]
+        ROLE_USUARIOS: [ROLE_USUARIOS_LISTAR, ROLE_USUARIOS_VER, ROLE_USUARIOS_CREAR, ROLE_USUARIOS_MODIFICAR, ROLE_USUARIOS_ELIMINAR]

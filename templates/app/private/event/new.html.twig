@@ -70,8 +70,11 @@
             <div class="row mb-3">
                 <div class="col-md mb-2">
                     <div class="input-group">
-                        {{ form_widget(form.attendeeFile,
-                        {'attr': {'class': 'form-control'}}) }}
+                        {% if is_granted(['ROLE_ASISTENTES_CREAR','ROLE_ASISTENTES_MODIFICAR']) %}    
+                            {{ form_widget(form.attendeeFile,{'attr': {'class': 'form-control'}}) }}                            
+                        {% else %}
+                            {{ form_widget(form.attendeeFile,{'attr': {'disabled': 'disabled'}}) }}                            
+                        {% endif %}
                     </div>
                 </div>
 
@@ -82,9 +85,13 @@
                     </div>
                 </div>
                 <div class="col col-md-auto">
-                    {% if (form.vars.value.eventAttendees.count != 0) %}
-                    <a href="{{path('viewAttendees', {eventID: form.vars.value.id})}}" class="btn btn-secondary"
-                        style="background-color: #00889B;">Ver asistentes</a>
+                    {% if is_granted(['ROLE_ASISTENTES_VER', 'ROLE_ASISTENTES_LISTAR', 'ROLE_ASISTENTES_CREAR','ROLE_ASISTENTES_MODIFICAR', 'ROLE_ASISTENTES_ELIMINAR']) %}    
+                        {% if (form.vars.value.eventAttendees.count != 0) %}
+                        <a href="{{path('viewAttendees', {eventID: form.vars.value.id})}}" class="btn btn-secondary"
+                            style="background-color: #00889B;">Ver asistentes</a>
+                        {% endif %}
+                    {% else %}
+                        <a class="btn btn-secondary" style="background-color: #00889B;" disabled title="Usuario no autorizado">Ver asistentes</a>
                     {% endif %}
                 </div>
                 {% endif %}
@@ -129,15 +136,21 @@
     </div>
     <div class="container">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3 pb-3">
-            {% if (form.vars.value.id is not null) %}
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
-                Eliminar
-            </button>
+            {% if is_granted(['ROLE_EVENTOS_ELIMINAR']) %}    
+                {% if (form.vars.value.id is not null) %}
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
+                    Eliminar
+                </button>
+                {% endif %}
             {% endif %}
             <a class="btn btn-secondary" href={{ path('events') }}>Volver</a>
-            {{ form_widget(form.createEvent,
-            {'attr': {'class': 'btn btn-success'}
-            }) }}
+            {% if is_granted(['ROLE_EVENTOS_CREAR', 'ROLE_EVENTOS_MODIFICAR']) %}    
+                {{ form_widget(form.createEvent,
+                {'attr': {'class': 'btn btn-success'} }) }}
+            {% else %}
+                {{ form_widget(form.createEvent,
+                    {'attr': {'disabled': 'disabled'} }) }}
+            {% endif %}
         </div>
         {% if (form.vars.value.id is not null) %}
         <!-- Delete modal -->
