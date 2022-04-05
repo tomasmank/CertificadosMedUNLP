@@ -88,7 +88,11 @@
         <div class="container">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
                 <a class="btn btn-secondary mb-3" href={{ path('users') }} tabindex="6" >Cancelar y volver</a>
-                <button class="btn btn-success mb-3" type="submit" tabindex="7" >Crear usuario</button>
+                {% if is_granted('ROLE_USUARIOS_CREAR') %}    
+                    <button class="btn btn-success mb-3" type="submit" tabindex="7" >Crear usuario</button>
+                {% else %}
+                    <button class="btn btn-success mb-3" type="submit" tabindex="7" disabled title="Usuario no autorizado">Crear usuario</button>
+                {% endif %}
             </div>
         </div>
     </form>

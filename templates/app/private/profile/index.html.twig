@@ -11,8 +11,11 @@
             <h3>Administración de Roles</h3>
         </div>
         <div class="col">
-            <a href={{path("newProfile")}} class="btn btn-secondary" style="background-color: #00889B; float: right;">Nuevo
-                Rol</a>
+            {% if is_granted(['ROLE_USUARIOS_CREAR']) %}    
+                <a href={{path("newProfile")}} class="btn btn-secondary" style="background-color: #00889B; float: right;">Nuevo Rol</a>
+            {% else %}
+                <a class="btn btn-secondary" style="background-color: #00889B; float: right;" disabled title="Usuario no autorizado">Nuevo Rol</a>
+            {% endif %}
         </div>
     </div>
     
@@ -28,8 +31,16 @@
                     <td>{{perfil.name}}</td>
                     <td>
                         {% if perfil.name != 'Administrador' %}
-                            <a href="{{ path('editProfile', {'id': perfil.id}) }}" class="btn btn-outline-secondary" >Editar</a>
-                            <a href="{{ path('deleteProfile', {'id': perfil.id}) }}"  class="btn btn-outline-secondary" >Eliminar</a>
+                            {% if is_granted(['ROLE_USUARIOS_MODIFICAR']) %}    
+                                <a href="{{ path('editProfile', {'id': perfil.id}) }}" class="btn btn-outline-secondary" >Editar</a>
+                            {% else %}
+                                <a class="btn btn-outline-secondary" disabled title="Usuario no autorizado">Editar</a>
+                            {% endif %}
+                            {% if is_granted(['ROLE_USUARIOS_ELIMINAR']) %}    
+                                <a href="{{ path('deleteProfile', {'id': perfil.id}) }}"  class="btn btn-outline-secondary" >Eliminar</a>
+                            {% else %}    
+                                <a class="btn btn-outline-secondary" disabled title="Usuario no autorizado">Eliminar</a>
+                            {% endif %}    
                         {% endif %}
                     </td>
                 </tr>

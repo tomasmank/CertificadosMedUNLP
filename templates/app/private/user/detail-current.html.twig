@@ -23,7 +23,7 @@
                     <div class="col-sm-6">
                         <label for="firstName" class="col col-form-label">Nombre/s</label>
                         <input type="text" class="form-control" id="firstName" name="firstName" tabindex="1" autofocus="autofocus" value={{user.firstName}}
-                        {% if not is_granted('ROLE_ADMIN') %}
+                        {% if not is_granted('ROLE_USUARIOS_MODIFICAR') %}
                             readonly
                         {% endif %} 
                         >
@@ -31,7 +31,7 @@
                     <div class="col-sm-6">
                         <label for="lastName" class="col col-form-label">Apellido/s</label>
                         <input type="text" class="form-control" id="lastName" name="lastName" tabindex="2" value={{user.lastName}}
-                        {% if not is_granted('ROLE_ADMIN') %}
+                        {% if not is_granted('ROLE_USUARIOS_MODIFICAR') %}
                             readonly
                         {% endif %} 
                         >
@@ -45,7 +45,7 @@
                     <div class="col-sm-6">
                         <label for="profile" class="col col-form-label">Tipo de perfil</label>    
                             <select class="form-select" tabindex="3" id="profileID" name="profileID" tabindex="3" value={{user.profile.id}}>
-                                {% if is_granted('ROLE_ADMIN') %}
+                                {% if is_granted('ROLE_USUARIOS_MODIFICAR') %}
                                     <option selected value={{user.profile.id}}>{{user.profile.name}}</option>
                                     {% for profile in profiles %}
                                         <option value={{profile.id}}>{{profile.name}}</option>
@@ -59,11 +59,11 @@
             </div>
         </div>
     
-        {% if (is_granted('ROLE_ADMIN') or user == inSession) %}
+        {% if (is_granted('ROLE_USUARIOS_MODIFICAR') or user == inSession) %}
         <div class="container border rounded">
             <div class="container mt-3">
                 <h4>Modificar contraseña</h4>
-                {% if (is_granted('ROLE_ADMIN') or user == inSession) %}
+                {% if (is_granted('ROLE_USUARIOS_MODIFICAR') or user == inSession) %}
                     <div class="col-sm-6">
                         <label for="password" class="col-form-label">Nueva contraseña</label>
                         <div class="input-group">
@@ -106,11 +106,11 @@
 
         <div class="container">
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                {% if (is_granted('ROLE_ADMIN') and (user != inSession)) %}
+                {% if (is_granted('ROLE_USUARIOS_ELIMINAR') and (user != inSession)) %}
                     <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#deleteModal" tabindex="7">Eliminar</button>
                 {% endif %}
                 <a class="btn btn-secondary mb-3" href={{ path('users') }} tabindex="8">Volver</a>
-                {% if (is_granted('ROLE_ADMIN') or (user == inSession))%}
+                {% if (is_granted(['ROLE_USUARIOS_CREAR', 'ROLE_USUARIOS_MODIFICAR']) or (user == inSession))%}
                     <button class="btn btn-success mb-3" tabindex="9">Modificar</button>
                 {% endif %}
             </div>
