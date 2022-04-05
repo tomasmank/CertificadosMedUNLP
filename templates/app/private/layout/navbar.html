@@ -15,25 +15,51 @@
                         <a class="nav-link {% if app.request.attributes.get('_route') == 'home' %}active{% endif %}"
                             aria-current="page" href={{path("home")}}>Inicio</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if app.request.attributes.get('_route') == 'events' %} active{% endif %}"
-                            href={{path("events")}}>Eventos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if app.request.attributes.get('_route') == 'templates' %} active{% endif %}"
-                            href={{path("templates")}}>Templates</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">Administrar</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
-                            <li><a class="dropdown-item" href={{path("users")}}>Usuarios</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href={{path("profile")}}>Roles de usuario</a></li>
-                        </ul>
-                    </li>
+
+                    {% if is_granted(['ROLE_EVENTOS_VER', 'ROLE_EVENTOS_LISTAR', 'ROLE_EVENTOS_CREAR','ROLE_EVENTOS_MODIFICAR', 'ROLE_EVENTOS_ELIMINAR']) %}        
+                        <li class="nav-item">
+                            <a class="nav-link {% if app.request.attributes.get('_route') == 'events' %} active{% endif %}"
+                                href={{path("events")}}>Eventos</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" title="Usuario no autorizado">Eventos</a>
+                        </li>
+                    {% endif %}            
+                    
+                    {% if is_granted(['ROLE_TEMPLATES_VER', 'ROLE_TEMPLATES_LISTAR', 'ROLE_TEMPLATES_CREAR','ROLE_TEMPLATES_MODIFICAR', 'ROLE_TEMPLATES_ELIMINAR']) %}        
+                        <li class="nav-item">
+                            <a class="nav-link {% if app.request.attributes.get('_route') == 'templates' %} active{% endif %}"
+                                href={{path("templates")}}>Templates</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" title="Usuario no autorizado" >Templates</a>
+                        </li>
+                    {% endif %}
+                  
+                    {% if is_granted(['ROLE_USUARIOS_VER', 'ROLE_USUARIOS_LISTAR', 'ROLE_USUARIOS_CREAR','ROLE_USUARIOS_MODIFICAR', 'ROLE_USUARIOS_ELIMINAR']) %}        
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">Administrar</a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown2">
+                                <li>
+                                    <a class="dropdown-item" href={{path("users")}}>Usuarios</a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href={{path("profile")}}>Roles de usuario</a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false" title="Usuario no autorizado" disabled>Administrar</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">

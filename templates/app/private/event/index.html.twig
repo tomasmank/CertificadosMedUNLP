@@ -11,8 +11,12 @@
             <h3>Eventos</h3>
         </div>
         <div class="col">
-            <a href={{ path('viewEvent', {eventID: null, action: 'new' }) }} class="btn btn-secondary"
-                style="background-color: #00889B; float: right;">Nuevo evento</a>
+            {% if is_granted(['ROLE_EVENTOS_CREAR']) %}    
+                <a href={{ path('viewEvent', {eventID: null, action: 'new' }) }} class="btn btn-secondary"
+                    style="background-color: #00889B; float: right;">Nuevo evento</a>
+            {% else %}
+                <a class="btn btn-secondary" style="background-color: #00889B; float: right;" disabled title="Usuario no autorizado">Nuevo evento</a>
+            {% endif %}    
         </div>
     </div>
     <div class="row">
@@ -87,14 +91,18 @@
                     {% endif %}
                     {% endif %}
                     <td>
-                        <a class="btn" href="{{ path('viewEvent', {eventID: event.id, action: 'view'}) }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-three-dots" viewBox="0 0 16 16" data-bs-toggle="modal"
-                                data-bs-target="#showOptionsModal">
-                                <path
-                                    d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-                            </svg>
-                        </a>
+                        {% if is_granted(['ROLE_EVENTOS_VER', 'ROLE_EVENTOS_MODIFICAR', 'ROLE_EVENTOS_ELIMINAR']) %}    
+                            <a class="btn" href="{{ path('viewEvent', {eventID: event.id, action: 'view'}) }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-three-dots" viewBox="0 0 16 16" data-bs-toggle="modal"
+                                    data-bs-target="#showOptionsModal">
+                                    <path
+                                        d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+                                </svg>
+                            </a>
+                        {% else %}
+                            <a class="btn" title="Usuario no autorizado"></a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
