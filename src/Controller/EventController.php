@@ -101,7 +101,6 @@ class EventController extends AbstractController
                 $originalFileName = pathinfo($attendeeFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFileName = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFileName);
                 $newFileName = $safeFileName.'-'.uniqid().'.'.$attendeeFile->guessExtension();
-# $pathToFile = $this->getParameter('attendees_directory');
 
                 try {
                     $attendeeFile->move($pathToFile, $newFileName);

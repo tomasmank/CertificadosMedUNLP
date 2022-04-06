@@ -88,10 +88,12 @@
         <!-- Trigger delete modal -->
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3 pb-4">
             <a href="{{ path('templates') }}" class="btn btn-secondary">Volver</a>
-            <a href="{{ path('updateTemplate', {id: template.id}) }}" class="btn btn-warning">Editar</a>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                Eliminar
-            </button>
+            {% if is_granted('ROLE_TEMPLATES_MODIFICAR') %}    
+                <a href="{{ path('updateTemplate', {id: template.id}) }}" class="btn btn-warning">Editar</a>
+            {% endif %}
+            {% if is_granted('ROLE_TEMPLATES_ELIMINAR') %}    
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Eliminar</button>
+            {% endif %}
         </div>
 
         <!-- Delete modal -->

@@ -136,13 +136,6 @@
     </div>
     <div class="container">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3 pb-3">
-            {% if is_granted(['ROLE_EVENTOS_ELIMINAR']) %}    
-                {% if (form.vars.value.id is not null) %}
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
-                    Eliminar
-                </button>
-                {% endif %}
-            {% endif %}
             <a class="btn btn-secondary" href={{ path('events') }}>Volver</a>
             {% if is_granted(['ROLE_EVENTOS_CREAR', 'ROLE_EVENTOS_MODIFICAR']) %}    
                 {{ form_widget(form.createEvent,
@@ -150,6 +143,13 @@
             {% else %}
                 {{ form_widget(form.createEvent,
                     {'attr': {'disabled': 'disabled'} }) }}
+            {% endif %}
+            {% if is_granted(['ROLE_EVENTOS_ELIMINAR']) %}    
+                {% if (form.vars.value.id is not null) %}
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
+                    Eliminar
+                </button>
+                {% endif %}
             {% endif %}
         </div>
         {% if (form.vars.value.id is not null) %}

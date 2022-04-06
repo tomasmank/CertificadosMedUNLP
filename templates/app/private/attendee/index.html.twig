@@ -23,8 +23,12 @@
                 href="{{ path('viewEvent', {eventID: event.id, action: 'view'}) }}">Volver</a>
         </div>
         <div class="col-auto">
-            <a href="{{path('newAttendee',{eventID: event.id})}}" class="btn btn-secondary"
-                style="background-color: #00889B; float: right;">Nuevo asistente</a>
+            {% if is_granted('ROLE_ASISTENTES_CREAR') %}    
+                <a href="{{path('newAttendee',{eventID: event.id})}}" class="btn btn-secondary"
+                    style="background-color: #00889B; float: right;">Nuevo asistente</a>
+            {% else %}
+                <a class="btn btn-secondary" style="background-color: #00889B; float: right;" disabled title="Usuario no autorizado">Nuevo asistente</a>
+            {% endif %}
         </div>
     </div>
     <div class="row">
@@ -85,13 +89,17 @@
                     <td>{{eventAttendee.attendee.dni}}</td>
                     <td class="d-none d-md-table-cell">{{eventAttendee.cond}}</td>
                     <td>
-                        <a class="btn" href="{{ path('viewEventAttendee', {eventAttendeeID: eventAttendee.id}) }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-three-dots" viewBox="0 0 16 16">
-                                <path
-                                    d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-                            </svg>
-                        </a>
+                        {% if is_granted(['ROLE_ASISTENTES_VER', 'ROLE_ASISTENTES_MODIFICAR', 'ROLE_ASISTENTES_ELIMINAR']) %}    
+                            <a class="btn" href="{{ path('viewEventAttendee', {eventAttendeeID: eventAttendee.id}) }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-three-dots" viewBox="0 0 16 16">
+                                    <path
+                                        d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+                                </svg>
+                            </a>
+                        {% else %}
+                            <a class="btn" title="Usuario no autorizado"></a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
