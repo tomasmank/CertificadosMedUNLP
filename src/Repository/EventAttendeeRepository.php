@@ -64,8 +64,8 @@ class EventAttendeeRepository extends ServiceEntityRepository
                 ->setParameter(1, '%'.$searchParameter.'%');
         }
         
-        $query = $qb->orderBy('a.last_name', 'DESC')
-            ->addOrderBy('a.first_name', 'DESC')
+        $query = $qb->orderBy('a.last_name', 'ASC')
+            ->addOrderBy('a.first_name', 'ASC')
             ->getQuery();
 
         $paginator = $this->paginate($query, $currentPage, $limit);
