@@ -89,9 +89,13 @@
         <div class="container">
             <!-- Trigger delete modal -->
             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#deleteModal">Eliminar</button>
                 <a href="{{ path('viewAttendees', {eventID: eventAttendee.event.id}) }}" class="btn btn-secondary mb-4">Volver</a>
-                <button class="btn btn-success mb-3">Modificar asistente</button>
+                {% if is_granted('ROLE_ASISTENTES_MODIFICAR') %}    
+                    <button class="btn btn-success mb-4">Modificar asistente</button>
+                {% endif %}
+                {% if is_granted('ROLE_ASISTENTES_ELIMINAR') %}    
+                    <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#deleteModal">Eliminar</button>
+                {% endif %}
             </div>
 
             <!-- Delete modal -->

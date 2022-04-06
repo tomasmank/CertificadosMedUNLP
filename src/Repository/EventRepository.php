@@ -72,7 +72,8 @@ class EventRepository extends ServiceEntityRepository
             ->setParameter(1, '%'.$searchParameter.'%');
         }
 
-        $qb ->addOrderBy('e.id', 'DESC');
+        $qb ->addOrderBy('e.published', 'ASC');
+        $qb ->addOrderBy('e.name', 'ASC');
 
         $query = $qb->getQuery();
 

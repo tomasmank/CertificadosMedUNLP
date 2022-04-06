@@ -24,7 +24,7 @@
                     <div class="row mb-3 mt-2">
                         <div class="col-md-9 mt-2">
                             <input type="text" class="form-control" id="toSearch" name="toSearch"
-                                placeholder="Escriba un término...">
+                                placeholder="Ingrese un término de búsqueda...">
                         </div>
                         <div class="col-md-3">
                             <button href="" class="btn btn-secondary mt-2" style="width: 100%;">Aplicar
@@ -68,13 +68,17 @@
                     <td>{{template.name}}</td>
                     <td>{{template.comments}}</td>
                     <td>
-                        <a class="btn" href="{{ path('detailTemplate', {id: template.id}) }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-three-dots" viewBox="0 0 16 16">
-                                <path
-                                    d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-                            </svg>
-                        </a>
+                        {% if is_granted(['ROLE_TEMPLATES_VER', 'ROLE_TEMPLATES_MODIFICAR', 'ROLE_TEMPLATES_ELIMINAR']) %}
+                            <a class="btn" href="{{ path('detailTemplate', {id: template.id}) }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-three-dots" viewBox="0 0 16 16">
+                                    <path
+                                        d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+                                </svg>
+                            </a>
+                        {% else %}
+                            <a class="btn" title="Usuario no autorizado"></a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
