@@ -265,7 +265,7 @@ class TemplateController extends AbstractController
             ->find($id);
 
         if ($template) {
-            $knpSnappyPdf = new Pdf('/usr/bin/wkhtmltopdf');
+            $knpSnappyPdf = new Pdf('/usr/local/bin/wkhtmltopdf');
             $knpSnappyPdf->setOption('lowquality', false);
             $knpSnappyPdf->setOption('disable-javascript', true);
             $knpSnappyPdf->setOption('page-size', 'A4');
