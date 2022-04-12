@@ -90,20 +90,20 @@ class MailerController extends AbstractController
         ]);
 
         # des-comentar para enviar mail
-        # return $knpSnappyPdf->getOutputFromHtml($html);
+        return $knpSnappyPdf->getOutputFromHtml($html);
 
         # se convierte a ASCII porque PdfResponse no acepta $filename con caracteres especiales
         # dice ser un bug de la clase PdfResponse / Response,
         # por lo que posiblemente no sea necesario  usar esto en el envio de mail
-        $filename = mb_convert_encoding($attendee->getLastName() . $attendee->getFirstName() . '-' . $event->getName() . '.pdf', "ASCII");
+        # $filename = mb_convert_encoding($attendee->getLastName() . $attendee->getFirstName() . '-' . $event->getName() . '.pdf', "ASCII");
 
-        return new PdfResponse(
-            $knpSnappyPdf->getOutputFromHtml($html),
-            $filename,
-            array(
-                'images' =>true,            
-            )
-        );
+        # return new PdfResponse(
+        #    $knpSnappyPdf->getOutputFromHtml($html),
+        #    $filename,
+        #   array(
+        #        'images' =>true,            
+        #    )
+        #);
     }
     
     /**
@@ -131,19 +131,19 @@ class MailerController extends AbstractController
 
         # sacar comentarios para enviar mail
 
-        #$email = (new Email())
-        #    ->from('lauchaoleastro3@gmail.com')
-        #    ->to($destinationEmail)
-        #    ->subject('Certificado - ' . $event->getName())
-        #    ->text('Este mensaje ha sido generado automáticamente. Por favor, no responder.')
-        #    ->attach($pdfFile, $filename);
+        $email = (new Email())
+            ->from('certificadosmedunlp@gmail.com')
+            ->to($destinationEmail)
+            ->subject('Certificado - ' . $event->getName())
+            ->text('Este mensaje ha sido generado automáticamente. Por favor, no responder.')
+            ->attach($pdfFile, $filename);
 
-        # $mailer->send($email);
+        $mailer->send($email);
         
         $this->addFlash("success", "Certificado enviado correctamente al mail: " . $destinationEmail );
         
-        # return $this->redirectToRoute('public', [ 'dni' => $attendee->getDni() ]);
+        return $this->redirectToRoute('public', [ 'dni' => $attendee->getDni() ]);
 
-        return $pdfFile;
+        # return $pdfFile;
     }
 }
